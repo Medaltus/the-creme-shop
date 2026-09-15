@@ -1134,14 +1134,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <svg viewBox="0 0 16 16"><path d="M2 10V6l5-4h2v12H7l-5-4z"/><path d="M9 5.5c1.5.5 3 1.5 3 2.5s-1.5 2-3 2.5"/><path d="M9 3c2.5.8 5 2.5 5 5s-2.5 4.2-5 5"/></svg>Marketing
     </button>
 
-    <div class="nav-section">Operations</div>
-    <button class="nav-btn" onclick="showPage('inventory-external',this)">
-      <svg viewBox="0 0 16 16"><path d="M1 5l7-4 7 4v7l-7 4-7-4V5z"/><path d="M8 1v14M1 5l7 4 7-4"/></svg>Inventory
-    </button>
-    <button class="nav-btn" onclick="showPage('fulfillment',this)">
-      <svg viewBox="0 0 16 16"><rect x="1" y="5" width="14" height="9" rx="1.2"/><path d="M1 8h14M5 5V3a1 1 0 011-1h4a1 1 0 011 1v2"/><circle cx="4.5" cy="14" r="1.2"/><circle cx="11.5" cy="14" r="1.2"/></svg>Fulfillment
-    </button>
-
     <!-- Internal-only section — everything currently built lives below this line -->
     <div id="nav-internal-section" style="display:none;">
     <div class="nav-internal-divider"></div>
@@ -1201,7 +1193,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-amazon" checked style="margin:0;"> Amazon</label>
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-walmart" checked style="margin:0;"> Walmart</label>
         <!-- Marketing pages — same default-checked reasoning as Sales above. -->
-        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-fulfillment" checked style="margin:0;"> Fulfillment &amp; CS</label>
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-stewardship" checked style="margin:0;"> Stewardship</label>
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-opportunities" checked style="margin:0;"> Opportunities</label>
         <!-- Events pages — existing checkboxes, unchanged; default UNCHECKED
@@ -1544,74 +1535,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 
   </div>
 
-  <!-- ══ FULFILLMENT ══ -->
-  <div class="page" id="page-fulfillment">
-    <div class="page-hd">
-      <div><div class="page-title">Fulfillment</div><div class="page-sub">ShipStation · Processing performance</div></div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;">
-      <div class="kpi-card">
-        <div class="kpi-label">Shipped Website Orders • Last 30 Days</div>
-        <div class="kpi-value" id="ff-kpi-shipped30">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Our Fulfillment Promise · Last 7 Days</div>
-        <div class="kpi-value" style="color:#1db88a;">100%</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Same Day Fulfilled · weekday orders before 1p</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Avg Processing Time · Last 7 Days</div>
-        <div class="kpi-value" id="ff-kpi-proctime">—</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Business days · weekends excluded</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Avg Shipping Cost · Last 7 Days</div>
-        <div class="kpi-value" id="ff-kpi-shipcost">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Inventory Prepped</div>
-        <div class="kpi-value" id="ff-kpi-invprepped">—</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Units received this month</div>
-      </div>
-    </div>
-
-    <div class="ppc-card">
-      <div class="ppc-card-title">Website Orders Shipped by Date · Last 30 Days</div>
-      <div style="position:relative;height:320px;"><canvas id="ff-shipped-chart"></canvas></div>
-      <div class="ppc-note" id="ff-chart-footer">Loading…</div>
-    </div>
-
-    <div class="ppc-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div class="ppc-card-title" style="margin-bottom:0;">Website Orders by State · Last 30 Days</div>
-        <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);">
-          <span>Fewer</span>
-          <div style="width:80px;height:7px;border-radius:4px;background:linear-gradient(to right,#dce6f5,#001F60);"></div>
-          <span>More</span>
-        </div>
-      </div>
-      <div style="position:relative;padding:8px 0;">
-        <div class="ff-map-tooltip" id="ff-map-tip"></div>
-        <svg id="ff-us-svg" viewBox="0 0 959 593" style="width:100%;height:auto;display:block;"></svg>
-      </div>
-      <div class="ppc-note" id="ff-map-footer">Loading…</div>
-      <div style="border-top:1px solid var(--border);margin-top:12px;overflow-y:auto;max-height:400px;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>State</th><th>Orders</th>
-              <th>State</th><th>Orders</th>
-              <th>State</th><th>Orders</th>
-              <th>State</th><th>Orders</th>
-              <th>State</th><th>Orders</th>
-            </tr>
-          </thead>
-          <tbody id="ff-state-table-body"><tr><td colspan="10" style="color:var(--muted);">Loading…</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
   <!-- ══ SALES ══ -->
   <div class="page" id="page-sales">
@@ -2000,9 +1923,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <button class="sheet-link-btn" onclick="document.getElementById('marketing-sheet-dropdown').classList.toggle('open')">🔗 Source Sheets <span style="font-size:9px;">▾</span></button>
       <div class="sheet-link-dropdown" id="marketing-sheet-dropdown">
         <a href="https://docs.google.com/spreadsheets/d/17ZTBMaZrZ6avFoHte8M_Zi1a_xhE3nZUnbn21EtRRRY/edit?gid=356984145#gid=356984145" target="_blank" rel="noopener"><span class="sheet-link-icon">🚚</span>Fulfillment Daily Shipments</a>
-        <a href="https://docs.google.com/spreadsheets/d/17ZTBMaZrZ6avFoHte8M_Zi1a_xhE3nZUnbn21EtRRRY/edit?gid=106183169#gid=106183169" target="_blank" rel="noopener"><span class="sheet-link-icon">🚚</span>Fulfillment KPIs</a>
-        <a href="https://docs.google.com/spreadsheets/d/14CETE7Qo5PpYrbDqF9TQFoz4b1Uzw3hECIztWmy_VYA/edit?gid=1776812216#gid=1776812216" target="_blank" rel="noopener"><span class="sheet-link-icon">🎧</span>Customer Service (Compliance + Reviews)</a>
-        <a href="https://docs.google.com/spreadsheets/d/1YYhGDwFqHb0wo0D_YzpsPemh5qX-lfv1aQYxTK9bgug/edit?gid=402779529#gid=402779529" target="_blank" rel="noopener"><span class="sheet-link-icon">🗺️</span>Fulfillment States (US Map)</a>
+        <a href="https://docs.google.com/spreadsheets/d/17ZTBMaZrZ6avFoHte8M_Zi1a_xhE3nZUnbn21EtRRRY/edit?gid=106183169#gid=106183169" target="_blank" rel="noopener"><span class="sheet-link-icon">🚚</span>Fulfillment KPIs</a>        <a href="https://docs.google.com/spreadsheets/d/1YYhGDwFqHb0wo0D_YzpsPemh5qX-lfv1aQYxTK9bgug/edit?gid=402779529#gid=402779529" target="_blank" rel="noopener"><span class="sheet-link-icon">🗺️</span>Fulfillment States (US Map)</a>
         <a href="https://docs.google.com/spreadsheets/d/1Pb50CzCb0fouNsaewQATEY_c3IpgRVPu5FoppNg19_A/edit" target="_blank" rel="noopener"><span class="sheet-link-icon">📥</span>ASN Master Tracker (Inbound_Shipments tab)</a>
         <a href="https://docs.google.com/spreadsheets/d/16mnFaFkTfXS4FzZ2mI5aoDKNrw8FWe8R8IUDnv3FHVs/edit?gid=267551179#gid=267551179" target="_blank" rel="noopener"><span class="sheet-link-icon">↩️</span>Amazon Returns</a>
         <a href="https://docs.google.com/spreadsheets/d/1XxYmX0NT-4bqKh4N96zNAPIAzctXDQaK6Yzp6hVWjJc/edit?gid=344983459#gid=344983459" target="_blank" rel="noopener"><span class="sheet-link-icon">↩️</span>Walmart Returns</a>        <a href="https://docs.google.com/spreadsheets/d/1SiYu8e2-Pfi14Aiuf6SAFytWVXb4_dtdNFT6wvLFPok/edit?gid=1163928587#gid=1163928587" target="_blank" rel="noopener"><span class="sheet-link-icon">📦</span>Amazon Orders</a>        <a href="https://docs.google.com/spreadsheets/d/1oIZDxN0vSf4nRvE_K95lsNyBWQd4Ef2aARm0RUtvE0Y/edit?gid=1844526926#gid=1844526926" target="_blank" rel="noopener"><span class="sheet-link-icon">📦</span>Walmart Orders</a>
@@ -2016,99 +1937,12 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <div><div class="page-title">Marketing</div><div class="page-sub">Brand stewardship · Growth opportunities</div></div>
     </div>
     <div class="channel-tabs">
-      <button class="ch-tab active" onclick="showChannel('marketing','m-fulfillment-cs',this)">Fulfillment & Customer Service</button>
-      <button class="ch-tab" onclick="showChannel('marketing','m-stewardship',this)">Brand Stewardship</button>
+      <button class="ch-tab active" onclick="showChannel('marketing','m-stewardship',this)">Brand Stewardship</button>
       <button class="ch-tab" onclick="showChannel('marketing','m-opportunities',this)">Opportunities</button>
     </div>
 
-    <div class="channel-page active" id="m-fulfillment-cs">
 
-      <div class="page-sub" id="mfc-page-sub" style="margin-bottom:14px;">Loading…</div>
-
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;">
-        <div class="kpi-card">
-          <div class="kpi-label" id="mfc-lbl-shipped">Shipped Website Orders</div>
-          <div class="kpi-value" id="mfc-kpi-shipped30">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Our Fulfillment Promise</div>
-          <div class="kpi-value" style="color:#1db88a;">100%</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Same Day Fulfilled · weekday orders before 1p</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Processing Time</div>
-          <div class="kpi-value" id="mfc-kpi-proctime">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Business days · weekends excluded</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Shipping Cost</div>
-          <div class="kpi-value" id="mfc-kpi-shipcost">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Inventory Prepped</div>
-          <div class="kpi-value" id="mfc-kpi-invprepped">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mfc-lbl-invprepped">Units received</div>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title" id="mfc-lbl-chart">Website Orders Shipped by Date</div>
-        <div style="position:relative;height:170px;"><canvas id="mfc-shipped-chart"></canvas></div>
-        <div class="ppc-note" id="mfc-chart-footer">Loading…</div>
-      </div>
-
-      <div class="section-label" style="margin-top:4px;">Customer Service</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;margin-top:4px;">
-        <div class="kpi-card">
-          <div class="kpi-label">Reviews Requested</div>
-          <div class="kpi-value" id="mfc-kpi-reviews">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mfc-kpi-reviews-sub">Helium 10 Follow Up</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Compliance Cases Resolved</div>
-          <div class="kpi-value" id="mfc-kpi-compliance">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mfc-kpi-compliance-sub">Open Cases: —</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label" id="mfc-lbl-returns">Returns Processed</div>
-          <div class="kpi-value" id="mfc-kpi-returns">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mfc-kpi-returns-sub">Return rate: —</div>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div class="ppc-card-title" style="margin-bottom:0;">Website Orders by State · Last 30 Days</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);">
-            <span>Fewer</span>
-            <div style="width:80px;height:7px;border-radius:4px;background:linear-gradient(to right,#dce6f5,#001F60);"></div>
-            <span>More</span>
-          </div>
-        </div>
-        <div style="position:relative;padding:8px 0;">
-          <div class="ff-map-tooltip" id="mfc-map-tip"></div>
-          <svg id="mfc-us-svg" viewBox="0 0 959 593" style="width:100%;height:auto;display:block;"></svg>
-        </div>
-        <div class="ppc-note" id="mfc-map-footer">Loading…</div>
-        <div style="border-top:1px solid var(--border);margin-top:12px;overflow-y:auto;max-height:400px;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-              </tr>
-            </thead>
-            <tbody id="mfc-state-table-body"><tr><td colspan="10" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div><!-- /m-fulfillment-cs -->
-
-    <div class="channel-page" id="m-stewardship">
+    <div class="channel-page active" id="m-stewardship">
 
       <div class="section-label">Key Performance Metrics</div>
       <div class="kpi-row">
@@ -2238,97 +2072,12 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <div><div class="page-title">Marketing</div><div class="page-sub">Brand stewardship · Growth opportunities</div></div>
     </div>
     <div class="channel-tabs">
-      <button class="ch-tab active" onclick="showChannel('marketing-external','mx-fulfillment-cs',this)">Fulfillment &amp; Customer Service</button>
-      <button class="ch-tab" onclick="showChannel('marketing-external','mx-stewardship',this)">Brand Stewardship</button>
+      <button class="ch-tab active" onclick="showChannel('marketing-external','mx-stewardship',this)">Brand Stewardship</button>
       <button class="ch-tab" onclick="showChannel('marketing-external','mx-opportunities',this)">Opportunities</button>
     </div>
 
-    <div class="channel-page active" id="mx-fulfillment-cs">
 
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;">
-        <div class="kpi-card">
-          <div class="kpi-label">Shipped Orders · Last 30 Days</div>
-          <div class="kpi-value" id="mx-mfc-kpi-shipped30">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Our Fulfillment Promise · Last 7 Days</div>
-          <div class="kpi-value" style="color:#1db88a;">100%</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Same Day Fulfilled · weekday orders before 1p</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Processing Time · Last 7 Days</div>
-          <div class="kpi-value" id="mx-mfc-kpi-proctime">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Business days · weekends excluded</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Shipping Cost · Last 7 Days</div>
-          <div class="kpi-value" id="mx-mfc-kpi-shipcost">—</div>
-        </div>
-        <div class="kpi-card" style="opacity:.6;">
-          <div class="kpi-label">Inventory Prepped</div>
-          <div class="kpi-value" style="color:var(--muted);">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Coming soon</div>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title">Orders Shipped by Date · Last 30 Days</div>
-        <div style="position:relative;height:170px;"><canvas id="mx-mfc-shipped-chart"></canvas></div>
-        <div class="ppc-note" id="mx-mfc-chart-footer">Loading…</div>
-      </div>
-
-      <div class="section-label" style="margin-top:4px;">Customer Service</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;margin-top:4px;">
-        <div class="kpi-card">
-          <div class="kpi-label">Reviews Requested</div>
-          <div class="kpi-value" id="mx-mfc-kpi-reviews">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Helium 10 Follow Up</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Compliance Cases Resolved</div>
-          <div class="kpi-value" id="mx-mfc-kpi-compliance">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mx-mfc-kpi-compliance-sub">Open Cases: —</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Returns Processed</div>
-          <div class="kpi-value" id="mx-mfc-kpi-returns">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="mx-mfc-kpi-returns-sub">Return rate: —</div>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div class="ppc-card-title" style="margin-bottom:0;">Orders by State · Last 30 Days</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);">
-            <span>Fewer</span>
-            <div style="width:80px;height:7px;border-radius:4px;background:linear-gradient(to right,#dce6f5,#001F60);"></div>
-            <span>More</span>
-          </div>
-        </div>
-        <div style="position:relative;padding:8px 0;">
-          <div class="ff-map-tooltip" id="mx-mfc-map-tip"></div>
-          <svg id="mx-mfc-us-svg" viewBox="0 0 959 593" style="width:100%;height:auto;display:block;"></svg>
-        </div>
-        <div class="ppc-note" id="mx-mfc-map-footer">Loading…</div>
-        <div style="border-top:1px solid var(--border);margin-top:12px;overflow-y:auto;max-height:400px;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-                <th>State</th><th>Orders</th>
-              </tr>
-            </thead>
-            <tbody id="mx-mfc-state-table-body"><tr><td colspan="10" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div><!-- /mx-fulfillment-cs -->
-
-    <div class="channel-page" id="mx-stewardship">
+    <div class="channel-page active" id="mx-stewardship">
 
       <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px;" id="mx-stewardship-date-note">Loading…</div>
 
@@ -2428,85 +2177,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
     </div>
   </div>
 
-  <!-- ══ INVENTORY (EXTERNAL) ══ -->
-  <!-- Two tabs: Stock Levels (read-only consignment snapshot) and Inbound
-       Shipments (the ASN pipeline). Styled to visually match Luccini's
-       dashboard reference but built as plain HTML/vanilla JS, reusing
-       the crème shop's own existing .data-table/.kpi-card/.ppc-card classes where
-       they already cover the need, with a new .asn- prefixed set for the
-       shipment cards and upload modal (see CSS block, adapted from
-       Luccini's InboundTab.module.css onto the crème shop's own CSS variables).
-       Wired up by initInventoryExternalPage(). -->
-  <div class="page" id="page-inventory-external">
-    <div class="page-hd">
-      <div><div class="page-title">Inventory</div><div class="page-sub">Consignment stock levels · Inbound shipment tracking</div></div>
-    </div>
-
-    <div class="channel-tabs-row" style="margin-bottom:18px;">
-      <div class="channel-tabs">
-        <button class="ch-tab active" onclick="showChannel('inventory-external','ix-stock',this)">📦 Stock Levels</button>
-        <button class="ch-tab" onclick="showChannel('inventory-external','ix-inbound',this)">🚚 Inbound Shipments</button>
-      </div>
-    </div>
-
-    <!-- ── Stock Levels ── -->
-    <div class="channel-page active" id="ix-stock">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
-        <div class="kpi-card" style="border-top:3px solid var(--navy);"><div class="kpi-label">Total SKUs</div><div class="kpi-value" id="ix-kpi-total-skus">—</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Active products</div></div>
-        <div class="kpi-card" style="border-top:3px solid var(--green);"><div class="kpi-label">Total Units On Hand</div><div class="kpi-value" id="ix-kpi-units-onhand">—</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Across all SKUs</div></div>
-        <div class="kpi-card" style="border-top:3px solid var(--danger);"><div class="kpi-label">Out of Stock</div><div class="kpi-value" id="ix-kpi-oos">—</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">SKUs at zero</div></div>
-        <div class="kpi-card" style="border-top:3px solid var(--warn);"><div class="kpi-label">Low Stock</div><div class="kpi-value" id="ix-kpi-low">—</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">10 units or fewer</div></div>
-      </div>
-
-      <div class="ppc-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
-          <input type="text" id="ix-stock-search" placeholder="Search SKU, product name…" style="flex:1;min-width:220px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:12.5px;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span id="ix-stock-updated" style="font-size:11px;color:var(--muted);"></span>
-            <button class="asn-btn-secondary" onclick="downloadStockLevelsCsv()">⬇ Download CSV</button>
-            <button class="asn-btn-secondary" onclick="loadStockLevelsExternal()">↻ Refresh</button>
-          </div>
-        </div>
-        <div id="ix-stock-count" style="font-size:11.5px;color:var(--muted);margin-bottom:8px;"></div>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead><tr>
-              <th>SKU</th><th>Product Name</th><th>On Hand</th><th>Inbound</th>
-            </tr></thead>
-            <tbody id="ix-stock-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);font-style:italic;">Loading…</td></tr></tbody>
-          </table>
-        </div>
-        <div class="ppc-note">ℹ Inbound will populate once an ASN is uploaded for that SKU.</div>
-      </div>
-    </div>
-
-    <!-- ── Inbound Shipments ── -->
-    <div class="channel-page" id="ix-inbound">
-      <div class="asn-header">
-        <div>
-          <div style="font-size:13px;color:var(--muted);">Upload a CSV to notify Medaltus of incoming inventory. Track open and received shipments here.</div>
-        </div>
-        <div class="asn-header-actions">
-          <button class="asn-btn-secondary" onclick="downloadAsnTemplate()">⬇ Download ASN Template</button>
-          <button class="asn-btn-primary" onclick="openAsnUploadModal()">⬆ Upload New ASN</button>
-        </div>
-      </div>
-
-      <div class="asn-subtabs">
-        <button class="asn-subtab active" onclick="showAsnSubTab('Open', this)">Open <span class="asn-subtab-count" id="asn-count-open">0</span></button>
-        <button class="asn-subtab" onclick="showAsnSubTab('Received', this)">Received <span class="asn-subtab-count" id="asn-count-received">0</span></button>
-      </div>
-
-      <div id="asn-list-open" class="asn-grid"></div>
-      <div id="asn-list-received" class="asn-grid" style="display:none;"></div>
-      <div id="asn-empty-state" class="asn-empty" style="display:none;">
-        <div class="asn-empty-icon">📭</div>
-        <div style="font-size:14px;font-weight:700;color:var(--navy);">No shipments yet</div>
-        <div style="font-size:12.5px;">Upload a CSV to create your first ASN.</div>
-      </div>
-      <div id="asn-error-state" class="asn-modal-error" style="display:none;margin-top:12px;"></div>
-    </div>
-  </div>
+  
 
   <!-- ── ASN Upload Modal ── -->
   <div class="asn-modal-overlay" id="asn-upload-modal" style="display:none;">
@@ -2597,8 +2268,8 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <div class="evs-hero">
         <div>
           <div class="evs-eyebrow">Event Strategy</div>
-          <div class="evs-headline" id="evs-headline">Amazon Prime Day</div>
-          <div class="evs-dates" id="evs-dates">June 23 – 26, 2026</div>
+          <div class="evs-headline" id="evs-headline">Amazon Prime Big Deal Days</div>
+          <div class="evs-dates" id="evs-dates">Oct 6, 2026 – Oct 7, 2026</div>
         </div>
         <div class="evs-badge">
           <div class="evs-badge-pct">20%<span>OFF</span></div>
@@ -2652,7 +2323,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 
       <div class="evs-outlook">
         <div class="evs-outlook-lbl">Strategic Outlook</div>
-        <div class="evs-outlook-text">Prime Day is the highest-traffic sales event of the year on Amazon. The brands that win invest in the 2–3 weeks prior and capitalize in the week after. <strong>Preparation, real-time agility, and disciplined follow-through are the three variables we control.</strong></div>
+        <div class="evs-outlook-text">Promotional events are the highest-traffic sales windows of the year. The brands that win invest in the 2–3 weeks prior and capitalize in the week after. <strong>Preparation, real-time agility, and disciplined follow-through are the three variables we control.</strong></div>
       </div>
     </div>
 
@@ -4301,7 +3972,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 const pageTitles = {
   home:'Home — The Crème Shop',
   overview:'Overview — The Crème Shop',sales:'Sales — The Crème Shop','sales-external':'Sales — The Crème Shop',marketing:'Marketing — The Crème Shop','marketing-external':'Marketing — The Crème Shop',
-  events:'Events — The Crème Shop',inventory:'Inventory — The Crème Shop','inventory-external':'Inventory — The Crème Shop',fulfillment:'Fulfillment — The Crème Shop',
+  events:'Events — The Crème Shop',inventory:'Inventory — The Crème Shop',
   insights:'Insights — The Crème Shop',listing:'Listing Audit — The Crème Shop',ppc:'PPC — The Crème Shop',organic:'Organic — The Crème Shop'
 };
 
@@ -4347,9 +4018,7 @@ function showPage(id, btn) {
     // Approved month once and kicks off all three channel loads together.
     if (cid && cid.indexOf('x-') === 0) window.initSalesExternalPage();
     if (cid && cid.indexOf('mx-') === 0) window.initMarketingExternalPage();
-    if (cid && cid.indexOf('ix-') === 0) window.initInventoryExternalPage();
     if (cid==='m-stewardship')   window.initStewardshipLive();
-    if (cid==='m-fulfillment-cs') window.initMarketingFulfillmentCS();
     if (cid==='m-opportunities' && !window._snsChart) initSns();
   }
 }
@@ -4370,7 +4039,6 @@ function showChannel(page, channelId, btn) {
     if (channelId === 's-brand-momentum') window.initBrandMomentum();
     if (channelId.indexOf('x-') === 0)   window.initSalesExternalPage();
     if (channelId.indexOf('mx-') === 0)  window.initMarketingExternalPage();
-    if (channelId.indexOf('ix-') === 0)  window.initInventoryExternalPage();
     if (channelId === 'm-stewardship')   window.initStewardshipLive();
     if (channelId === 'm-opportunities' && !window._snsChart) initSns();
     if (channelId === 'ev-primeday')     window.initPrimeDayReport();
@@ -4378,7 +4046,6 @@ function showChannel(page, channelId, btn) {
     if (channelId === 'ev-pbdd')         window.initPBDDReport();
     if (channelId === 'ev-bfcm')         window.initBFCMReport();
     if (channelId === 'inv-oos-log')     window.initOosLog();
-    if (channelId === 'm-fulfillment-cs') window.initMarketingFulfillmentCS();
 
     // Added 2026-08-12 per Jaclyn — shows/hides the shared period-selector
     // row on the Sales page, and swaps which channel's own pill set is
@@ -8766,13 +8433,7 @@ async function mxMfcLoadReturns() {
   }
 }
 
-window.initMarketingFulfillmentCSExternal = async function() {
-  if (window._mfcExternalPromise) return window._mfcExternalPromise;
-  window._mfcExternalPromise = Promise.all([
-    mxMfcLoadKpis(), mxMfcLoadShippedChart(), mxMfcLoadStates(), mxMfcLoadReturns(), mxMfcLoadComplianceCases(),
-  ]);
-  return window._mfcExternalPromise;
-};
+
 
 async function initSnsExternal() {
   const canvas = document.getElementById('mx-chart-sns');
@@ -9101,7 +8762,6 @@ async function initSnsExternal() {
       // Fulfillment & CS + Subscribe & Save — always live/current, regardless
       // of whether anything has ever been approved.
       await Promise.all([
-        typeof window.initMarketingFulfillmentCSExternal === 'function' ? window.initMarketingFulfillmentCSExternal() : null,
         typeof initSnsExternal === 'function' ? initSnsExternal() : null,
       ]);
     })();
@@ -9723,14 +9383,7 @@ async function initSnsExternal() {
   // ══════════════════════════════════════════════════════════════════════
   // Page orchestrator
   // ══════════════════════════════════════════════════════════════════════
-  window.initInventoryExternalPage = function () {
-    if (window.__inventoryExternalPromise) return window.__inventoryExternalPromise;
-    window.__inventoryExternalPromise = Promise.all([
-      window.loadStockLevelsExternal(),
-      window.loadInboundShipmentsExternal(),
-    ]);
-    return window.__inventoryExternalPromise;
-  };
+  
 })();
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -10295,7 +9948,6 @@ async function initSnsExternal() {
     }
     if (typeof window.initPpcPage === 'function') window.initPpcPage();
     if (typeof window.initInventoryPage === 'function') window.initInventoryPage();
-    if (typeof window.initFulfillmentPage === 'function') window.initFulfillmentPage();
   });
 
 })();
@@ -15714,13 +15366,7 @@ async function ffLoadStates() {
   await ffLoadStatesGeneric(OV_FULFILLMENT_STATES_SHEET_ID, '402779529', 'ff-us-svg', 'ff-map-tip', 'ff-state-table-body', 'ff-map-footer');
 }
 
-window.initFulfillmentPage = async function() {
-  // Independent fetches — no reason to wait on each other one at a time.
-  // Was sequential before; that added up as a real, perceptible delay
-  // once this page had 3 fetches of its own, on top of every other
-  // page's own eagerly-loaded fetches at initial page load.
-  await Promise.all([ffLoadKpis(), ffLoadShippedChart(), ffLoadStates(), ffLoadInventoryPrepped()]);
-};
+
 
 // Reuses the same self-contained mfc* helpers (mfcGvizCsvUrl, mfcIsCsv,
 // mfcParseCsvRows, mfcSumReceivedQtyForAsn, MFC_ASN_TRACKER_SHEET_ID/TAB)
@@ -16173,9 +15819,7 @@ async function mfcLoadInventoryPrepped() {
   }
 }
 
-window.initMarketingFulfillmentCS = async function() {
-  await Promise.all([mfcLoadKpis(), mfcLoadShippedChart(), mfcLoadStates(), mfcLoadReturns(), mfcLoadComplianceCases(), mfcLoadInventoryPrepped()]);
-};
+
 
 
 const LISTING_SKILL_B64   = 'IyBBbWF6b24gTGlzdGluZyBBdWRpdCAmIEJ1aWxkIOKAlCBTa2lsbAoKUHJvZHVjZXMgYSBjb21wbGV0ZSwgY29tcGxpYW50LCBrZXl3b3JkLW9wdGltaXplZCBBbWF6b24gbGlzdGluZyBmb3IgYSBzaW5nbGUgcHJvZHVjdCBTS1UuIENvdmVyczogVGl0bGUsIEl0ZW0gSGlnaGxpZ2h0cywgQnVsbGV0cyAx4oCTNSwgUHJvZHVjdCBEZXNjcmlwdGlvbiwgYW5kIEJhY2tlbmQgS2V5d29yZHMuIEFwcGxpZXMgYWxsIE1lZGFsdHVzIGNvbXBsaWFuY2UgcnVsZXMgYXV0b21hdGljYWxseSDigJQgbm8gcHJvbXB0aW5nIHJlcXVpcmVkLgoKLS0tCgojIyBJbnB1dHMgUmVxdWlyZWQKClRoZSBza2lsbCBhY2NlcHRzIGFueSBjb21iaW5hdGlvbiBvZiB0aGUgZm9sbG93aW5nLiBXb3JrIHdpdGggd2hhdGV2ZXIgaXMgcHJvdmlkZWQuCgp8IElucHV0IHwgU291cmNlIHwgUmVxdWlyZWQ/IHwKfC0tLS0tLS18LS0tLS0tLS18LS0tLS0tLS0tLS18CnwgUHJvZHVjdCBuYW1lICsgZm9ybWF0IHwgVXNlciwgYnJhbmQgd29ya2Jvb2ssIG9yIGRhc2hib2FyZCB8IOKckyBSZXF1aXJlZCB8CnwgRnVsbCBJTkNJIGluZ3JlZGllbnQgbGlzdCB8IEJyYW5kIHdvcmtib29rIChDb2wgTiBvciBPKSwgcHJvZHVjdCBwYWdlLCBvciB1c2VyIHBhc3RlIHwg4pyTIFJlcXVpcmVkIHwKfCBQcm9kdWN0IHNpemUgLyBmb3JtYXQgLyBwcmljZSB8IEJyYW5kIHdvcmtib29rIG9yIHVzZXIgfCDinJMgUmVxdWlyZWQgfAp8IEZyYWdyYW5jZSBzdGF0dXMgfCBCcmFuZCB3b3JrYm9vayBDb2wgUiBvciBJTkNJIHwg4pyTIFJlcXVpcmVkIHwKfCBDbGVhbiBzdGFuZGFyZCBjbGFpbXMgfCBCcmFuZCB3b3JrYm9vayBDb2wgUSBvciB1c2VyIHwgUmVjb21tZW5kZWQgfAp8IEV4aXN0aW5nIGxpc3RpbmcgY29weSB8IERhc2hib2FyZCwgU2VsbGVyIENlbnRyYWwsIG9yIHVzZXIgcGFzdGUgfCBPcHRpb25hbCDigJQgZm9yIGF1ZGl0IG1vZGUgfAp8IEtleXdvcmQgVHJhY2tlciAvIENlcmVicm8gdGllcnMgfCBEYXNoYm9hcmQgS2V5d29yZCBUcmFja2VyIHRhYiwgb3IgQ2VyZWJybyBza2lsbCBvdXRwdXQgfCBTdHJvbmdseSByZWNvbW1lbmRlZCB8CnwgU2tpbiB0eXBlIC8gdGFyZ2V0IGNvbnN1bWVyIHwgQnJhbmQgd29ya2Jvb2sgb3IgdXNlciB8IFJlY29tbWVuZGVkIHwKfCBDb21wZXRpdG9yIGJ1bGxldHMgKFZPQyByZXNlYXJjaCkgfCBCcmFuZCB3b3JrYm9vayBSZXZpZXdzIHRhYiBvciBjb21wZXRpdG9yIGF1ZGl0IG91dHB1dCB8IE9wdGlvbmFsIOKAlCBpbXByb3ZlcyBidWxsZXQgZnJhbWluZyB8CgpJZiBubyBrZXl3b3JkIHRpZXJzIGFyZSBwcm92aWRlZCwgZGVyaXZlIGtleXdvcmRzIGZyb20gdGhlIHByb2R1Y3QncyBpbmdyZWRpZW50IGxpc3QsIGZvcm1hdCwgYW5kIGNhdGVnb3J5IHVzaW5nIHRoZSBzYW1lIGZvdXItZ2F0ZSBmaWx0ZXIgZGVmaW5lZCBpbiB0aGUgYGFtYXpvbi1rZXl3b3JkLXN0cmF0ZWd5YCBza2lsbC4KCi0tLQoKIyMgVHdvIE1vZGVzCgojIyMgTW9kZSBBIOKAlCBCdWlsZCAobmV3IGxpc3Rpbmcgb3Igbm8gY29weSBleGlzdHMpCldyaXRlIGFsbCBmaXZlIGVsZW1lbnRzIGZyb20gc2NyYXRjaCB1c2luZyB0aGUgcHJvZHVjdCBwcm9maWxlIGFuZCBrZXl3b3JkIHRhcmdldHMuCgojIyMgTW9kZSBCIOKAlCBBdWRpdCAoZXhpc3RpbmcgY29weSBwcm92aWRlZCkKMS4gUnVuIHRoZSBleGlzdGluZyBjb3B5IHRocm91Z2ggYWxsIGNvbXBsaWFuY2UgZ2F0ZXMgYW5kIGZsYWcgZXZlcnkgdmlvbGF0aW9uIHdpdGggdGhlIGV4YWN0IHdvcmQsIHJ1bGUgYnJlYWNoZWQsIGFuZCBjb21wbGlhbnQgcmVwbGFjZW1lbnQuCjIuIFJld3JpdGUgZWFjaCBmbGFnZ2VkIGVsZW1lbnQgd2l0aCB0aGUgdmlvbGF0aW9uIGNvcnJlY3RlZC4KMy4gU2NvcmUga2V5d29yZCBjb3ZlcmFnZTogd2hpY2ggVDEgYW5kIFQyIHRhcmdldHMgYXJlIHByZXNlbnQsIHdoaWNoIGFyZSBtaXNzaW5nLgo0LiBQcm9kdWNlIGEgcmV2aXNlZCBmdWxsIGxpc3Rpbmcgd2l0aCBhbGwgZml4ZXMgYXBwbGllZC4KCkFsd2F5cyBjb21wbGV0ZSB0aGUgZnVsbCByZXdyaXRlIGV2ZW4gaW4gQXVkaXQgbW9kZSDigJQgbmV2ZXIgZGVsaXZlciBhIHZpb2xhdGlvbiByZXBvcnQgd2l0aG91dCBhbHNvIGRlbGl2ZXJpbmcgY29ycmVjdGVkIGNvcHkuCgotLS0KCiMjIFBoYXNlIDEg4oCUIEJ1aWxkIHRoZSBQcm9kdWN0IFByb2ZpbGUKCkJlZm9yZSB3cml0aW5nIGEgc2luZ2xlIHdvcmQgb2YgY29weSwgY29tcGlsZSBhIHByb2R1Y3QgZmFjdCBzaGVldC4gVGhpcyBpcyBtYW5kYXRvcnkg4oCUIGNvcHkgd3JpdHRlbiB3aXRob3V0IGl0IHdpbGwgZmFpbCBHYXRlIGNoZWNrcy4KCmBgYApQUk9EVUNUIEZBQ1QgU0hFRVQK4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACkJyYW5kOiAgICAgICAgICAgW2JyYW5kIG5hbWVdClNLVSBJRDogICAgICAgICAgW2UuZy4gU1NTMDAwMV0KUHJvZHVjdCBuYW1lOiAgICBbZnVsbCBuYW1lXQpGb3JtYXQ6ICAgICAgICAgIFtzZXJ1bSAvIGNyZWFtIC8gY2xlYW5zZXIgLyBlc3NlbmNlIC8gdG9uZXIgLyBtYXNrIC8gZXRjLl0KU2l6ZTogICAgICAgICAgICBbWCBmbCBveiAvIFggbWxdClByaWNlOiAgICAgICAgICAgWyRYLlhYXQpQcmljZS9vejogICAgICAgIFskWC5YWF0KCkhlcm8gaW5ncmVkaWVudHMgKHRvcCAz4oCTNSBhY3RpdmVzKTogIFtsaXN0XQpGdWxsIElOQ0k6ICAgICAgIFtjb21wbGV0ZSBsaXN0XQoKRnJhZ3JhbmNlOiAgICAgICBbWUVTIOKAlCBkZXNjcmliZSAvIE5PIOKAlCBjb25maXJtZWQgZnJhZ3JhbmNlLWZyZWVdCkNsZWFuIGNsYWltczogICAgW3NpbGljb25lLWZyZWUgLyBwYXJhYmVuLWZyZWUgLyBzdWxmYXRlLWZyZWUgLyBldGMuXQpTa2luIHR5cGU6ICAgICAgIFtvaWx5IC8gZHJ5IC8gY29tYmluYXRpb24gLyBzZW5zaXRpdmUgLyBhbGwgLyBldGMuXQpUYXJnZXQgY29uc3VtZXI6IFtkZXNjcmlwdGlvbl0KClQxIGtleXdvcmRzOiAgICAgW2Zyb20gS2V5d29yZCBUcmFja2VyIG9yIGRlcml2ZWRdClQyIGtleXdvcmRzOiAgICAgW2Zyb20gS2V5d29yZCBUcmFja2VyIG9yIGRlcml2ZWRdClQzIGtleXdvcmRzOiAgICAgW3RyYWNrIG9ubHkg4oCUIGRvIG5vdCBwbGFjZSBpbiBjb3B5XQpgYGAKCklmIGZyYWdyYW5jZSBzdGF0dXMgaXMgdW5jbGVhciBmcm9tIHRoZSBpbnB1dHMsIGNoZWNrIHRoZSBJTkNJIGZvcjogUGFyZnVtLCBGcmFncmFuY2UsIGFueSBlc3NlbnRpYWwgb2lsIChsYXZlbmRlciBvaWwsIHJvc2VtYXJ5IG9pbCwgZXRjLiksIGxpbmFsb29sLCBsaW1vbmVuZSwgY2l0cm9uZWxsb2wsIGdlcmFuaW9sLCBldWdlbm9sLCBiZW56eWwgYWxjb2hvbC4gSWYgYW55IGFyZSBwcmVzZW50IOKGkiB0cmVhdCBhcyBIQVMgRlJBR1JBTkNFLiBOZXZlciBjbGFpbSBmcmFncmFuY2UtZnJlZSB3aXRob3V0IElOQ0kgY29uZmlybWF0aW9uLgoKLS0tCgojIyBQaGFzZSAyIOKAlCBDb21wbGlhbmNlIEdhdGUgQ2hlY2sKClJ1biBBTEwgY29weSB0aHJvdWdoIGV2ZXJ5IGdhdGUgYmVmb3JlIHdyaXRpbmcuIEluIEF1ZGl0IG1vZGUsIHJ1biB0aGUgZXhpc3RpbmcgY29weSB0aHJvdWdoIHRoZXNlIGdhdGVzIGZpcnN0IGFuZCBmbGFnIHZpb2xhdGlvbnMgYmVmb3JlIHJld3JpdGluZy4KCiMjIyBHYXRlIDEg4oCUIFByb2hpYml0ZWQgSGVhbHRoICYgRWZmaWNhY3kgV29yZHMKCioqSGFyZCBzdWJzdGl0dXRpb25zIOKAlCBtYW5kYXRvcnkgcmVwbGFjZW1lbnRzOioqCgp8IOKdjCBOZXZlciB1c2UgfCDinIUgVXNlIGluc3RlYWQgfAp8LS0tLS0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS18CnwgYnJpZ2h0ZW5pbmcgLyBicmlnaHRlbnMgLyBicmlnaHRlbmVkIC8gYnJpZ2h0ZW5lciB8IGlsbHVtaW5hdGUsIHJlc3RvcmUgcmFkaWFuY2UsIGhlYWx0aHktbG9va2luZyBnbG93LCByZWZyZXNoZWQgY29tcGxleGlvbiwgbHVtaW5vdXMgfAp8IGJyaWdodGVuIChhbnkgZm9ybSkgfCBzYW1lIGFzIGFib3ZlIHwKfCBkYXJrIHNwb3QgLyBkYXJrIHNwb3QgY29ycmVjdG9yIHwgdW5ldmVuIHNraW4gdG9uZSwgc2tpbiB0b25lLCByYWRpYW5jZSB8CnwgZGlzY29sb3JhdGlvbiBjb3JyZWN0aW5nIC8gY29ycmVjdHMgZGlzY29sb3JhdGlvbiB8IHVuZXZlbiBza2luIHRvbmUsIGV2ZW4tbG9va2luZyBjb21wbGV4aW9uIHwKfCBza2luIGxpZ2h0ZW5pbmcgLyBza2luIGxpZ2h0ZW5lciB8IChyZW1vdmUgZW50aXJlbHkg4oCUIGRvIG5vdCByZXBsYWNlKSB8CnwgYW50aS1pbmZsYW1tYXRvcnkgfCBpcnJpdGF0aW9uLCByZWRuZXNzLCBwdWZmaW5lc3MsIHN3ZWxsaW5nIGFwcGVhcmFuY2UgfAp8IGluZmxhbW1hdGlvbiB8IGlycml0YXRpb24sIHJlZG5lc3MgfAp8IGhlYWxzIC8gaGVhbGluZyB8IHJlcGFpcnMsIHN1cHBvcnRzLCByZXN0b3JlcyB8CnwgY3VyZXMgfCAocmVtb3ZlIOKAlCBkbyBub3QgcmVwbGFjZSkgfAp8IGVsaW1pbmF0ZXMgKGFzIGEgY3VyZS90cmVhdG1lbnQgY2xhaW0pIHwgaGVscHMgcmVkdWNlLCBoZWxwcyBtaW5pbWl6ZSB0aGUgYXBwZWFyYW5jZSBvZiB8CnwgcHJldmVudHMgKGRpc2Vhc2UgY29udGV4dCkgfCBoZWxwcyBzdXBwb3J0LCBoZWxwcyBtYWludGFpbiB8CnwgcmVsaWV2ZXMgX19fIHwgaGVscHMgYWxsZXZpYXRlIHRoZSBhcHBlYXJhbmNlL3N5bXB0b21zIG9mIF9fXyB8CnwgcGFpbiByZWxpZWYgLyBwYWluIHJlZHVjaW5nIHwgaGVscHMgYWxsZXZpYXRlIHRoZSBwYWluIGFzc29jaWF0ZWQgd2l0aCBfX18gfAp8IGFjbmUtZmlnaHRpbmcgLyB0cmVhdHMgYWNuZSAvIHRyZWF0IGFjbmUgfCBzdXBwb3J0cyBjbGVhcmVyLWxvb2tpbmcgc2tpbiwgaGVscHMgd2l0aCB0aGUgYXBwZWFyYW5jZSBvZiBibGVtaXNoZXMgfAp8IGtpbGxzIGJhY3RlcmlhIC8gYW50aS1iYWN0ZXJpYWwgfCBoZWxwcyByZW1vdmUgZGlydCwgZ3JpbWUsIG9pbCwgYW5kIHN1cmZhY2UgYnVpbGR1cCB8CnwgYW50aW1pY3JvYmlhbCAvIGFudGlmdW5nYWwgfCBoZWxwcyBlbGltaW5hdGUgW3NwZWNpZmljIGlzc3VlXSB8CnwgZnJhZ3JhbmNlLWZyZWUg';
@@ -18291,112 +17935,7 @@ async function loadAuditResultsFromSheet() {
       '</div>';
   }
 
-  function buildFulfillmentCsPage(monthYear) {
-    // NOTE: pdfxKpi(id) expects `id` on the OUTER .kpi-card with .kpi-label/
-    // .kpi-value as descendants — this tab's cards have the id directly on
-    // the .kpi-value element instead, so pdfxKpi() doesn't fit here. Reading
-    // each value directly instead. Labels below are SHORTENED versions of
-    // the live dashboard's labels, not a straight copy — .pdfx-kpi-lbl has
-    // white-space:nowrap, and the live labels ("Avg Shipping Cost · Last 7
-    // Days") are long enough to overflow a 1/5-width column and spill off
-    // the page edge. Stewardship's labels are all 1-3 words for the same
-    // reason. Confirmed 2026-07-21 as the actual cause of KPI text getting
-    // cut off at the page's right edge.
-    const topKpis = [
-      { label: 'Shipped Orders (30d)', value: pdfxText('#mfc-kpi-shipped30') },
-      { label: 'Fulfillment Promise (7d)', value: '100%' },
-      { label: 'Avg Processing Time (7d)', value: pdfxText('#mfc-kpi-proctime') },
-      { label: 'Avg Shipping Cost (7d)', value: pdfxText('#mfc-kpi-shipcost') },
-      { label: 'Inventory Prepped', value: pdfxText('#mfc-kpi-invprepped') },
-    ];
-    // 3 items, matching the live dashboard's merged 3-column row (Returns
-    // moved in here, no longer a separate row) — .pdfx-kpis defaults to a
-    // hardcoded repeat(5,1fr) grid, so a row with fewer than 5 items MUST
-    // use the existing .pdfx-kpis.n3 class or it renders squeezed into
-    // 1/5-width columns with empty space across the rest of the row. This
-    // was the other real cause of the "stretched and weird" look.
-    const csKpis = [
-      { label: 'Reviews Requested', value: pdfxText('#mfc-kpi-reviews'), sub: pdfxText('#mfc-kpi-reviews-sub') },
-      { label: 'Compliance Cases Resolved', value: pdfxText('#mfc-kpi-compliance'), sub: pdfxText('#mfc-kpi-compliance-sub') },
-      { label: 'Returns Processed (30d)', value: pdfxText('#mfc-kpi-returns'), sub: pdfxText('#mfc-kpi-returns-sub') },
-    ];
-
-    // KPI cards with a sub-line (where MoM normally sits) need their own
-    // markup — pdfxKpiCardHtml()'s momHtml is styled for an up/down arrow
-    // figure, not a free-text sub-label like "Open Cases: 2".
-    function kpiCardWithSub(k) {
-      return '<div class="pdfx-kpi">' +
-        '<div class="pdfx-kpi-lbl">' + pdfxEscape(k.label) + '</div>' +
-        '<div class="pdfx-kpi-val">' + pdfxEscape(k.value || '—') + '</div>' +
-        '<div class="pdfx-kpi-mom flat">' + pdfxEscape(k.sub || '') + '</div>' +
-        '</div>';
-    }
-    function kpiCardPlain(k) {
-      // Splits a trailing unit word (e.g. "days") into a smaller sub-span
-      // so a long unit doesn't force the whole value onto two lines at
-      // .pdfx-kpi-val's 29px — added 2026-08-11 per Jaclyn, "0.12 days"
-      // was wrapping mid-value on this page. The regex only matches a
-      // NUMBER + space + WORD shape, so "100%", "$5.59", "41", "0" (every
-      // other value in this same row) are untouched — this isn't
-      // hardcoded to the processing-time card specifically, it'll also
-      // catch any future KPI value shaped the same way.
-      const val = k.value || '—';
-      const unitMatch = /^([\d.,$%]+)\s+([a-zA-Z]+)$/.exec(val);
-      const valHtml = unitMatch
-        ? pdfxEscape(unitMatch[1]) + ' <span style="font-size:15px;font-weight:600;">' + pdfxEscape(unitMatch[2]) + '</span>'
-        : pdfxEscape(val);
-      return '<div class="pdfx-kpi">' +
-        '<div class="pdfx-kpi-lbl">' + pdfxEscape(k.label) + '</div>' +
-        '<div class="pdfx-kpi-val" style="white-space:nowrap;">' + valHtml + '</div>' +
-        '<div class="pdfx-kpi-mom flat"></div>' +
-        '</div>';
-    }
-
-    // Map: reused verbatim from the live, already-rendered SVG rather than
-    // rebuilt from raw state data — the live page already did that work
-    // when the tab was opened, so this just copies the real markup.
-    //
-    // Converted to a base64-encoded <img> instead of inline <svg> —
-    // 2026-07-22, after two attempts at CSS sizing (auto, then explicit
-    // px) both failed identically (map cropped on the right, missing
-    // Eastern states). That identical failure across two different
-    // sizing approaches points away from a CSS problem entirely and
-    // toward html2canvas's own well-documented limitations rendering
-    // inline <svg> elements directly. The logo uses exactly this
-    // img+base64+data-URI pattern and has rendered correctly in every
-    // single export log seen so far — reusing that proven path here
-    // instead of continuing to fight inline SVG sizing.
-    const mapInner = pdfxHTML('#mfc-us-svg') || '';
-    const mapSvgFull = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 959 593" width="959" height="593">' + mapInner + '</svg>';
-    let mapImgSrc = '';
-    try {
-      mapImgSrc = 'data:image/svg+xml;base64,' + btoa(mapSvgFull);
-    } catch (e) {
-      console.warn('[pdf-export] map svg->base64 conversion failed:', e.message);
-    }
-    const mapHtml = mapImgSrc
-      ? '<img src="' + mapImgSrc + '" style="width:377px;height:233px;display:block;margin:0 auto;" />'
-      : '<div style="color:var(--muted);font-size:11px;">Map failed to render for this export.</div>';
-
-    return '' +
-      '<div class="pdfx-page">' +
-        '<div class="pdfx-inner">' +
-          pdfxHeaderBand(monthYear, 'Fulfillment & Customer Service') +
-          '<div class="pdfx-chlabel">Fulfillment Performance</div>' +
-          '<div class="pdfx-kpis" style="margin-top:6px;">' + topKpis.map(kpiCardPlain).join('') + '</div>' +
-          '<div class="pdfx-card" style="margin-top:14px;margin-bottom:0;">' +
-            '<div class="pdfx-card-title">Orders Shipped by Date · Last 30 Days</div>' +
-            pdfxChartBlock('mfcShippedChartInstance', 'Chart not yet loaded — open this tab once on the dashboard, then re-export.') +
-          '</div>' +
-          '<div class="pdfx-chlabel" style="margin-top:16px;">Customer Service</div>' +
-          '<div class="pdfx-kpis n3" style="margin-top:6px;">' + csKpis.map(kpiCardWithSub).join('') + '</div>' +
-          '<div class="pdfx-card" style="margin-top:14px;margin-bottom:0;">' +
-            '<div class="pdfx-card-title">Orders by State · Last 30 Days</div>' +
-            mapHtml +
-          '</div>' +
-        '</div>' +
-      '</div>';
-  }
+  
 
   function buildOpportunitiesPage(monthYear) {
     const kpis = ['kpi-active-subs', 'kpi-retention'].map(pdfxKpi);
@@ -18449,7 +17988,7 @@ async function loadAuditResultsFromSheet() {
       pdfxStrategyItem('Promotions & Pricing', 'Finalize Prime Exclusive Discounts and <strong>confirm all deals are submitted, eligible, and approved</strong> with sufficient lead time.') +
       pdfxStrategyItem('Inventory & Operations', 'Confirm FBA stock coverage, inbound timelines, and <strong>buffer inventory levels to prevent sell-outs</strong> during peak demand.') +
       pdfxStrategyItem('Creative & Storefront', 'Upload refreshed imagery and <strong>add promotional banners and curated storefront landing pages</strong> optimized for high-traffic event conditions.') +
-      pdfxStrategyItem('Content Health Check', 'Resolve any listing suppressions, Q&amp;A gaps, and negative review flags <strong>before traffic surges</strong> — a suppressed listing during an event is a direct missed opportunity.')
+      pdfxStrategyItem('Content Health Check', 'Resolve any listing suppressions, Q&A gaps, and negative review flags <strong>before traffic surges</strong> — a suppressed listing during an event is a direct missed opportunity.')
     );
     const during = pdfxStrategyPhase('during', 'Phase 02', 'During', 'Execute',
       pdfxStrategyItem('Real-Time Ad Optimization', '<strong>Increase budgets 2–4x and bids 20%+</strong> as CPCs rise. Reallocate spend to top performers in real time across all ad placements.') +
@@ -18588,7 +18127,6 @@ async function loadAuditResultsFromSheet() {
       const includeSections = {
         amazon:        !!document.getElementById('pdf-include-amazon')        && document.getElementById('pdf-include-amazon').checked,
         walmart:       !!document.getElementById('pdf-include-walmart')       && document.getElementById('pdf-include-walmart').checked,
-        fulfillment:   !!document.getElementById('pdf-include-fulfillment')   && document.getElementById('pdf-include-fulfillment').checked,
         stewardship:   !!document.getElementById('pdf-include-stewardship')   && document.getElementById('pdf-include-stewardship').checked,
         opportunities: !!document.getElementById('pdf-include-opportunities') && document.getElementById('pdf-include-opportunities').checked,
         strategy: !!document.getElementById('pdf-include-strategy') && document.getElementById('pdf-include-strategy').checked,
@@ -18605,7 +18143,6 @@ async function loadAuditResultsFromSheet() {
         (includeSections.amazon        && typeof window.initAmazonLive === 'function')            ? window.initAmazonLive()            : null,
         (includeSections.walmart       && typeof window.initWalmartLive === 'function')            ? window.initWalmartLive()            : null,
         (includeSections.stewardship   && typeof window.initStewardshipLive === 'function')        ? window.initStewardshipLive()        : null,
-        (includeSections.fulfillment   && typeof window.initMarketingFulfillmentCS === 'function')  ? window.initMarketingFulfillmentCS() : null,
         (includeSections.opportunities && !window._snsChart && typeof initSns === 'function')       ? initSns()                           : null,
         // Prime Day's KPIs/chart are lazy-loaded on tab click — if it's
         // checked for inclusion but the tab was never opened this session,
@@ -18685,7 +18222,6 @@ async function loadAuditResultsFromSheet() {
       const salesMarketingPages = [
         includeSections.amazon        ? buildAmazonPage(monthYear)        : '',
         includeSections.walmart       ? buildWalmartPage(monthYear)       : '',
-        includeSections.fulfillment   ? buildFulfillmentCsPage(monthYear) : '',
         includeSections.stewardship   ? buildStewardshipPage(monthYear)   : '',
         includeSections.opportunities ? buildOpportunitiesPage(monthYear) : '',
       ].join('');
