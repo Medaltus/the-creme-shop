@@ -54,7 +54,7 @@
   --font:'GT Walsheim Pro Light','DM Sans',system-ui,sans-serif; --mono:'DM Mono','Fira Mono',monospace;
   --font-header:'GT Walsheim Pro Medium','DM Sans',system-ui,sans-serif;
   --font-bold:'GT Walsheim Pro Bold','DM Sans',system-ui,sans-serif;
-  --font-subheader:'Plantin MT Pro Italic',Georgia,'Times New Roman',serif;
+  --font-subheader:Georgia,'Times New Roman',serif;
   --font-body-light:'GT Walsheim Pro Light','DM Sans',system-ui,sans-serif;
   --radius:10px; --radius-sm:6px;
 }
@@ -1099,7 +1099,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
   .asn-meta-form-grid{grid-template-columns:1fr;}
 }
 </style>
-<link rel="icon" type="image/png" href="/reports/creme_shop_favicon.png"><!-- TODO: real favicon asset not available in this session -->
+<link rel="icon" type="image/png" href="creme shop_favicon.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1113,9 +1113,9 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 <aside class="sidebar">
   <div class="sb-brand">
     <div class="sb-brand-logo" style="display:flex;align-items:center;gap:6px;">
-      <span style="font-family:var(--font-subheader,inherit);font-weight:700;font-size:14px;color:#fff;letter-spacing:.02em;">THE CRÈME SHOP</span><!-- TODO: real logo asset not available in this session -->
+      <img src="creme_shop_logo.svg" alt="The Crème Shop" style="height:18px;width:auto;filter:brightness(0) invert(1);">
       <span style="color:var(--green);">•</span>
-      <img src="/reports/Medaltus_Typeface Logo_dark bground_RGB.svg" alt="Medaltus" style="height:18px;width:auto;">
+      <img src="Medaltus_Typeface Logo_dark bground_RGB.svg" alt="Medaltus" style="height:18px;width:auto;">
     </div>
     <div class="sb-brand-sub">Brand Dashboard</div>
   </div>
@@ -1230,7 +1230,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 
     <!-- Hero -->
     <div class="home-hero">
-      <span class="home-hero-logo" style="font-family:var(--font-subheader,inherit);font-weight:700;font-size:28px;color:#fff;letter-spacing:.02em;">THE CRÈME SHOP</span><!-- TODO: real logo asset not available in this session -->
+      <img class="home-hero-logo" src="creme_shop_logo.svg" alt="The Crème Shop" style="filter:brightness(0) invert(1);">
       <div class="home-badges">
         <span class="home-badge">
           <svg viewBox="0 0 16 16"><path d="M8 1l6 2.5v4c0 4-2.6 6.8-6 7.5-3.4-.7-6-3.5-6-7.5v-4L8 1z"/></svg>
@@ -5792,7 +5792,6 @@ async function initSns() {
 
   // ── Revenue chart — computed from orders sheet ────────────────────────────
   // ── Website revenue chart — reads from revenue tab (mirrors Amazon/Walmart) ─
-  async 
 
   // Looks up a field by name ignoring case — protects against a hand-typed
   // sheet header ("SKU" vs "sku" etc.) silently breaking a lookup the way
@@ -5809,7 +5808,6 @@ async function initSns() {
   }
 
   // ── Top products table ────────────────────────────────────────────────────
-  async 
 
   
 
@@ -7447,7 +7445,6 @@ async function initSns() {
 
   // ── Revenue chart — computed from orders sheet ────────────────────────────
   // ── Website revenue chart — reads from revenue tab (mirrors Amazon/Walmart) ─
-  async 
 
   // Looks up a field by name ignoring case — protects against a hand-typed
   // sheet header ("SKU" vs "sku" etc.) silently breaking a lookup the way
@@ -7464,7 +7461,6 @@ async function initSns() {
   }
 
   // ── Top products table ────────────────────────────────────────────────────
-  async 
 
   
 
