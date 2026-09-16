@@ -488,6 +488,30 @@ table.perf-compare tr:last-child td{border-bottom:none;}
 .pcard-itemtype{font-size:11px;font-weight:400;color:#fff;margin-top:2px;}
 .pcard-exec-hd .sc-badge,.ppc-strategy-hd .sc-badge{background:#fff;}
 .pcard-exec-hd .sc-badge{font-size:12px;padding:4px 12px;border-radius:12px;}
+/* Added 2026-09-16 per Jaclyn — Performance table folded into the
+   Product Portfolio cards (BSR/Subcat BSR under the name, rating next
+   to the status pill, Revenue/Sessions/Units/Conversion as a compact
+   KPI strip above ingredients) so a 11–16 product category doesn't need
+   a separate wide table at all. Same visual language as the page-level
+   .kpi-row/.kpi-card (navy value, uppercase muted label, font-subheader)
+   just sized down for this denser context. */
+.pcard-hd-status{display:flex;align-items:center;gap:10px;}
+.pcard-rating{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;}
+.pcard-bsr-line{font-size:11px;color:rgba(255,255,255,.65);margin-top:4px;}
+/* Star-rating display — added 2026-09-16 per Jaclyn, replacing the plain
+   "4.3 ★ (210)" text and the HEALTHY/WATCH/CRITICAL status pill (no real
+   data source ever backed that pill — it was hardcoded per-product on
+   évolis's original, never wired to anything live for Creme Shop). Gold
+   stars rounded to the nearest half-star, exact rating in the dashboard's
+   existing green accent, review count muted — matches Jaclyn's reference
+   screenshot exactly (color-sampled from it, not guessed). */
+.pcard-rating-stars{color:#F0A030;font-size:13px;letter-spacing:1px;}
+.pcard-rating-stars .half{font-size:11px;vertical-align:middle;margin-left:1px;}
+.pcard-rating-num{color:var(--green);font-weight:700;font-size:13px;margin-left:4px;}
+.pcard-rating-count{color:rgba(255,255,255,.6);font-size:11px;margin-left:3px;}
+.pcard-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.pcard-kpi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+.pcard-kpi-value{font-size:18px;font-weight:700;color:var(--navy);font-family:var(--font-subheader);line-height:1;}
 
 /* ── Event Strategy page (Events > Strategy) ────────────────────────────
    2026-07-16, per Jaclyn: hardcoded to match the exact reference layout
@@ -2632,6 +2656,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
            rather than each getting a full one-product tab of their own). -->
       <div class="sub-tabs">
         <button class="sub-tab active" onclick="showSubTab('ins-products','pt-handcream',this)">Hand Cream</button>
+        <button class="sub-tab" onclick="showSubTab('ins-products','pt-acnepatches',this)">Acne Patches</button>
       </div>
 
       <!-- ── HAND CREAM ── -->
@@ -2645,9 +2670,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           <div class="card-title">Product Portfolio</div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0258">Hello Kitty Moisturizing Hand Crème (Sweet Strawberry)</b><span class="meta"><span id="pcard-sku-0258">CRE0258</span> · <span id="pcard-asin-0258">B0CDHPG9V5</span> · <span id="pcard-price-0258">$10.00</span> · <span id="pcard-size-0258">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0258"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0258">Hello Kitty Moisturizing Hand Crème (Sweet Strawberry)</b><span class="meta"><span id="pcard-sku-0258">CRE0258</span> · <span id="pcard-asin-0258">B0CDHPG9V5</span> · <span id="pcard-price-0258">$10.00</span> · <span id="pcard-size-0258">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0258"></div><div class="pcard-bsr-line" id="pcard-bsr-0258">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0258">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0258">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0258">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0258">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0258">—</div></div></div>
                 <div id="pcard-keying-0258"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0258"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0258">—</span></div>
@@ -2661,9 +2687,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0304">Little Twin Stars Moisturizing Hand Crème Duo (Strawberry Pudding + Mint Crème Skies)</b><span class="meta"><span id="pcard-sku-0304">CRE0304</span> · <span id="pcard-asin-0304">B0C4N5XQ3K</span> · <span id="pcard-price-0304">$20.00</span> · <span id="pcard-size-0304">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0304"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0304">Little Twin Stars Moisturizing Hand Crème Duo (Strawberry Pudding + Mint Crème Skies)</b><span class="meta"><span id="pcard-sku-0304">CRE0304</span> · <span id="pcard-asin-0304">B0C4N5XQ3K</span> · <span id="pcard-price-0304">$20.00</span> · <span id="pcard-size-0304">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0304"></div><div class="pcard-bsr-line" id="pcard-bsr-0304">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0304">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0304">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0304">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0304">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0304">—</div></div></div>
                 <div id="pcard-keying-0304"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0304"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0304">—</span></div>
@@ -2677,9 +2704,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0327-label">Pusheen Moisturizing Hand Crème (Strawberry Milkshake)</b><span class="meta"><span id="pcard-sku-0327-label">CRE0327-label</span> · <span id="pcard-asin-0327-label">B0D42FB2GJ</span> · <span id="pcard-price-0327-label">$10.00</span> · <span id="pcard-size-0327-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0327-label"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0327-label">Pusheen Moisturizing Hand Crème (Strawberry Milkshake)</b><span class="meta"><span id="pcard-sku-0327-label">CRE0327-label</span> · <span id="pcard-asin-0327-label">B0D42FB2GJ</span> · <span id="pcard-price-0327-label">$10.00</span> · <span id="pcard-size-0327-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0327-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0327-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0327-label">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0327-label">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0327-label">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0327-label">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0327-label">—</div></div></div>
                 <div id="pcard-keying-0327-label"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0327-label"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0327-label">—</span></div>
@@ -2693,9 +2721,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0381">Hello Kitty Moisturizing Hand Crème (Pumpkin Latte)</b><span class="meta"><span id="pcard-sku-0381">CRE0381</span> · <span id="pcard-asin-0381">B0CDHN88D4</span> · <span id="pcard-price-0381">$10.00</span> · <span id="pcard-size-0381">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0381"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0381">Hello Kitty Moisturizing Hand Crème (Pumpkin Latte)</b><span class="meta"><span id="pcard-sku-0381">CRE0381</span> · <span id="pcard-asin-0381">B0CDHN88D4</span> · <span id="pcard-price-0381">$10.00</span> · <span id="pcard-size-0381">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0381"></div><div class="pcard-bsr-line" id="pcard-bsr-0381">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0381">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0381">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0381">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0381">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0381">—</div></div></div>
                 <div id="pcard-keying-0381"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0381"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0381">—</span></div>
@@ -2709,9 +2738,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0382">Hello Kitty Moisturizing Hand Crème (Caramel Macchiato)</b><span class="meta"><span id="pcard-sku-0382">CRE0382</span> · <span id="pcard-asin-0382">B0CDHNJLDF</span> · <span id="pcard-price-0382">$10.00</span> · <span id="pcard-size-0382">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0382"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0382">Hello Kitty Moisturizing Hand Crème (Caramel Macchiato)</b><span class="meta"><span id="pcard-sku-0382">CRE0382</span> · <span id="pcard-asin-0382">B0CDHNJLDF</span> · <span id="pcard-price-0382">$10.00</span> · <span id="pcard-size-0382">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0382"></div><div class="pcard-bsr-line" id="pcard-bsr-0382">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0382">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0382">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0382">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0382">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0382">—</div></div></div>
                 <div id="pcard-keying-0382"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0382"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0382">—</span></div>
@@ -2725,9 +2755,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0440">Moisturizing Hand Crème (Honey Oat)</b><span class="meta"><span id="pcard-sku-0440">CRE0440</span> · <span id="pcard-asin-0440">B0CTHYRNJM</span> · <span id="pcard-price-0440">$9.00</span> · <span id="pcard-size-0440">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0440"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0440">Moisturizing Hand Crème (Honey Oat)</b><span class="meta"><span id="pcard-sku-0440">CRE0440</span> · <span id="pcard-asin-0440">B0CTHYRNJM</span> · <span id="pcard-price-0440">$9.00</span> · <span id="pcard-size-0440">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0440"></div><div class="pcard-bsr-line" id="pcard-bsr-0440">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0440">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0440">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0440">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0440">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0440">—</div></div></div>
                 <div id="pcard-keying-0440"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0440"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0440">—</span></div>
@@ -2741,9 +2772,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0441">Hand Crème Trio (Peach Passion, Mango Fluff & Lavender Clouds)</b><span class="meta"><span id="pcard-sku-0441">CRE0441</span> · <span id="pcard-asin-0441">B0CTHVS3QK</span> · <span id="pcard-price-0441">$27.00</span> · <span id="pcard-size-0441">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0441"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0441">Hand Crème Trio (Peach Passion, Mango Fluff & Lavender Clouds)</b><span class="meta"><span id="pcard-sku-0441">CRE0441</span> · <span id="pcard-asin-0441">B0CTHVS3QK</span> · <span id="pcard-price-0441">$27.00</span> · <span id="pcard-size-0441">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0441"></div><div class="pcard-bsr-line" id="pcard-bsr-0441">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0441">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0441">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0441">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0441">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0441">—</div></div></div>
                 <div id="pcard-keying-0441"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0441"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0441">—</span></div>
@@ -2757,9 +2789,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
 
           <div class="pcard-exec">
-            <div class="pcard-exec-hd"><div><b id="pcard-name-0471">Hello Kitty and Friends Hand Smoothing Remedy (Sweet Tangerine)</b><span class="meta"><span id="pcard-sku-0471">CRE0471</span> · <span id="pcard-asin-0471">B0DQFFKWC2</span> · <span id="pcard-price-0471">$15.00</span> · <span id="pcard-size-0471">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0471"></div></div></div>
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0471">Hello Kitty and Friends Hand Smoothing Remedy (Sweet Tangerine)</b><span class="meta"><span id="pcard-sku-0471">CRE0471</span> · <span id="pcard-asin-0471">B0DQFFKWC2</span> · <span id="pcard-price-0471">$15.00</span> · <span id="pcard-size-0471">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0471"></div><div class="pcard-bsr-line" id="pcard-bsr-0471">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0471">—</span></div></div>
             <div class="pcard-exec-body">
               <div>
+                <div class="pcard-kpi-row"><div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0471">—</div></div><div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0471">—</div></div><div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0471">—</div></div><div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0471">—</div></div></div>
                 <div id="pcard-keying-0471"></div>
                 <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0471"></div></details>
                 <div class="exec-fact"><b>Use</b><span id="pcard-use-0471">—</span></div>
@@ -2802,6 +2835,279 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
         </div>
       </div><!-- /pt-handcream -->
+
+      <!-- ── ACNE PATCHES ── -->
+      <div class="sub-page" id="pt-acnepatches">
+
+        <!-- Sessions/Units by SKU -->
+        <div id="perf-acnepatches-container" style="margin-bottom:14px;"></div>
+
+        <!-- Products -->
+        <div class="card">
+          <div class="card-title">Product Portfolio</div>
+
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0020-stickerless">Dreamy Skin Hydrocolloid Dark Spot Acne Patches (Salicylic Acid & Whitch Hazel)</b><span class="meta"><span id="pcard-sku-0020-stickerless">CRE0020-stickerless</span> · <span id="pcard-asin-0020-stickerless">B08QB3Y36M</span> · <span id="pcard-price-0020-stickerless">$9.49</span> · <span id="pcard-size-0020-stickerless">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0020-stickerless"></div><div class="pcard-bsr-line" id="pcard-bsr-0020-stickerless">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0020-stickerless">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0020-stickerless">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0020-stickerless">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0020-stickerless">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0020-stickerless">—</div></div>
+                </div>
+                <div id="pcard-keying-0020-stickerless"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0020-stickerless"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0020-stickerless">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0020-stickerless">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0020-stickerless"></div>
+              </div>
+              <div id="pcard-pricecontext-0020-stickerless">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0021">Cotton Candy Skin Hydrocolloid Acne Patches (Aloe & Tea Tree)</b><span class="meta"><span id="pcard-sku-0021">CRE0021</span> · <span id="pcard-asin-0021">B08R6P36N1</span> · <span id="pcard-price-0021">$12.00</span> · <span id="pcard-size-0021">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0021"></div><div class="pcard-bsr-line" id="pcard-bsr-0021">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0021">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0021">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0021">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0021">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0021">—</div></div>
+                </div>
+                <div id="pcard-keying-0021"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0021"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0021">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0021">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0021"></div>
+              </div>
+              <div id="pcard-pricecontext-0021">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0055">Cotton Candy Skin Hydrocolloid Acne Patches (Aloe Vera)</b><span class="meta"><span id="pcard-sku-0055">CRE0055</span> · <span id="pcard-asin-0055">B0BBK3BDMV</span> · <span id="pcard-price-0055">$12.00</span> · <span id="pcard-size-0055">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0055"></div><div class="pcard-bsr-line" id="pcard-bsr-0055">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0055">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0055">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0055">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0055">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0055">—</div></div>
+                </div>
+                <div id="pcard-keying-0055"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0055"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0055">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0055">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0055"></div>
+              </div>
+              <div id="pcard-pricecontext-0055">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0081">Blemish Treatment Target Hydration Patches (Cica + Tea Tree)</b><span class="meta"><span id="pcard-sku-0081">CRE0081</span> · <span id="pcard-asin-0081">B0CJ16XW6G</span> · <span id="pcard-price-0081">$15.00</span> · <span id="pcard-size-0081">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0081"></div><div class="pcard-bsr-line" id="pcard-bsr-0081">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0081">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0081">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0081">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0081">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0081">—</div></div>
+                </div>
+                <div id="pcard-keying-0081"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0081"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0081">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0081">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0081"></div>
+              </div>
+              <div id="pcard-pricecontext-0081">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0144">Hello Kitty Super Cute Skin! Hydrocolloid Blemish Patches (Salicylic Acid)</b><span class="meta"><span id="pcard-sku-0144">CRE0144</span> · <span id="pcard-asin-0144">B0C66KPJCW</span> · <span id="pcard-price-0144">$30.00</span> · <span id="pcard-size-0144">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0144"></div><div class="pcard-bsr-line" id="pcard-bsr-0144">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0144">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0144">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0144">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0144">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0144">—</div></div>
+                </div>
+                <div id="pcard-keying-0144"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0144"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0144">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0144">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0144"></div>
+              </div>
+              <div id="pcard-pricecontext-0144">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0172">Clear Skin Hydrocolloid Acne Patches (Glycolic Acid)</b><span class="meta"><span id="pcard-sku-0172">CRE0172</span> · <span id="pcard-asin-0172">B08X1BRFC4</span> · <span id="pcard-price-0172">$13.50</span> · <span id="pcard-size-0172">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0172"></div><div class="pcard-bsr-line" id="pcard-bsr-0172">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0172">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0172">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0172">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0172">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0172">—</div></div>
+                </div>
+                <div id="pcard-keying-0172"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0172"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0172">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0172">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0172"></div>
+              </div>
+              <div id="pcard-pricecontext-0172">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0173">I Heart Clear Skin Hydrocolloid Acne Patches (Salicylic Acid + Tea Tree Oil)</b><span class="meta"><span id="pcard-sku-0173">CRE0173</span> · <span id="pcard-asin-0173">B08X1V2YJB</span> · <span id="pcard-price-0173">$13.50</span> · <span id="pcard-size-0173">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0173"></div><div class="pcard-bsr-line" id="pcard-bsr-0173">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0173">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0173">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0173">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0173">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0173">—</div></div>
+                </div>
+                <div id="pcard-keying-0173"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0173"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0173">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0173">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0173"></div>
+              </div>
+              <div id="pcard-pricecontext-0173">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0218">Petal Perfect Skin Hydrocolloid Acne Patches (Vitamin E)</b><span class="meta"><span id="pcard-sku-0218">CRE0218</span> · <span id="pcard-asin-0218">B0B5FQNP5J</span> · <span id="pcard-price-0218">$13.50</span> · <span id="pcard-size-0218">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0218"></div><div class="pcard-bsr-line" id="pcard-bsr-0218">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0218">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0218">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0218">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0218">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0218">—</div></div>
+                </div>
+                <div id="pcard-keying-0218"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0218"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0218">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0218">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0218"></div>
+              </div>
+              <div id="pcard-pricecontext-0218">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0289">What Acne? Invisable Makeup Patches (Salicylic Acid)</b><span class="meta"><span id="pcard-sku-0289">CRE0289</span> · <span id="pcard-asin-0289">B08QX19RRK</span> · <span id="pcard-price-0289">$12.00</span> · <span id="pcard-size-0289">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0289"></div><div class="pcard-bsr-line" id="pcard-bsr-0289">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0289">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0289">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0289">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0289">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0289">—</div></div>
+                </div>
+                <div id="pcard-keying-0289"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0289"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0289">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0289">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0289"></div>
+              </div>
+              <div id="pcard-pricecontext-0289">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0328">Pusheen Pawsitively Clear Skin Infused Hydrocolloid Blemish Patches (Salicylic Acid)</b><span class="meta"><span id="pcard-sku-0328">CRE0328</span> · <span id="pcard-asin-0328">B0D221BXG5</span> · <span id="pcard-price-0328">$30.00</span> · <span id="pcard-size-0328">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0328"></div><div class="pcard-bsr-line" id="pcard-bsr-0328">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0328">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0328">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0328">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0328">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0328">—</div></div>
+                </div>
+                <div id="pcard-keying-0328"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0328"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0328">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0328">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0328"></div>
+              </div>
+              <div id="pcard-pricecontext-0328">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0429">Hello Kitty Hydrocolloid Blemish Patches (Holly Jolly Skin!)</b><span class="meta"><span id="pcard-sku-0429">CRE0429</span> · <span id="pcard-asin-0429">B0DQDZ5ZD9</span> · <span id="pcard-price-0429">$10.00</span> · <span id="pcard-size-0429">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0429"></div><div class="pcard-bsr-line" id="pcard-bsr-0429">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0429">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0429">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0429">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0429">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0429">—</div></div>
+                </div>
+                <div id="pcard-keying-0429"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0429"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0429">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0429">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0429"></div>
+              </div>
+              <div id="pcard-pricecontext-0429">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="card" id="acnepatches-keywords">
+          <div class="card-title">Keyword Strategy</div>
+          <div id="acnepatches-keywords-container"><div style="color:var(--muted);font-size:12px;">Loading…</div></div>
+        </div>
+
+        <!-- Competitors -->
+        <div class="card">
+          <div class="card-title">Competitive Landscape</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Data: Helium 10 · Live from the competitor research sheet.</div>
+          <div class="sec-lbl" style="margin-top:0;">Current Competitors</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-acnepatches-current"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="sec-lbl">Category Leaders</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-acnepatches-leaders"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+            <strong>Key differentiation:</strong> <span id="cl-diff-acnepatches">—</span>
+          </div>
+        </div>
+      </div><!-- /pt-acnepatches -->
 
     </div><!-- /ins-products -->
 
@@ -9655,26 +9961,33 @@ async function initSnsExternal() {
     // the Performance table chunker below renders 5 + 3.
     const HANDCREAM_SKUS = ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'];
     if (typeof window.renderProductPortfolioCards === 'function') {
-      window.renderProductPortfolioCards('handcream', HANDCREAM_SKUS);
+      window.renderProductPortfolioCards('handcream', HANDCREAM_SKUS, 'Hand Cream');
     }
     if (typeof window.renderSimpleKeywordStrategy === 'function') {
       window.renderSimpleKeywordStrategy('handcream-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.handcream);
     }
-    if (typeof window.renderCategoryPerformanceTable === 'function') {
-      window.renderCategoryPerformanceTable('perf-handcream-container', 'Hand Cream');
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-handcream-container', 'Hand Cream');
+    }
+    // Acne Patches — added 2026-09-16 per Jaclyn. 16 rows on the Product
+    // Short Name sheet; CRE0082/CRE0151/CRE0368/CRE0378 are DELETED
+    // status (excluded), CRE0429-label is a same-ASIN duplicate of
+    // CRE0429 (only one card built) — 11 live, distinct SKUs.
+    const ACNEPATCHES_SKUS = ['CRE0020-stickerless', 'CRE0021', 'CRE0055', 'CRE0081', 'CRE0144', 'CRE0172', 'CRE0173', 'CRE0218', 'CRE0289', 'CRE0328', 'CRE0429'];
+    if (typeof window.renderProductPortfolioCards === 'function') {
+      window.renderProductPortfolioCards('acnepatches', ACNEPATCHES_SKUS, 'Acne Patches');
+    }
+    if (typeof window.renderSimpleKeywordStrategy === 'function') {
+      window.renderSimpleKeywordStrategy('acnepatches-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.acnepatches);
+    }
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-acnepatches-container', 'Acne Patches');
     }
     if (typeof window.renderSearchQueryPerformance === 'function') {
       window.renderSearchQueryPerformance('ins-sqp-container');
     }
     if (typeof window.renderReviewsTab === 'function') window.renderReviewsTab();
     if (typeof window.loadLastRunDates === 'function') window.loadLastRunDates();
-    if (typeof window.loadActivatorsPerformanceTable === 'function') window.loadActivatorsPerformanceTable();
-    if (typeof window.renderCategoryPerformanceTable === 'function') {
-      window.renderCategoryPerformanceTable('perf-shampoo-container', 'Shampoo');
-      window.renderCategoryPerformanceTable('perf-conditioner-container', 'Conditioner');
-      window.renderCategoryPerformanceTable('perf-hairmask-container', 'Hair Mask');
-      window.renderCategoryPerformanceTable('perf-dryshampoo-container', 'Dry Shampoo');
-    }
     if (typeof window.initPpcPage === 'function') window.initPpcPage();
     if (typeof window.initInventoryPage === 'function') window.initInventoryPage();
   });
@@ -12168,144 +12481,6 @@ window.loadActivatorsPerformanceTable = async function() {
 // name. Every call logs the full list of unique category values actually
 // found on the sheet, so a mismatch is easy to spot and fix from the
 // console rather than silently rendering "no products found."
-async function renderCategoryPerformanceTable(containerId, categoryLabel) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const norm = s => (s || '').trim().toLowerCase();
-  try {
-    const { year, month } = ovGetLastFullMonth();
-    const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
-
-    const [master, kwCsv, bizCsv, amzCsv, wmtCsv, webCsv, oosBySku] = await Promise.all([
-      getProductMaster(),
-      fetch(ovCsvUrl(KEYWORD_TRACKER_SUMMARY_SHEET_ID, KEYWORD_TRACKER_SUMMARY_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      fetch(ovCsvUrl(OV_BUSINESS_REPORT_SHEET_ID, OV_BUSINESS_REPORT_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      fetch(ovCsvUrl(OV_ORDER_SYNC_SHEET_ID, OV_ORDER_SYNC_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      fetch(ovCsvUrl(OV_WMT_ORDERS_SHEET_ID, OV_WMT_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      fetch(ovCsvUrl(OV_WEB_ORDERS_SHEET_ID, OV_WEB_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      getOosStatusBySku(),
-    ]);
-
-    const kwRows  = parseCsvToRows(kwCsv);
-    const bizRows = parseCsvToRows(bizCsv);
-    const amzRows = parseCsvToRows(amzCsv);
-    const wmtRows = parseCsvToRows(wmtCsv);
-    const webRows = parseCsvToRows(webCsv);
-
-    const allEntries = Object.values(master.bySku);
-    const isBundleOrKit = e => norm(e.skuType).includes('bundle') || norm(e.skuType).includes('kit');
-
-    let products = allEntries.filter(e => norm(e.category) === norm(categoryLabel) && !isBundleOrKit(e));
-    let fuzzy = false;
-    if (!products.length) {
-      products = allEntries.filter(e => norm(e.category).includes(norm(categoryLabel)) && !isBundleOrKit(e));
-      fuzzy = products.length > 0;
-    }
-    products = products.filter(e => e.sku && e.asin);
-
-    const uniqueCategories = [...new Set(allEntries.map(e => e.category).filter(Boolean))];
-    console.log(`[CategoryPerf][${categoryLabel}] matched ${products.length} product(s)${fuzzy ? ' (FUZZY substring match — no exact match found)' : ''}. All unique categories on the sheet:`, JSON.stringify(uniqueCategories));
-
-    if (!products.length) {
-      container.innerHTML = `<div class="card"><div style="color:var(--muted);font-size:12px;">No live products found for category "${escapeHtmlOrg(categoryLabel)}" — check the Product Category column on the Product Short Name sheet against the console log for this page (unique categories found are listed there).</div></div>`;
-      return;
-    }
-
-    const rowsData = { bsr: [], subBsr: [], sessions: [], units: [], revenue: [], conv: [], rating: [] };
-
-    products.forEach(p => {
-      const kwRow = pickKwRowForAsin(kwRows, p.asin);
-      const prevKwRow = kwRow ? pickPreviousKwRowForAsin(kwRows, p.asin, kwRow.date || '') : null;
-
-      // Split into two rows 2026-08-10 per Jaclyn, now that category/
-      // subcategory are synced fields (upload-keyword-tracker.js) — BSR
-      // shows the overall category name, Subcategory BSR shows its own
-      // name, each with its own independent trend marker (the two ranks
-      // can move in different directions from each other).
-      let bsrText = '—';
-      if (kwRow && kwRow.bsr) {
-        bsrText = '#' + (Number(kwRow.bsr) || 0).toLocaleString();
-        if (kwRow.category) bsrText += ` (${escapeHtmlOrg(kwRow.category)})`;
-        bsrText += buildBsrTrendHtml(kwRow.bsr, prevKwRow, 'bsr');
-      }
-      rowsData.bsr.push(bsrText);
-
-      let subBsrText = '—';
-      if (kwRow && kwRow.subcategory_bsr) {
-        subBsrText = '#' + (Number(kwRow.subcategory_bsr) || 0).toLocaleString();
-        if (kwRow.subcategory) subBsrText += ` (${escapeHtmlOrg(kwRow.subcategory)})`;
-        subBsrText += buildBsrTrendHtml(kwRow.subcategory_bsr, prevKwRow, 'subcategory_bsr');
-      }
-      rowsData.subBsr.push(subBsrText);
-
-      const rating = kwRow ? parseFloat(kwRow.rating) : NaN;
-      const reviews = kwRow ? parseInt(kwRow.review_count, 10) : NaN;
-      rowsData.rating.push((!isNaN(rating) && !isNaN(reviews)) ? `${rating.toFixed(1)} ★ (${reviews})` : '—');
-
-      const bizRow = bizRows.find(r => (r.asin || '').trim().toUpperCase() === p.asin
-        && parseInt(r.year, 10) === year && parseInt(r.month, 10) === month);
-      const sessions = bizRow ? (parseInt(bizRow.sessions, 10) || 0) : 0;
-      rowsData.sessions.push(bizRow ? sessions.toLocaleString() : '—');
-
-      const amzOrderRows = amzRows.filter(r => (r.asin || '').trim().toUpperCase() === p.asin
-        && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-      const wmtOrderRows = wmtRows.filter(r => (r.sku || '').trim().toUpperCase() === p.sku
-        && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-      const webOrderRows = webRows.filter(r => (r.sku || '').trim().toUpperCase() === p.sku
-        && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-      const amzUnits = amzOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-      const wmtUnits = wmtOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-      const webUnits = webOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-      const totalUnits = amzUnits + wmtUnits + webUnits;
-      rowsData.units.push(totalUnits.toLocaleString());
-
-      const amzRevenue = bizRow ? parseAmt(bizRow.ordered_product_sales) : 0;
-      const wmtRevenue = wmtOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
-      const webRevenue = webOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
-      rowsData.revenue.push('$' + (amzRevenue + wmtRevenue + webRevenue).toFixed(2));
-
-      const conv = sessions > 0 ? (totalUnits / sessions * 100) : null;
-      rowsData.conv.push(conv != null ? conv.toFixed(2) + '%' : '—');
-    });
-
-    const rowDefs = [
-      ['BSR', 'bsr'], ['Subcategory BSR', 'subBsr'], ['Sessions', 'sessions'],
-      [`Units — ${OV_MONTH_ABBR[month - 1]}`, 'units'],
-      ['Revenue', 'revenue'], ['Conversion', 'conv'], ['Rating', 'rating'],
-    ];
-
-    // Split into chunks of at most 5 product-columns per table — added
-    // 2026-09-16 per Jaclyn: a category like Hand Cream (8 live SKUs)
-    // packed into one row of columns runs off-screen and is unreadable.
-    // Stacks multiple .perf-compare tables (same row labels each time)
-    // inside the one card instead of widening a single table. Generic —
-    // a 3-product category still renders as one table, an 11-product
-    // category would render as three (5+5+1), not hardcoded to any
-    // specific category's count.
-    const CHUNK_SIZE = 5;
-    const chunkTablesHtml = [];
-    for (let i = 0; i < products.length; i += CHUNK_SIZE) {
-      const chunkProducts = products.slice(i, i + CHUNK_SIZE);
-      const theadHtml = '<tr><th></th>' + chunkProducts.map(p => {
-        const isOos = !!oosBySku[p.sku.toUpperCase()];
-        return `<th class="prodcol${isOos ? ' prodcol-oos' : ''}"><div class="prodcol-name">${escapeHtmlOrg(p.name || p.sku)}</div><div class="prodcol-sku">${escapeHtmlOrg(p.sku)}</div>${isOos ? '<div class="prodcol-oos-pill">Out of Stock</div>' : ''}</th>`;
-      }).join('') + '</tr>';
-      const tbodyHtml = rowDefs.map(([label, key]) =>
-        `<tr><td>${label}</td>${rowsData[key].slice(i, i + CHUNK_SIZE).map((v, j) => `<td${oosBySku[chunkProducts[j].sku.toUpperCase()] ? ' class="prodcol-oos"' : ''}>${v}</td>`).join('')}</tr>`
-      ).join('');
-      chunkTablesHtml.push(`<div style="overflow-x:auto;${i > 0 ? 'margin-top:10px;' : ''}"><table class="perf-compare"><thead>${theadHtml}</thead><tbody>${tbodyHtml}</tbody></table></div>`);
-    }
-
-    container.innerHTML = `<div class="card">
-      <div class="card-title" style="margin-bottom:2px;">Performance — ${OV_MONTH_ABBR[month - 1]} ${year}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon</div>
-      ${chunkTablesHtml.join('')}
-    </div>`;
-  } catch (err) {
-    console.warn(`[CategoryPerf][${categoryLabel}] load failed:`, err.message);
-  }
-}
-window.renderCategoryPerformanceTable = renderCategoryPerformanceTable;
 
 window.initInsightsOverview = async function() {
   const result = await ovLoadUnitsAndPeakMonth();
@@ -12336,6 +12511,7 @@ window.initInsightsOverview = async function() {
 const SHEET_COMPETITOR_ID = '19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M';
 const COMPETITOR_GID_BY_PRODUCT_TYPE = {
   handcream: '813842918', // Hand Cream tab on the Competitor Sheet — added 2026-09-16 per Jaclyn
+  acnepatches: '1568722320', // Acne Patches tab on the Competitor Sheet — added 2026-09-16 per Jaclyn
 };
 
 function clFindSectionRow(rows, needle) {
@@ -12596,16 +12772,146 @@ function varRenderHeroTags(raw) {
     .map(s => `<span class="la-hero-tag">${escapeHtmlOrg(s)}</span>`).join('');
 }
 
-async function renderProductPortfolioCards(productTypeKey, productIds) {
+// ═══════════════════════════════════════════════════════════════════
+// SHARED PER-PRODUCT METRICS — added 2026-09-16 per Jaclyn, extracted
+// from what used to be renderCategoryPerformanceTable's own inline
+// computation, now shared by both the Product Portfolio cards (BSR/
+// Subcat BSR/Rating/Revenue/Sessions/Units/Conversion folded directly
+// into each card) and the Sessions/Units pie charts, so both read the
+// exact same numbers from one fetch instead of two independent ones.
+// Renders a gold star row (rounded to the nearest half-star) + the exact
+// rating in green + muted review count — added 2026-09-16 per Jaclyn,
+// replacing plain "4.3 ★ (210)" text. Half-stars are the "½" character
+// rather than a separate half-filled star glyph (no half-star icon is
+// used elsewhere in this dashboard to match against).
+function buildStarRatingHtml(rating, reviews) {
+  if (isNaN(rating) || isNaN(reviews)) return '<span style="color:rgba(255,255,255,.5);font-size:12px;">—</span>';
+  const rounded = Math.round(rating * 2) / 2; // nearest 0.5
+  const fullStars = Math.min(5, Math.floor(rounded));
+  const hasHalf = (rounded - fullStars) === 0.5;
+  let starsHtml = '★'.repeat(fullStars);
+  if (hasHalf) starsHtml += '<span class="half">½</span>';
+  return `<span class="pcard-rating-stars">${starsHtml}</span><span class="pcard-rating-num">${rating.toFixed(1)}</span><span class="pcard-rating-count">(${reviews})</span>`;
+}
+
+async function computeCategoryProductMetrics(categoryLabel) {
+  const norm = s => (s || '').trim().toLowerCase();
+  const { year, month } = ovGetLastFullMonth();
+  const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
+
+  const [master, kwCsv, bizCsv, amzCsv, wmtCsv, webCsv, oosBySku] = await Promise.all([
+    getProductMaster(),
+    fetch(ovCsvUrl(KEYWORD_TRACKER_SUMMARY_SHEET_ID, KEYWORD_TRACKER_SUMMARY_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+    fetch(ovCsvUrl(OV_BUSINESS_REPORT_SHEET_ID, OV_BUSINESS_REPORT_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+    fetch(ovCsvUrl(OV_ORDER_SYNC_SHEET_ID, OV_ORDER_SYNC_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+    fetch(ovCsvUrl(OV_WMT_ORDERS_SHEET_ID, OV_WMT_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+    fetch(ovCsvUrl(OV_WEB_ORDERS_SHEET_ID, OV_WEB_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+    getOosStatusBySku(),
+  ]);
+
+  const kwRows  = parseCsvToRows(kwCsv);
+  const bizRows = parseCsvToRows(bizCsv);
+  const amzRows = parseCsvToRows(amzCsv);
+  const wmtRows = parseCsvToRows(wmtCsv);
+  const webRows = parseCsvToRows(webCsv);
+
+  const allEntries = Object.values(master.bySku);
+  const isBundleOrKit = e => norm(e.skuType).includes('bundle') || norm(e.skuType).includes('kit');
+
+  // Same product, different SKU string — added 2026-09-16 per Jaclyn.
+  // A rename (e.g. CRE0327 -> CRE0327-label, same ASIN B0D42FB2GJ) means
+  // Amazon order/session data (matched by ASIN below) already merges
+  // fine, but Walmart/website order rows are only ever recorded by SKU
+  // string, not ASIN — so sales that happened under the OLD sku before
+  // the rename would otherwise go missing from the still-live sku's
+  // card entirely. Builds every sku string (live or deleted) that
+  // shares an ASIN, so those rows get matched no matter which of the
+  // sibling skus they were recorded under.
+  const siblingSkusByAsin = {};
+  allEntries.forEach(e => {
+    if (!e.asin) return;
+    (siblingSkusByAsin[e.asin] = siblingSkusByAsin[e.asin] || new Set()).add(e.sku);
+  });
+
+  let products = allEntries.filter(e => norm(e.category) === norm(categoryLabel) && !isBundleOrKit(e));
+  let fuzzy = false;
+  if (!products.length) {
+    products = allEntries.filter(e => norm(e.category).includes(norm(categoryLabel)) && !isBundleOrKit(e));
+    fuzzy = products.length > 0;
+  }
+  products = products.filter(e => e.sku && e.asin);
+
+  const uniqueCategories = [...new Set(allEntries.map(e => e.category).filter(Boolean))];
+  console.log(`[CategoryMetrics][${categoryLabel}] matched ${products.length} product(s)${fuzzy ? ' (FUZZY substring match — no exact match found)' : ''}. All unique categories on the sheet:`, JSON.stringify(uniqueCategories));
+
+  const metricsBySku = {};
+  products.forEach(p => {
+    const kwRow = pickKwRowForAsin(kwRows, p.asin);
+    const prevKwRow = kwRow ? pickPreviousKwRowForAsin(kwRows, p.asin, kwRow.date || '') : null;
+
+    let bsrText = '—';
+    if (kwRow && kwRow.bsr) {
+      bsrText = '#' + (Number(kwRow.bsr) || 0).toLocaleString();
+      if (kwRow.category) bsrText += ` (${escapeHtmlOrg(kwRow.category)})`;
+      bsrText += buildBsrTrendHtml(kwRow.bsr, prevKwRow, 'bsr');
+    }
+
+    let subBsrText = '—';
+    if (kwRow && kwRow.subcategory_bsr) {
+      subBsrText = '#' + (Number(kwRow.subcategory_bsr) || 0).toLocaleString();
+      if (kwRow.subcategory) subBsrText += ` (${escapeHtmlOrg(kwRow.subcategory)})`;
+      subBsrText += buildBsrTrendHtml(kwRow.subcategory_bsr, prevKwRow, 'subcategory_bsr');
+    }
+
+    const rating = kwRow ? parseFloat(kwRow.rating) : NaN;
+    const reviews = kwRow ? parseInt(kwRow.review_count, 10) : NaN;
+    const ratingHtml = buildStarRatingHtml(rating, reviews);
+
+    const bizRow = bizRows.find(r => (r.asin || '').trim().toUpperCase() === p.asin
+      && parseInt(r.year, 10) === year && parseInt(r.month, 10) === month);
+    const sessions = bizRow ? (parseInt(bizRow.sessions, 10) || 0) : 0;
+
+    const siblingSkus = siblingSkusByAsin[p.asin] || new Set([p.sku]);
+    const amzOrderRows = amzRows.filter(r => (r.asin || '').trim().toUpperCase() === p.asin
+      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
+    const wmtOrderRows = wmtRows.filter(r => siblingSkus.has((r.sku || '').trim().toUpperCase())
+      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
+    const webOrderRows = webRows.filter(r => siblingSkus.has((r.sku || '').trim().toUpperCase())
+      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
+    const amzUnits = amzOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
+    const wmtUnits = wmtOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
+    const webUnits = webOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
+    const totalUnits = amzUnits + wmtUnits + webUnits;
+
+    const amzRevenue = bizRow ? parseAmt(bizRow.ordered_product_sales) : 0;
+    const wmtRevenue = wmtOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
+    const webRevenue = webOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
+    const totalRevenue = amzRevenue + wmtRevenue + webRevenue;
+
+    const conv = sessions > 0 ? (totalUnits / sessions * 100) : null;
+
+    metricsBySku[p.sku.toUpperCase()] = {
+      name: p.name || p.sku, sku: p.sku,
+      bsrText, subBsrText, ratingHtml,
+      sessions, units: totalUnits, revenue: totalRevenue,
+      convText: conv != null ? conv.toFixed(2) + '%' : '—',
+    };
+  });
+
+  return { products, metricsBySku, oosBySku, year, month };
+}
+
+async function renderProductPortfolioCards(productTypeKey, productIds, categoryLabel) {
   try {
     const gid = COMPETITOR_GID_BY_PRODUCT_TYPE[productTypeKey];
     if (!gid) { console.warn('[Variations] no gid configured for product type', productTypeKey); return; }
-    const [master, csv, itemTypeBySku, oosBySku] = await Promise.all([
+    const [master, csv, itemTypeBySku, catMetrics] = await Promise.all([
       getProductMaster(),
       fetch(ovCsvUrl(SHEET_COMPETITOR_ID, gid) + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => ''),
       getItemTypeBySku(),
-      getOosStatusBySku(),
+      computeCategoryProductMetrics(categoryLabel),
     ]);
+    const { metricsBySku, oosBySku } = catMetrics;
     const rows = parseCsvFull(csv);
     const varByAsin = varParseSection(rows);
     const categorySummary = varParseCategorySummary(rows);
@@ -12619,7 +12925,22 @@ async function renderProductPortfolioCards(productTypeKey, productIds) {
     const diffEl = document.getElementById(`cl-diff-${productTypeKey}`);
     if (diffEl) diffEl.textContent = categorySummary.keyDifferentiation || 'No key differentiation note found on row 3, column N — check the competitor sheet.';
 
-    productIds.forEach(sku => {
+    // Best sellers first — added 2026-09-16 per Jaclyn. Sorted by revenue
+    // descending (falls back to 0 for a SKU with no matching business-
+    // report/order row this month, so it sorts to the bottom rather than
+    // throwing). This re-sorts productIds for iteration AND physically
+    // re-appends each .pcard-exec element into the DOM in that order —
+    // Chart/DOM elements only move when actually re-appended, sorting
+    // the array alone would fill in the same on-page order every time.
+    const sortedIds = [...productIds].sort((a, b) => {
+      const ra = (metricsBySku[a.toUpperCase()] || {}).revenue || 0;
+      const rb = (metricsBySku[b.toUpperCase()] || {}).revenue || 0;
+      return rb - ra;
+    });
+
+    let portfolioContainer = null;
+
+    sortedIds.forEach(sku => {
       // Generic prefix strip (was hardcoded to 'EVO' — Creme Shop's SKUs
       // are CRE-prefixed, e.g. CRE0258 -> suffix "0258"). Fixed 2026-09-16
       // per Jaclyn while wiring up the Hand Cream tab.
@@ -12633,16 +12954,42 @@ async function renderProductPortfolioCards(productTypeKey, productIds) {
       setPerfCellText(`pcard-asin-${suffix}`, entry.asin || '—');
       setPerfCellText(`pcard-price-${suffix}`, entry.price ? '$' + entry.price.toFixed(2) : '—');
 
+      const nameEl = document.getElementById(`pcard-name-${suffix}`);
+      const cardEl = nameEl ? nameEl.closest('.pcard-exec') : null;
+      const cardBody = cardEl ? cardEl.querySelector('.pcard-exec-body') : null;
+
+      // Physically reorder the card into the sorted position — a
+      // repeated appendChild on an already-attached node moves it
+      // rather than duplicating it, so calling this in sortedIds order
+      // leaves the container's children in that same order.
+      if (cardEl) {
+        if (!portfolioContainer) portfolioContainer = cardEl.parentElement;
+        if (portfolioContainer) portfolioContainer.appendChild(cardEl);
+      }
+
+      // Performance metrics folded into the card — added 2026-09-16 per
+      // Jaclyn, replacing the separate wide Performance table. BSR/
+      // Subcat BSR sits under the name; Rating next to the status pill;
+      // Revenue/Sessions/Units/Conversion as a compact KPI strip above
+      // ingredients.
+      const m = metricsBySku[sku.toUpperCase()] || {};
+      const bsrLineEl = document.getElementById(`pcard-bsr-${suffix}`);
+      if (bsrLineEl) bsrLineEl.innerHTML = `BSR ${m.bsrText || '—'} · Subcat BSR ${m.subBsrText || '—'}`;
+      const ratingEl = document.getElementById(`pcard-rating-${suffix}`);
+      if (ratingEl) ratingEl.innerHTML = m.ratingHtml || '—';
+      setPerfCellText(`pcard-kpi-revenue-${suffix}`, '$' + (m.revenue || 0).toFixed(2));
+      setPerfCellText(`pcard-kpi-sessions-${suffix}`, (m.sessions || 0).toLocaleString());
+      setPerfCellText(`pcard-kpi-units-${suffix}`, (m.units || 0).toLocaleString());
+      setPerfCellText(`pcard-kpi-conv-${suffix}`, m.convText || '—');
+
       // OOS dulling overlay — added 2026-08-10 per Jaclyn. Traverses from
       // the name element (nameEl) rather than needing a new ID on the
-      // card body itself, since the 18 pcard-exec-body containers are
+      // card body itself, since the pcard-exec-body containers are
       // static hand-authored HTML with no per-SKU id of their own —
       // safer than a bulk find-replace across all of them just to add
       // one. Inserts/removes the overlay div fresh each render rather
       // than toggling a class, so this is safe to re-run repeatedly
       // (e.g. on a refresh) without stacking duplicate overlays.
-      const nameEl = document.getElementById(`pcard-name-${suffix}`);
-      const cardBody = nameEl ? nameEl.closest('.pcard-exec')?.querySelector('.pcard-exec-body') : null;
       if (cardBody) {
         const existingOverlay = cardBody.querySelector('.pcard-oos-overlay');
         if (existingOverlay) existingOverlay.remove();
@@ -12693,10 +13040,8 @@ async function renderProductPortfolioCards(productTypeKey, productIds) {
       // Jaclyn: was hardcoded (and in several cases, literally identical
       // copy-pasted text across different products). Now driven by the
       // exact same live Key Ingredients data as the grey pills above,
-      // split into the first 3 items (the shared FGF5-inhibitor trio,
-      // shown bold as "primary") and everything after (shown as the
-      // flowing "rest" list) — same visual split as before, same source
-      // as the pills, so the two can never drift out of sync again.
+      // split into the first 3 items (shown bold as "primary") and
+      // everything after (shown as the flowing "rest" list).
       if (heroPrimaryEl || heroRestEl) {
         const items = (v.keyIngredients || '').split(/[,;]/).map(s => s.trim()).filter(Boolean);
         if (heroPrimaryEl) heroPrimaryEl.textContent = items.slice(0, 3).join(', ');
@@ -12708,6 +13053,80 @@ async function renderProductPortfolioCards(productTypeKey, productIds) {
   }
 }
 window.renderProductPortfolioCards = renderProductPortfolioCards;
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSIONS / UNITS BY SKU — pie charts — added 2026-09-16 per Jaclyn,
+// replacing the old wide Performance table entirely (its metrics now
+// live on the Product Portfolio cards themselves via
+// computeCategoryProductMetrics). Two pie charts side by side: Sessions
+// by SKU (where traffic is coming from) and Units by SKU (where sales
+// volume is coming from). Reuses the same brand color palette used
+// elsewhere (YEAR_COLORS' navy/slate/sand + a few extensions), cycling
+// if a category ever has more SKUs than colors.
+const PIE_PALETTE = ['#001f60', '#24e9a3', '#6b7ba2', '#c87d2f', '#f4dfd0', '#1db88a', '#8a94a6', '#ccd3d5', '#0d3494', '#a3634b', '#4a7c8c', '#d1a54f'];
+
+async function renderCategorySessionsUnitsPies(containerId, categoryLabel) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  try {
+    const { year, month, metricsBySku } = await computeCategoryProductMetrics(categoryLabel);
+    const entries = Object.values(metricsBySku);
+
+    if (!entries.length) {
+      container.innerHTML = `<div class="card"><div style="color:var(--muted);font-size:12px;">No live products found for category "${escapeHtmlOrg(categoryLabel)}" — check the Product Category column on the Product Short Name sheet against the console log for this page.</div></div>`;
+      return;
+    }
+
+    const shortLabel = e => e.name.length > 28 ? e.name.slice(0, 27).trim() + '…' : e.name;
+    const sessionsData = entries.map(e => e.sessions);
+    const unitsData = entries.map(e => e.units);
+    const labels = entries.map(shortLabel);
+    const colors = entries.map((_, i) => PIE_PALETTE[i % PIE_PALETTE.length]);
+    const monthLabel = `${OV_MONTH_ABBR[month - 1]} ${year}`;
+
+    container.innerHTML = `<div class="card">
+      <div class="card-title" style="margin-bottom:2px;">Sessions &amp; Units by SKU — ${monthLabel}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <div class="sec-lbl" style="margin-top:0;">Sessions by SKU</div>
+          <div style="height:280px;"><canvas id="${containerId}-sessions-pie"></canvas></div>
+        </div>
+        <div>
+          <div class="sec-lbl" style="margin-top:0;">Units Ordered by SKU</div>
+          <div style="height:280px;"><canvas id="${containerId}-units-pie"></canvas></div>
+        </div>
+      </div>
+    </div>`;
+
+    const pieOpts = fmt => ({
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10.5 }, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.parsed)}` } },
+      },
+    });
+
+    const sessionsKey = `_${containerId}SessionsPie`;
+    if (window[sessionsKey]) { window[sessionsKey].destroy(); }
+    window[sessionsKey] = new Chart(document.getElementById(`${containerId}-sessions-pie`), {
+      type: 'pie',
+      data: { labels, datasets: [{ data: sessionsData, backgroundColor: colors, borderWidth: 0 }] },
+      options: pieOpts(v => v.toLocaleString()),
+    });
+
+    const unitsKey = `_${containerId}UnitsPie`;
+    if (window[unitsKey]) { window[unitsKey].destroy(); }
+    window[unitsKey] = new Chart(document.getElementById(`${containerId}-units-pie`), {
+      type: 'pie',
+      data: { labels, datasets: [{ data: unitsData, backgroundColor: colors, borderWidth: 0 }] },
+      options: pieOpts(v => v.toLocaleString()),
+    });
+  } catch (err) {
+    console.warn(`[CategoryPies][${categoryLabel}] load failed:`, err.message);
+  }
+}
+window.renderCategorySessionsUnitsPies = renderCategorySessionsUnitsPies;
 
 // ═══════════════════════════════════════════════════════════════════
 // KEYWORD STRATEGY (simplified) — added 2026-08-06 per Jaclyn. Replaces
@@ -14010,9 +14429,9 @@ async function ppcLoadProductPerformance() {
   const takeawayEl = document.getElementById('ppc-context-takeaway');
   if (!tbody) return;
   try {
-    const [bizCsv, namesCsv] = await Promise.all([
+    const [bizCsv, master] = await Promise.all([
       fetch(ovCsvUrl(OV_BUSINESS_REPORT_SHEET_ID, OV_BUSINESS_REPORT_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-      fetch(ovCsvUrl(OV_PRODUCTS_CACHE_SHEET_ID, OV_PRODUCTS_CACHE_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+      getProductMaster(),
     ]);
 
     const bizRows = parseCsvToRows(bizCsv);
@@ -14053,13 +14472,12 @@ async function ppcLoadProductPerformance() {
       return `<span style="font-size:10px;color:${color};margin-left:4px;">${arrow} ${Math.abs(pct)}%</span>`;
     }
 
-    // ASIN -> product name, most recent Products Cache snapshot date only
-    const nameRows = parseCsvToRows(namesCsv);
-    const latestDate = nameRows.reduce((max, r) => ((r.date || '') > max ? r.date : max), '');
+    // ASIN -> product name, from the Product Short Name sheet (never the
+    // long Amazon listing title) — fixed 2026-09-16 per Jaclyn, this used
+    // to read the Products Cache sheet's scraped Amazon title instead.
     const nameMap = {};
-    nameRows.filter(r => r.date === latestDate).forEach(r => {
-      const asin = (r.asin || '').trim().toUpperCase();
-      if (asin) nameMap[asin] = r.name || asin;
+    Object.values(master.byAsin).forEach(entry => {
+      if (entry.asin) nameMap[entry.asin] = entry.name || entry.asin;
     });
 
     if (takeawayEl) takeawayEl.innerHTML = ppcBuildContextTakeaway(monthRows, nameMap, year, month);
@@ -14467,11 +14885,18 @@ async function loadInventoryPage() {
     // literal space) — parseCsvToRows only lowercases headers, it doesn't
     // replace spaces with underscores, confirmed against this exact file.
     const skuTypeMap = {};
+    // Name map — added 2026-09-16 per Jaclyn: this table used to display
+    // r.name straight off the Products Cache row (the scraped, full-length
+    // Amazon listing title). statusCsv is the same Product Short Name
+    // sheet already being fetched for Status/SKU Type above, so this adds
+    // no extra request — just reads its short name column too.
+    const nameMap = {};
     parseCsvToRows(statusCsv).forEach(r => {
       const sku = (r.sku || '').trim().toUpperCase().replace(/-SF$/i, '');
       const status = (r.status || '').trim().toUpperCase();
       if (sku && status) statusMap[sku] = status;
       if (sku) skuTypeMap[sku] = (r['sku type'] || '').trim().toUpperCase();
+      if (sku) nameMap[sku] = (r['product short name'] || '').trim();
     });
 
     // Daily snapshot cron — most recent date only
@@ -14529,7 +14954,7 @@ async function loadInventoryPage() {
       // being called out on their own. Per Jaclyn, 2026-07-24.
       const status = available === 0 ? 'oos' : invStatusFor(days);
       return {
-        sku: r.sku || '', name: r.name || r.sku || '',
+        sku: r.sku || '', name: nameMap[skuUpper] || r.sku || '',
         qtyAtAmazon, qtyAtMedaltus, available, allocated, wfs, onHand, consignment,
         days, status,
         discontinued: statusMap[skuUpper] === 'DELETED',
@@ -14712,20 +15137,27 @@ async function loadOosLog() {
   const body = document.getElementById('oos-log-body');
   if (!body) return;
   try {
-    const csv = await fetch(ovCsvUrl(OV_PRODUCTS_CACHE_SHEET_ID, OV_PRODUCTS_CACHE_GID)).then(r => r.ok ? r.text() : '').catch(() => '');
+    const [csv, master] = await Promise.all([
+      fetch(ovCsvUrl(OV_PRODUCTS_CACHE_SHEET_ID, OV_PRODUCTS_CACHE_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
+      getProductMaster(),
+    ]);
     const rows = parseCsvToRows(csv);
     if (!rows.length) { body.innerHTML = '<div class="ppc-card" style="color:var(--muted);">No data</div>'; return; }
 
     const todayStr = rows.reduce((max, r) => ((r.date || '') > max ? r.date : max), '');
 
-    // Group by SKU, sort each group's rows by date ascending
+    // Group by SKU, sort each group's rows by date ascending. Name comes
+    // from the Product Short Name sheet (master), never the Products
+    // Cache row's own scraped Amazon title — fixed 2026-09-16 per Jaclyn.
     const bySku = {};
     rows.forEach(r => {
       const sku = (r.sku || '').trim();
       if (!sku) return;
-      if (!bySku[sku]) bySku[sku] = { name: r.name || sku, rows: [] };
+      if (!bySku[sku]) {
+        const entry = master.bySku[sku.toUpperCase()];
+        bySku[sku] = { name: (entry && entry.name) || sku, rows: [] };
+      }
       bySku[sku].rows.push(r);
-      if (r.name) bySku[sku].name = r.name; // keep the most recently seen name
     });
 
     const skuLogs = [];
