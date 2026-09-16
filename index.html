@@ -512,6 +512,22 @@ table.perf-compare tr:last-child td{border-bottom:none;}
 .pcard-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);}
 .pcard-kpi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
 .pcard-kpi-value{font-size:18px;font-weight:700;color:var(--navy);font-family:var(--font-subheader);line-height:1;}
+/* Big-category pattern (41+ products) — added 2026-09-16 per Jaclyn,
+   piloted on Spa Headband before Face Masks. Cards default to collapsed
+   (header + KPI strip only); click the header to expand ingredients/
+   pricing detail. A search box filters the visible list by name/SKU.
+   Small categories (Hand Cream, Acne Patches, etc.) don't use this —
+   they keep every card always expanded, which is still the better
+   experience at 8-13 products. */
+.pcard-exec.collapsible .pcard-exec-body{display:none;}
+.pcard-exec.collapsible.expanded .pcard-exec-body{display:grid;}
+.pcard-exec.collapsible .pcard-exec-hd{cursor:pointer;}
+.pcard-chevron{display:inline-block;margin-left:10px;font-size:11px;color:rgba(255,255,255,.6);transition:transform .15s ease;}
+.pcard-exec.collapsible.expanded .pcard-chevron{transform:rotate(180deg);}
+.pcard-kpi-row-standalone{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
+.pcard-search-input{width:100%;max-width:340px;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--navy);margin-bottom:16px;}
+.pcard-search-input:focus{outline:none;border-color:var(--navy);}
+.pcard-no-results{padding:24px;text-align:center;color:var(--muted);font-size:13px;}
 
 /* ── Event Strategy page (Events > Strategy) ────────────────────────────
    2026-07-16, per Jaclyn: hardcoded to match the exact reference layout
@@ -2657,6 +2673,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <div class="sub-tabs">
         <button class="sub-tab active" onclick="showSubTab('ins-products','pt-handcream',this)">Hand Cream</button>
         <button class="sub-tab" onclick="showSubTab('ins-products','pt-acnepatches',this)">Acne Patches</button>
+        <button class="sub-tab" onclick="showSubTab('ins-products','pt-makeupwipes',this)">Makeup Wipes</button>
+        <button class="sub-tab" onclick="showSubTab('ins-products','pt-dermaplanerazors',this)">Dermaplane Razors</button>
+        <button class="sub-tab" onclick="showSubTab('ins-products','pt-mascara',this)">Mascara</button>
+        <button class="sub-tab" onclick="showSubTab('ins-products','pt-spaheadband',this)">Spa Headband</button>
       </div>
 
       <!-- ── HAND CREAM ── -->
@@ -3108,6 +3128,1605 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
         </div>
       </div><!-- /pt-acnepatches -->
+
+
+      <!-- ── MAKEUP WIPES ── -->
+      <div class="sub-page" id="pt-makeupwipes">
+
+        <!-- Sessions/Units by SKU -->
+        <div id="perf-makeupwipes-container" style="margin-bottom:14px;"></div>
+
+        <!-- Products -->
+        <div class="card">
+          <div class="card-title">Product Portfolio</div>
+
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0037-label">Makeup Removing Wipes (Narwal - Rose Water)</b><span class="meta"><span id="pcard-sku-0037-label">CRE0037-label</span> · <span id="pcard-asin-0037-label">B093X8RT53</span> · <span id="pcard-price-0037-label">$8.00</span> · <span id="pcard-size-0037-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0037-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0037-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0037-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0037-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0037-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0037-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0037-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0037-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0037-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0037-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0037-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0037-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0037-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0038-label">Makeup Removing Wipes (Unicorn - Vitamin C)</b><span class="meta"><span id="pcard-sku-0038-label">CRE0038-label</span> · <span id="pcard-asin-0038-label">B093XT5DP5</span> · <span id="pcard-price-0038-label">$8.00</span> · <span id="pcard-size-0038-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0038-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0038-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0038-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0038-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0038-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0038-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0038-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0038-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0038-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0038-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0038-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0038-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0038-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0039">Makeup Removing Wipes (Bunny - Coconut Oil)</b><span class="meta"><span id="pcard-sku-0039">CRE0039</span> · <span id="pcard-asin-0039">B093XJ1F91</span> · <span id="pcard-price-0039">$8.00</span> · <span id="pcard-size-0039">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0039"></div><div class="pcard-bsr-line" id="pcard-bsr-0039">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0039">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0039">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0039">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0039">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0039">—</div></div>
+                </div>
+                <div id="pcard-keying-0039"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0039"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0039">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0039">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0039"></div>
+              </div>
+              <div id="pcard-pricecontext-0039">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0040">Makeup Removing Wipes (Bear - Waternelon)</b><span class="meta"><span id="pcard-sku-0040">CRE0040</span> · <span id="pcard-asin-0040">B093X2133W</span> · <span id="pcard-price-0040">$8.00</span> · <span id="pcard-size-0040">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0040"></div><div class="pcard-bsr-line" id="pcard-bsr-0040">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0040">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0040">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0040">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0040">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0040">—</div></div>
+                </div>
+                <div id="pcard-keying-0040"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0040"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0040">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0040">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0040"></div>
+              </div>
+              <div id="pcard-pricecontext-0040">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0060">Makeup Removing Wipes (Lavender)</b><span class="meta"><span id="pcard-sku-0060">CRE0060</span> · <span id="pcard-asin-0060">B0BKBY9JMW</span> · <span id="pcard-price-0060">$8.00</span> · <span id="pcard-size-0060">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0060"></div><div class="pcard-bsr-line" id="pcard-bsr-0060">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0060">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0060">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0060">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0060">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0060">—</div></div>
+                </div>
+                <div id="pcard-keying-0060"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0060"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0060">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0060">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0060"></div>
+              </div>
+              <div id="pcard-pricecontext-0060">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0061-label">Makeup Removing Wipes (Cucumber)</b><span class="meta"><span id="pcard-sku-0061-label">CRE0061-label</span> · <span id="pcard-asin-0061-label">B0BKC21NF6</span> · <span id="pcard-price-0061-label">$8.00</span> · <span id="pcard-size-0061-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0061-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0061-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0061-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0061-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0061-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0061-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0061-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0061-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0061-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0061-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0061-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0061-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0061-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0089-label">Hello Kitty Complete Cleansnig Wipes (Hydrating Watermelon)</b><span class="meta"><span id="pcard-sku-0089-label">CRE0089-label</span> · <span id="pcard-asin-0089-label">B0C66R5938</span> · <span id="pcard-price-0089-label">$9.00</span> · <span id="pcard-size-0089-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0089-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0089-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0089-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0089-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0089-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0089-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0089-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0089-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0089-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0089-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0089-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0089-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0089-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0146-label">My Melody 3-in-1 Complete Cleansing Wipes (Soothing Aloe)</b><span class="meta"><span id="pcard-sku-0146-label">CRE0146-label</span> · <span id="pcard-asin-0146-label">B0C66M7KRH</span> · <span id="pcard-price-0146-label">$9.00</span> · <span id="pcard-size-0146-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0146-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0146-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0146-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0146-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0146-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0146-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0146-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0146-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0146-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0146-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0146-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0146-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0146-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0224">Little Twin Stars 3-in-1 Complete Cleansing Wipes (Grapefruit + Vitmain C)</b><span class="meta"><span id="pcard-sku-0224">CRE0224</span> · <span id="pcard-asin-0224">B0CP8HNKCF</span> · <span id="pcard-price-0224">$8.00</span> · <span id="pcard-size-0224">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0224"></div><div class="pcard-bsr-line" id="pcard-bsr-0224">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0224">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0224">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0224">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0224">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0224">—</div></div>
+                </div>
+                <div id="pcard-keying-0224"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0224"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0224">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0224">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0224"></div>
+              </div>
+              <div id="pcard-pricecontext-0224">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0225">Hello Kitty 3-in-1 Complete Cleansing Wipes (Rose Water + Strawberry)</b><span class="meta"><span id="pcard-sku-0225">CRE0225</span> · <span id="pcard-asin-0225">B0CC347XFZ</span> · <span id="pcard-price-0225">$8.00</span> · <span id="pcard-size-0225">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0225"></div><div class="pcard-bsr-line" id="pcard-bsr-0225">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0225">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0225">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0225">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0225">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0225">—</div></div>
+                </div>
+                <div id="pcard-keying-0225"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0225"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0225">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0225">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0225"></div>
+              </div>
+              <div id="pcard-pricecontext-0225">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0326-label">Pusheen 3-in-1 Complete Cleansing Wipes (Vitamin C)</b><span class="meta"><span id="pcard-sku-0326-label">CRE0326-label</span> · <span id="pcard-asin-0326-label">B0D42FGVKS</span> · <span id="pcard-price-0326-label">$9.00</span> · <span id="pcard-size-0326-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0326-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0326-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0326-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0326-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0326-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0326-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0326-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0326-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0326-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0326-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0326-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0326-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0326-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0419-label">Hello Kitty 3-in-1 Complete Cleansing Wipes (Watermelon & Salicyic Acid)</b><span class="meta"><span id="pcard-sku-0419-label">CRE0419-label</span> · <span id="pcard-asin-0419-label">B0D8XWCK6T</span> · <span id="pcard-price-0419-label">$9.00</span> · <span id="pcard-size-0419-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0419-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0419-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0419-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0419-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0419-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0419-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0419-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0419-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0419-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0419-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0419-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0419-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0419-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0423">Hello Kitty 3-in-1 Complete Cleansing Wipes (Cooling Pepeprmint)</b><span class="meta"><span id="pcard-sku-0423">CRE0423</span> · <span id="pcard-asin-0423">B0CC35MP89</span> · <span id="pcard-price-0423">$9.00</span> · <span id="pcard-size-0423">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0423"></div><div class="pcard-bsr-line" id="pcard-bsr-0423">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0423">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0423">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0423">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0423">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0423">—</div></div>
+                </div>
+                <div id="pcard-keying-0423"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0423"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0423">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0423">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0423"></div>
+              </div>
+              <div id="pcard-pricecontext-0423">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="card" id="makeupwipes-keywords">
+          <div class="card-title">Keyword Strategy</div>
+          <div id="makeupwipes-keywords-container"><div style="color:var(--muted);font-size:12px;">Loading…</div></div>
+        </div>
+
+        <!-- Competitors -->
+        <div class="card">
+          <div class="card-title">Competitive Landscape</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Data: Helium 10 · Live from the competitor research sheet.</div>
+          <div class="sec-lbl" style="margin-top:0;">Current Competitors</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-makeupwipes-current"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="sec-lbl">Category Leaders</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-makeupwipes-leaders"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+            <strong>Key differentiation:</strong> <span id="cl-diff-makeupwipes">—</span>
+          </div>
+        </div>
+      </div><!-- /pt-makeupwipes -->
+
+      <!-- ── DERMAPLANE RAZORS ── -->
+      <div class="sub-page" id="pt-dermaplanerazors">
+
+        <!-- Sessions/Units by SKU -->
+        <div id="perf-dermaplanerazors-container" style="margin-bottom:14px;"></div>
+
+        <!-- Products -->
+        <div class="card">
+          <div class="card-title">Product Portfolio</div>
+
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0142-label">Hello Kitty Bye, Fuzzies! Perfect Arch Shaping Razors</b><span class="meta"><span id="pcard-sku-0142-label">CRE0142-label</span> · <span id="pcard-asin-0142-label">B09YS67WCW</span> · <span id="pcard-price-0142-label">$10.00</span> · <span id="pcard-size-0142-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0142-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0142-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0142-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0142-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0142-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0142-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0142-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0142-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0142-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0142-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0142-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0142-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0142-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0168">Portable Precision Razor + Travel Case</b><span class="meta"><span id="pcard-sku-0168">CRE0168</span> · <span id="pcard-asin-0168">B0CMRWPYSQ</span> · <span id="pcard-price-0168">$5.00</span> · <span id="pcard-size-0168">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0168"></div><div class="pcard-bsr-line" id="pcard-bsr-0168">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0168">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0168">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0168">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0168">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0168">—</div></div>
+                </div>
+                <div id="pcard-keying-0168"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0168"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0168">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0168">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0168"></div>
+              </div>
+              <div id="pcard-pricecontext-0168">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0169">Fuzzy Friends Dermaplane Razors</b><span class="meta"><span id="pcard-sku-0169">CRE0169</span> · <span id="pcard-asin-0169">B0CMS18G21</span> · <span id="pcard-price-0169">$10.00</span> · <span id="pcard-size-0169">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0169"></div><div class="pcard-bsr-line" id="pcard-bsr-0169">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0169">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0169">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0169">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0169">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0169">—</div></div>
+                </div>
+                <div id="pcard-keying-0169"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0169"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0169">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0169">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0169"></div>
+              </div>
+              <div id="pcard-pricecontext-0169">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0170-label">Flawless Finish Percision Razors</b><span class="meta"><span id="pcard-sku-0170-label">CRE0170-label</span> · <span id="pcard-asin-0170-label">B0CMRS12JK</span> · <span id="pcard-price-0170-label">$15.00</span> · <span id="pcard-size-0170-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0170-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0170-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0170-label">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0170-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0170-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0170-label">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0170-label">—</div></div>
+                </div>
+                <div id="pcard-keying-0170-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0170-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0170-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0170-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0170-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0170-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0171">Fuzz Off! Angled Brow Razors</b><span class="meta"><span id="pcard-sku-0171">CRE0171</span> · <span id="pcard-asin-0171">B0CMRPF124</span> · <span id="pcard-price-0171">$5.00</span> · <span id="pcard-size-0171">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0171"></div><div class="pcard-bsr-line" id="pcard-bsr-0171">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0171">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0171">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0171">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0171">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0171">—</div></div>
+                </div>
+                <div id="pcard-keying-0171"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0171"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0171">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0171">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0171"></div>
+              </div>
+              <div id="pcard-pricecontext-0171">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0194">Hello Kitty Prepped Up! Dermaplane & Sculpt Razors (Red)</b><span class="meta"><span id="pcard-sku-0194">CRE0194</span> · <span id="pcard-asin-0194">B0CMV9V1G3</span> · <span id="pcard-price-0194">$10.00</span> · <span id="pcard-size-0194">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0194"></div><div class="pcard-bsr-line" id="pcard-bsr-0194">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0194">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0194">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0194">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0194">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0194">—</div></div>
+                </div>
+                <div id="pcard-keying-0194"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0194"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0194">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0194">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0194"></div>
+              </div>
+              <div id="pcard-pricecontext-0194">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0202">Expert Hair Removal Collection</b><span class="meta"><span id="pcard-sku-0202">CRE0202</span> · <span id="pcard-asin-0202">B0CP6CR8M8</span> · <span id="pcard-price-0202">$9.00</span> · <span id="pcard-size-0202">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0202"></div><div class="pcard-bsr-line" id="pcard-bsr-0202">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0202">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0202">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0202">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0202">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0202">—</div></div>
+                </div>
+                <div id="pcard-keying-0202"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0202"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0202">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0202">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0202"></div>
+              </div>
+              <div id="pcard-pricecontext-0202">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0203">Ultra-Fine Razors</b><span class="meta"><span id="pcard-sku-0203">CRE0203</span> · <span id="pcard-asin-0203">B0CP6HPSTW</span> · <span id="pcard-price-0203">$6.00</span> · <span id="pcard-size-0203">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0203"></div><div class="pcard-bsr-line" id="pcard-bsr-0203">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0203">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0203">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0203">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0203">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0203">—</div></div>
+                </div>
+                <div id="pcard-keying-0203"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0203"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0203">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0203">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0203"></div>
+              </div>
+              <div id="pcard-pricecontext-0203">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0205">Comb & Shape Grooming Folding Razor Duo</b><span class="meta"><span id="pcard-sku-0205">CRE0205</span> · <span id="pcard-asin-0205">B0B7TRWN5P</span> · <span id="pcard-price-0205">$6.00</span> · <span id="pcard-size-0205">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0205"></div><div class="pcard-bsr-line" id="pcard-bsr-0205">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0205">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0205">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0205">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0205">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0205">—</div></div>
+                </div>
+                <div id="pcard-keying-0205"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0205"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0205">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0205">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0205"></div>
+              </div>
+              <div id="pcard-pricecontext-0205">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0241">Smooth Finish Dermaplane Razors</b><span class="meta"><span id="pcard-sku-0241">CRE0241</span> · <span id="pcard-asin-0241">B0CTRRJ7W4</span> · <span id="pcard-price-0241">$10.00</span> · <span id="pcard-size-0241">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0241"></div><div class="pcard-bsr-line" id="pcard-bsr-0241">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0241">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0241">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0241">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0241">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0241">—</div></div>
+                </div>
+                <div id="pcard-keying-0241"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0241"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0241">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0241">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0241"></div>
+              </div>
+              <div id="pcard-pricecontext-0241">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0278">Flawless Face Precision Razors</b><span class="meta"><span id="pcard-sku-0278">CRE0278</span> · <span id="pcard-asin-0278">B0CZ1TW4CQ</span> · <span id="pcard-price-0278">$10.00</span> · <span id="pcard-size-0278">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0278"></div><div class="pcard-bsr-line" id="pcard-bsr-0278">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0278">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0278">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0278">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0278">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0278">—</div></div>
+                </div>
+                <div id="pcard-keying-0278"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0278"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0278">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0278">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0278"></div>
+              </div>
+              <div id="pcard-pricecontext-0278">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0279">Flawless Finish Percision Razors</b><span class="meta"><span id="pcard-sku-0279">CRE0279</span> · <span id="pcard-asin-0279">B0CZ1XS7ZY</span> · <span id="pcard-price-0279">$15.00</span> · <span id="pcard-size-0279">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0279"></div><div class="pcard-bsr-line" id="pcard-bsr-0279">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0279">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0279">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0279">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0279">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0279">—</div></div>
+                </div>
+                <div id="pcard-keying-0279"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0279"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0279">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0279">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0279"></div>
+              </div>
+              <div id="pcard-pricecontext-0279">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="card" id="dermaplanerazors-keywords">
+          <div class="card-title">Keyword Strategy</div>
+          <div id="dermaplanerazors-keywords-container"><div style="color:var(--muted);font-size:12px;">Loading…</div></div>
+        </div>
+
+        <!-- Competitors -->
+        <div class="card">
+          <div class="card-title">Competitive Landscape</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Data: Helium 10 · Live from the competitor research sheet.</div>
+          <div class="sec-lbl" style="margin-top:0;">Current Competitors</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-dermaplanerazors-current"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="sec-lbl">Category Leaders</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-dermaplanerazors-leaders"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+            <strong>Key differentiation:</strong> <span id="cl-diff-dermaplanerazors">—</span>
+          </div>
+        </div>
+      </div><!-- /pt-dermaplanerazors -->
+
+      <!-- ── MASCARA ── -->
+      <div class="sub-page" id="pt-mascara">
+
+        <!-- Sessions/Units by SKU -->
+        <div id="perf-mascara-container" style="margin-bottom:14px;"></div>
+
+        <!-- Products -->
+        <div class="card">
+          <div class="card-title">Product Portfolio</div>
+
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0266">Hello Kitty Lash Luv Serum Mascara (Black)</b><span class="meta"><span id="pcard-sku-0266">CRE0266</span> · <span id="pcard-asin-0266">B0C42K4DVP</span> · <span id="pcard-price-0266">$14.00</span> · <span id="pcard-size-0266">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0266"></div><div class="pcard-bsr-line" id="pcard-bsr-0266">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0266">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0266">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0266">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0266">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0266">—</div></div>
+                </div>
+                <div id="pcard-keying-0266"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0266"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0266">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0266">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0266"></div>
+              </div>
+              <div id="pcard-pricecontext-0266">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec">
+            <div class="pcard-exec-hd"><div><b id="pcard-name-0457">Hello Kitty Dolly Lash Mascara (Brown)</b><span class="meta"><span id="pcard-sku-0457">CRE0457</span> · <span id="pcard-asin-0457">B0DQF62F9Q</span> · <span id="pcard-price-0457">$14.00</span> · <span id="pcard-size-0457">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0457"></div><div class="pcard-bsr-line" id="pcard-bsr-0457">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0457">—</span></div></div>
+            <div class="pcard-exec-body">
+              <div>
+                <div class="pcard-kpi-row">
+                  <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0457">—</div></div>
+                  <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0457">—</div></div>
+                  <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0457">—</div></div>
+                  <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0457">—</div></div>
+                </div>
+                <div id="pcard-keying-0457"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0457"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0457">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0457">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0457"></div>
+              </div>
+              <div id="pcard-pricecontext-0457">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="card" id="mascara-keywords">
+          <div class="card-title">Keyword Strategy</div>
+          <div id="mascara-keywords-container"><div style="color:var(--muted);font-size:12px;">Loading…</div></div>
+        </div>
+
+        <!-- Competitors -->
+        <div class="card">
+          <div class="card-title">Competitive Landscape</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Data: Helium 10 · Live from the competitor research sheet.</div>
+          <div class="sec-lbl" style="margin-top:0;">Current Competitors</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-mascara-current"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="sec-lbl">Category Leaders</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-mascara-leaders"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+            <strong>Key differentiation:</strong> <span id="cl-diff-mascara">—</span>
+          </div>
+        </div>
+      </div><!-- /pt-mascara -->
+
+      <!-- ── SPA HEADBAND ── -->
+      <div class="sub-page" id="pt-spaheadband">
+
+        <!-- Sessions/Units by SKU -->
+        <div id="perf-spaheadband-container" style="margin-bottom:14px;"></div>
+
+        <!-- Products -->
+        <div class="card">
+          <div class="card-title">Product Portfolio</div>
+          <input type="text" class="pcard-search-input" placeholder="Search by product name or SKU…" oninput="filterPcardList('spaheadband-portfolio-list', this.value)">
+          <div id="spaheadband-portfolio-list">
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0130">Teddy Headband (Pink &amp; White)</b><span class="meta"><span id="pcard-sku-0130">CRE0130</span> · <span id="pcard-asin-0130">B0CK57F4LF</span> · <span id="pcard-price-0130">$8.00</span> · <span id="pcard-size-0130">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0130"></div><div class="pcard-bsr-line" id="pcard-bsr-0130">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0130">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0130">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0130">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0130">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0130">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0130"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0130"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0130">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0130">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0130"></div>
+              </div>
+              <div id="pcard-pricecontext-0130">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0131">Teddy Headband (Hot Pink Hearts)</b><span class="meta"><span id="pcard-sku-0131">CRE0131</span> · <span id="pcard-asin-0131">B0CK584SQK</span> · <span id="pcard-price-0131">$8.00</span> · <span id="pcard-size-0131">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0131"></div><div class="pcard-bsr-line" id="pcard-bsr-0131">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0131">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0131">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0131">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0131">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0131">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0131"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0131"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0131">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0131">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0131"></div>
+              </div>
+              <div id="pcard-pricecontext-0131">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0132">3D Teddy Headyband (Flower Power)</b><span class="meta"><span id="pcard-sku-0132">CRE0132</span> · <span id="pcard-asin-0132">B0CB75B7NH</span> · <span id="pcard-price-0132">$9.00</span> · <span id="pcard-size-0132">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0132"></div><div class="pcard-bsr-line" id="pcard-bsr-0132">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0132">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0132">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0132">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0132">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0132">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0132"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0132"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0132">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0132">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0132"></div>
+              </div>
+              <div id="pcard-pricecontext-0132">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0133">3D Teddy Headyband (Winky Face)</b><span class="meta"><span id="pcard-sku-0133">CRE0133</span> · <span id="pcard-asin-0133">B0CB73Q49T</span> · <span id="pcard-price-0133">$9.00</span> · <span id="pcard-size-0133">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0133"></div><div class="pcard-bsr-line" id="pcard-bsr-0133">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0133">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0133">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0133">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0133">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0133">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0133"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0133"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0133">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0133">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0133"></div>
+              </div>
+              <div id="pcard-pricecontext-0133">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0134">3D Teddy Headyband (Mush Love)</b><span class="meta"><span id="pcard-sku-0134">CRE0134</span> · <span id="pcard-asin-0134">B0CB75YMBQ</span> · <span id="pcard-price-0134">$9.00</span> · <span id="pcard-size-0134">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0134"></div><div class="pcard-bsr-line" id="pcard-bsr-0134">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0134">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0134">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0134">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0134">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0134">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0134"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0134"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0134">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0134">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0134"></div>
+              </div>
+              <div id="pcard-pricecontext-0134">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0135">3D Teddy Headyband (Be Hoppy)</b><span class="meta"><span id="pcard-sku-0135">CRE0135</span> · <span id="pcard-asin-0135">B0CB7535WC</span> · <span id="pcard-price-0135">$9.00</span> · <span id="pcard-size-0135">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0135"></div><div class="pcard-bsr-line" id="pcard-bsr-0135">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0135">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0135">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0135">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0135">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0135">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0135"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0135"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0135">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0135">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0135"></div>
+              </div>
+              <div id="pcard-pricecontext-0135">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0162">3D Teddy Headyband (Red Panda)</b><span class="meta"><span id="pcard-sku-0162">CRE0162</span> · <span id="pcard-asin-0162">B0CC43RNMR</span> · <span id="pcard-price-0162">$9.00</span> · <span id="pcard-size-0162">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0162"></div><div class="pcard-bsr-line" id="pcard-bsr-0162">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0162">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0162">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0162">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0162">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0162">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0162"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0162"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0162">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0162">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0162"></div>
+              </div>
+              <div id="pcard-pricecontext-0162">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0163-label">3D Teddy Headyband (Sugar Bunny)</b><span class="meta"><span id="pcard-sku-0163-label">CRE0163-label</span> · <span id="pcard-asin-0163-label">B0CC45GZCQ</span> · <span id="pcard-price-0163-label">$9.00</span> · <span id="pcard-size-0163-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0163-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0163-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0163-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0163-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0163-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0163-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0163-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0163-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0163-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0163-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0163-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0163-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0163-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0165">3D Teddy Headyband (Beary Cute)</b><span class="meta"><span id="pcard-sku-0165">CRE0165</span> · <span id="pcard-asin-0165">B0CB75V4S2</span> · <span id="pcard-price-0165">$9.00</span> · <span id="pcard-size-0165">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0165"></div><div class="pcard-bsr-line" id="pcard-bsr-0165">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0165">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0165">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0165">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0165">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0165">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0165"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0165"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0165">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0165">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0165"></div>
+              </div>
+              <div id="pcard-pricecontext-0165">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0166">Teddy Headband (Pastel Stripped)</b><span class="meta"><span id="pcard-sku-0166">CRE0166</span> · <span id="pcard-asin-0166">B08QWZJJP3</span> · <span id="pcard-price-0166">$8.00</span> · <span id="pcard-size-0166">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0166"></div><div class="pcard-bsr-line" id="pcard-bsr-0166">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0166">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0166">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0166">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0166">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0166">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0166"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0166"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0166">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0166">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0166"></div>
+              </div>
+              <div id="pcard-pricecontext-0166">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0167">Teddy Headband (Blue Pink Stars)</b><span class="meta"><span id="pcard-sku-0167">CRE0167</span> · <span id="pcard-asin-0167">B07BTDJDK6</span> · <span id="pcard-price-0167">$8.00</span> · <span id="pcard-size-0167">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0167"></div><div class="pcard-bsr-line" id="pcard-bsr-0167">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0167">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0167">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0167">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0167">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0167">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0167"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0167"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0167">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0167">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0167"></div>
+              </div>
+              <div id="pcard-pricecontext-0167">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0198">Boba Bears 3D Teddy Headyband (Strawberry Fluff)</b><span class="meta"><span id="pcard-sku-0198">CRE0198</span> · <span id="pcard-asin-0198">B0CP6JXQYN</span> · <span id="pcard-price-0198">$9.00</span> · <span id="pcard-size-0198">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0198"></div><div class="pcard-bsr-line" id="pcard-bsr-0198">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0198">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0198">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0198">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0198">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0198">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0198"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0198"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0198">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0198">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0198"></div>
+              </div>
+              <div id="pcard-pricecontext-0198">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0199">Boba Bears 3D Teddy Headyband (Milk Tea Cloud)</b><span class="meta"><span id="pcard-sku-0199">CRE0199</span> · <span id="pcard-asin-0199">B0CP6J49LF</span> · <span id="pcard-price-0199">$9.00</span> · <span id="pcard-size-0199">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0199"></div><div class="pcard-bsr-line" id="pcard-bsr-0199">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0199">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0199">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0199">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0199">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0199">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0199"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0199"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0199">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0199">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0199"></div>
+              </div>
+              <div id="pcard-pricecontext-0199">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0201">Teddy Headband (Mint Green Striped)</b><span class="meta"><span id="pcard-sku-0201">CRE0201</span> · <span id="pcard-asin-0201">B0CP6JRHHT</span> · <span id="pcard-price-0201">$8.00</span> · <span id="pcard-size-0201">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0201"></div><div class="pcard-bsr-line" id="pcard-bsr-0201">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0201">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0201">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0201">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0201">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0201">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0201"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0201"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0201">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0201">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0201"></div>
+              </div>
+              <div id="pcard-pricecontext-0201">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0227">Hello Kitty Teddy Headband (Pink Satin)</b><span class="meta"><span id="pcard-sku-0227">CRE0227</span> · <span id="pcard-asin-0227">B09JFDMPKQ</span> · <span id="pcard-price-0227">$12.00</span> · <span id="pcard-size-0227">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0227"></div><div class="pcard-bsr-line" id="pcard-bsr-0227">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0227">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0227">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0227">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0227">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0227">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0227"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0227"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0227">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0227">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0227"></div>
+              </div>
+              <div id="pcard-pricecontext-0227">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0229">Kuromi 3D Teddy Headyband (Purple)</b><span class="meta"><span id="pcard-sku-0229">CRE0229</span> · <span id="pcard-asin-0229">B0CGKLFJZM</span> · <span id="pcard-price-0229">$12.00</span> · <span id="pcard-size-0229">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0229"></div><div class="pcard-bsr-line" id="pcard-bsr-0229">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0229">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0229">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0229">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0229">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0229">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0229"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0229"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0229">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0229">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0229"></div>
+              </div>
+              <div id="pcard-pricecontext-0229">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0234">Cloud Bubble Headband (Paris Bloom)</b><span class="meta"><span id="pcard-sku-0234">CRE0234</span> · <span id="pcard-asin-0234">B0CKGKFCKN</span> · <span id="pcard-price-0234">$10.00</span> · <span id="pcard-size-0234">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0234"></div><div class="pcard-bsr-line" id="pcard-bsr-0234">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0234">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0234">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0234">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0234">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0234">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0234"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0234"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0234">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0234">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0234"></div>
+              </div>
+              <div id="pcard-pricecontext-0234">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0235">Cloud Bubble Headband (Fiji Clouds)</b><span class="meta"><span id="pcard-sku-0235">CRE0235</span> · <span id="pcard-asin-0235">B0CKG826XG</span> · <span id="pcard-price-0235">$10.00</span> · <span id="pcard-size-0235">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0235"></div><div class="pcard-bsr-line" id="pcard-bsr-0235">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0235">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0235">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0235">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0235">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0235">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0235"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0235"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0235">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0235">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0235"></div>
+              </div>
+              <div id="pcard-pricecontext-0235">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0236">Apeach 3D Teddy Headyband (Pink)</b><span class="meta"><span id="pcard-sku-0236">CRE0236</span> · <span id="pcard-asin-0236">B0B83TPSX3</span> · <span id="pcard-price-0236">$14.00</span> · <span id="pcard-size-0236">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0236"></div><div class="pcard-bsr-line" id="pcard-bsr-0236">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0236">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0236">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0236">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0236">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0236">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0236"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0236"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0236">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0236">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0236"></div>
+              </div>
+              <div id="pcard-pricecontext-0236">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0237">Teddy Headband (Pink &amp; Purple)</b><span class="meta"><span id="pcard-sku-0237">CRE0237</span> · <span id="pcard-asin-0237">B0CTSDF78N</span> · <span id="pcard-price-0237">$8.00</span> · <span id="pcard-size-0237">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0237"></div><div class="pcard-bsr-line" id="pcard-bsr-0237">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0237">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0237">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0237">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0237">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0237">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0237"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0237"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0237">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0237">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0237"></div>
+              </div>
+              <div id="pcard-pricecontext-0237">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0239-label">Teddy Headband (Lavender with Pink Hearts)</b><span class="meta"><span id="pcard-sku-0239-label">CRE0239-label</span> · <span id="pcard-asin-0239-label">B07BTPJ5QS</span> · <span id="pcard-price-0239-label">$8.00</span> · <span id="pcard-size-0239-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0239-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0239-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0239-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0239-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0239-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0239-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0239-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0239-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0239-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0239-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0239-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0239-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0239-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0240">3D Teddy Headyband (Shooting Star)</b><span class="meta"><span id="pcard-sku-0240">CRE0240</span> · <span id="pcard-asin-0240">B0C7FSZ1GK</span> · <span id="pcard-price-0240">$9.00</span> · <span id="pcard-size-0240">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0240"></div><div class="pcard-bsr-line" id="pcard-bsr-0240">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0240">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0240">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0240">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0240">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0240">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0240"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0240"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0240">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0240">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0240"></div>
+              </div>
+              <div id="pcard-pricecontext-0240">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0261">Hello Kitty Plush Sp Headband (Signiture Pink Bow)</b><span class="meta"><span id="pcard-sku-0261">CRE0261</span> · <span id="pcard-asin-0261">B09JDQMCTC</span> · <span id="pcard-price-0261">$12.00</span> · <span id="pcard-size-0261">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0261"></div><div class="pcard-bsr-line" id="pcard-bsr-0261">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0261">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0261">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0261">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0261">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0261">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0261"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0261"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0261">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0261">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0261"></div>
+              </div>
+              <div id="pcard-pricecontext-0261">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0273">Teddy Headband (White)</b><span class="meta"><span id="pcard-sku-0273">CRE0273</span> · <span id="pcard-asin-0273">B0CD9WJ1MF</span> · <span id="pcard-price-0273">$8.00</span> · <span id="pcard-size-0273">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0273"></div><div class="pcard-bsr-line" id="pcard-bsr-0273">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0273">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0273">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0273">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0273">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0273">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0273"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0273"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0273">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0273">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0273"></div>
+              </div>
+              <div id="pcard-pricecontext-0273">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0274">Spa Teddy Headband &amp; Teddy Cuff Set</b><span class="meta"><span id="pcard-sku-0274">CRE0274</span> · <span id="pcard-asin-0274">B0CZ24G3Y7</span> · <span id="pcard-price-0274">$16.00</span> · <span id="pcard-size-0274">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0274"></div><div class="pcard-bsr-line" id="pcard-bsr-0274">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0274">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0274">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0274">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0274">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0274">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0274"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0274"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0274">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0274">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0274"></div>
+              </div>
+              <div id="pcard-pricecontext-0274">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0275-label">3D Teddy Headyband (Not Your Baby)</b><span class="meta"><span id="pcard-sku-0275-label">CRE0275-label</span> · <span id="pcard-asin-0275-label">B08QX2G2TV</span> · <span id="pcard-price-0275-label">$9.00</span> · <span id="pcard-size-0275-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0275-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0275-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0275-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0275-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0275-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0275-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0275-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0275-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0275-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0275-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0275-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0275-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0275-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0276">3D Teddy Headyband (Peach Please)</b><span class="meta"><span id="pcard-sku-0276">CRE0276</span> · <span id="pcard-asin-0276">B0CZ29ZYRJ</span> · <span id="pcard-price-0276">$9.00</span> · <span id="pcard-size-0276">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0276"></div><div class="pcard-bsr-line" id="pcard-bsr-0276">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0276">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0276">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0276">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0276">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0276">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0276"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0276"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0276">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0276">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0276"></div>
+              </div>
+              <div id="pcard-pricecontext-0276">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0277">3D Teddy Headyband (Bear)</b><span class="meta"><span id="pcard-sku-0277">CRE0277</span> · <span id="pcard-asin-0277">B08QX33CJ7</span> · <span id="pcard-price-0277">$9.00</span> · <span id="pcard-size-0277">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0277"></div><div class="pcard-bsr-line" id="pcard-bsr-0277">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0277">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0277">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0277">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0277">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0277">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0277"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0277"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0277">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0277">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0277"></div>
+              </div>
+              <div id="pcard-pricecontext-0277">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0294">Hello Kitty Y2K Plush Spa Headband (Bling Bling)</b><span class="meta"><span id="pcard-sku-0294">CRE0294</span> · <span id="pcard-asin-0294">B0C442RW3J</span> · <span id="pcard-price-0294">$14.00</span> · <span id="pcard-size-0294">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0294"></div><div class="pcard-bsr-line" id="pcard-bsr-0294">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0294">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0294">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0294">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0294">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0294">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0294"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0294"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0294">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0294">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0294"></div>
+              </div>
+              <div id="pcard-pricecontext-0294">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0295-label">Plush Spa Headband (Sweet Stripes)</b><span class="meta"><span id="pcard-sku-0295-label">CRE0295-label</span> · <span id="pcard-asin-0295-label">B0CCT2Q2VN</span> · <span id="pcard-price-0295-label">$12.00</span> · <span id="pcard-size-0295-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0295-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0295-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0295-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0295-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0295-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0295-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0295-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0295-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0295-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0295-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0295-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0295-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0295-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0320">Disney Minnie 3D Plush Headband (Ruby Glitz)</b><span class="meta"><span id="pcard-sku-0320">CRE0320</span> · <span id="pcard-asin-0320">B0B72D9WYG</span> · <span id="pcard-price-0320">$14.00</span> · <span id="pcard-size-0320">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0320"></div><div class="pcard-bsr-line" id="pcard-bsr-0320">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0320">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0320">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0320">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0320">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0320">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0320"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0320"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0320">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0320">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0320"></div>
+              </div>
+              <div id="pcard-pricecontext-0320">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0321">Hello Kitty Plush Spa Headband (Hello Kitty's Signiture Bow)</b><span class="meta"><span id="pcard-sku-0321">CRE0321</span> · <span id="pcard-asin-0321">B0D419VMZR</span> · <span id="pcard-price-0321">$14.00</span> · <span id="pcard-size-0321">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0321"></div><div class="pcard-bsr-line" id="pcard-bsr-0321">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0321">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0321">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0321">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0321">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0321">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0321"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0321"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0321">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0321">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0321"></div>
+              </div>
+              <div id="pcard-pricecontext-0321">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0331-label">Pusheen 3D Teddy Headyband (Sweet Softie)</b><span class="meta"><span id="pcard-sku-0331-label">CRE0331-label</span> · <span id="pcard-asin-0331-label">B0D43G5DV2</span> · <span id="pcard-price-0331-label">$12.00</span> · <span id="pcard-size-0331-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0331-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0331-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0331-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0331-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0331-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0331-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0331-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0331-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0331-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0331-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0331-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0331-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0331-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0343">ONCH Hollywood 3D Plush Spa Headband (Superstar Fantasy)</b><span class="meta"><span id="pcard-sku-0343">CRE0343</span> · <span id="pcard-asin-0343">B0D43LX717</span> · <span id="pcard-price-0343">$9.00</span> · <span id="pcard-size-0343">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0343"></div><div class="pcard-bsr-line" id="pcard-bsr-0343">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0343">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0343">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0343">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0343">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0343">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0343"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0343"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0343">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0343">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0343"></div>
+              </div>
+              <div id="pcard-pricecontext-0343">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0344-label">3D Teddy Headyband (Beauty Sleep)</b><span class="meta"><span id="pcard-sku-0344-label">CRE0344-label</span> · <span id="pcard-asin-0344-label">B08QX26G2Q</span> · <span id="pcard-price-0344-label">$8.00</span> · <span id="pcard-size-0344-label">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0344-label"></div><div class="pcard-bsr-line" id="pcard-bsr-0344-label">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0344-label">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0344-label">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0344-label">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0344-label">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0344-label">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0344-label"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0344-label"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0344-label">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0344-label">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0344-label"></div>
+              </div>
+              <div id="pcard-pricecontext-0344-label">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0345">Brown and Friends 3D Teddy Headyband (Cony)</b><span class="meta"><span id="pcard-sku-0345">CRE0345</span> · <span id="pcard-asin-0345">B09YMQ2LGF</span> · <span id="pcard-price-0345">$12.00</span> · <span id="pcard-size-0345">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0345"></div><div class="pcard-bsr-line" id="pcard-bsr-0345">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0345">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0345">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0345">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0345">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0345">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0345"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0345"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0345">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0345">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0345"></div>
+              </div>
+              <div id="pcard-pricecontext-0345">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0346">3D Teddy Headyband (Capybara)</b><span class="meta"><span id="pcard-sku-0346">CRE0346</span> · <span id="pcard-asin-0346">B0D43GQ2VB</span> · <span id="pcard-price-0346">$9.00</span> · <span id="pcard-size-0346">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0346"></div><div class="pcard-bsr-line" id="pcard-bsr-0346">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0346">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0346">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0346">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0346">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0346">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0346"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0346"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0346">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0346">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0346"></div>
+              </div>
+              <div id="pcard-pricecontext-0346">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0363">3D Teddy Headband (Strawberry Cow)</b><span class="meta"><span id="pcard-sku-0363">CRE0363</span> · <span id="pcard-asin-0363">B0DG9RB7L9</span> · <span id="pcard-price-0363">$9.00</span> · <span id="pcard-size-0363">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0363"></div><div class="pcard-bsr-line" id="pcard-bsr-0363">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0363">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0363">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0363">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0363">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0363">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0363"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0363"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0363">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0363">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0363"></div>
+              </div>
+              <div id="pcard-pricecontext-0363">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0392">Hello Kitty Plush Spa Headband (Halloween Signature Bow)</b><span class="meta"><span id="pcard-sku-0392">CRE0392</span> · <span id="pcard-asin-0392">B0CGFZF24S</span> · <span id="pcard-price-0392">$12.00</span> · <span id="pcard-size-0392">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0392"></div><div class="pcard-bsr-line" id="pcard-bsr-0392">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0392">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0392">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0392">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0392">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0392">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0392"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0392"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0392">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0392">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0392"></div>
+              </div>
+              <div id="pcard-pricecontext-0392">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0403">Hello Kitty Plush Spa Headband (Zombie Signature Bow)</b><span class="meta"><span id="pcard-sku-0403">CRE0403</span> · <span id="pcard-asin-0403">B0DG9VBM6B</span> · <span id="pcard-price-0403">$14.00</span> · <span id="pcard-size-0403">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0403"></div><div class="pcard-bsr-line" id="pcard-bsr-0403">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0403">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0403">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0403">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0403">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0403">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0403"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0403"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0403">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0403">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0403"></div>
+              </div>
+              <div id="pcard-pricecontext-0403">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-exec collapsible">
+            <div class="pcard-exec-hd" onclick="togglePcard(this)"><div><b id="pcard-name-0469">Hello Kitty and Friends Plushie Spa Headband (Pompompurin)</b><span class="meta"><span id="pcard-sku-0469">CRE0469</span> · <span id="pcard-asin-0469">B0DQFCKSBY</span> · <span id="pcard-price-0469">$14.00</span> · <span id="pcard-size-0469">—</span></span><div class="pcard-itemtype" id="pcard-itemtype-0469"></div><div class="pcard-bsr-line" id="pcard-bsr-0469">—</div></div><div class="pcard-hd-status"><span class="pcard-rating" id="pcard-rating-0469">—</span><span class="pcard-chevron">▼</span></div></div>
+            <div class="pcard-kpi-row-standalone">
+              <div><div class="pcard-kpi-label">Revenue</div><div class="pcard-kpi-value" id="pcard-kpi-revenue-0469">—</div></div>
+              <div><div class="pcard-kpi-label">Sessions</div><div class="pcard-kpi-value" id="pcard-kpi-sessions-0469">—</div></div>
+              <div><div class="pcard-kpi-label">Units</div><div class="pcard-kpi-value" id="pcard-kpi-units-0469">—</div></div>
+              <div><div class="pcard-kpi-label">Conversion</div><div class="pcard-kpi-value" id="pcard-kpi-conv-0469">—</div></div>
+            </div>
+            <div class="pcard-exec-body">
+              <div>
+                <div id="pcard-keying-0469"></div>
+                <details class="inci-toggle"><summary>View full INCI</summary><div class="inci-toggle-body" id="pcard-inci-0469"></div></details>
+                <div class="exec-fact"><b>Use</b><span id="pcard-use-0469">—</span></div>
+                <div class="exec-fact"><b>Benefits</b><span id="pcard-benefits-0469">—</span></div>
+                <div style="margin-top:8px;" id="pcard-freefrom-0469"></div>
+              </div>
+              <div id="pcard-pricecontext-0469">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Competitive Price Context</div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="card" id="spaheadband-keywords">
+          <div class="card-title">Keyword Strategy</div>
+          <div id="spaheadband-keywords-container"><div style="color:var(--muted);font-size:12px;">Loading…</div></div>
+        </div>
+
+        <!-- Competitors -->
+        <div class="card">
+          <div class="card-title">Competitive Landscape</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Data: Helium 10 · Live from the competitor research sheet.</div>
+          <div class="sec-lbl" style="margin-top:0;">Current Competitors</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-spaheadband-current"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="sec-lbl">Category Leaders</div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>ASIN</th><th>Brand / Product</th><th>Price</th><th>Rating</th><th>Reviews</th><th>BSR</th><th>Threat</th></tr></thead>
+              <tbody id="cl-spaheadband-leaders"><tr><td colspan="7" style="color:var(--muted);">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+            <strong>Key differentiation:</strong> <span id="cl-diff-spaheadband">—</span>
+          </div>
+        </div>
+      </div><!-- /pt-spaheadband -->
 
     </div><!-- /ins-products -->
 
@@ -9983,6 +11602,60 @@ async function initSnsExternal() {
     if (typeof window.renderCategorySessionsUnitsPies === 'function') {
       window.renderCategorySessionsUnitsPies('perf-acnepatches-container', 'Acne Patches');
     }
+    // Makeup Wipes, Dermaplane Razors, Mascara — added 2026-09-16 per
+    // Jaclyn. Same DELETED-status exclusion + same-ASIN dedup as Hand
+    // Cream/Acne Patches: 33 raw rows -> 13 live distinct SKUs for Makeup
+    // Wipes, 18 -> 12 for Dermaplane Razors, 5 -> 2 for Mascara.
+    const MAKEUPWIPES_SKUS = ['CRE0037-label', 'CRE0038-label', 'CRE0039', 'CRE0040', 'CRE0060', 'CRE0061-label', 'CRE0089-label', 'CRE0146-label', 'CRE0224', 'CRE0225', 'CRE0326-label', 'CRE0419-label', 'CRE0423'];
+    if (typeof window.renderProductPortfolioCards === 'function') {
+      window.renderProductPortfolioCards('makeupwipes', MAKEUPWIPES_SKUS, 'Makeup Wipes');
+    }
+    if (typeof window.renderSimpleKeywordStrategy === 'function') {
+      window.renderSimpleKeywordStrategy('makeupwipes-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.makeupwipes);
+    }
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-makeupwipes-container', 'Makeup Wipes');
+    }
+
+    const DERMAPLANERAZORS_SKUS = ['CRE0142-label', 'CRE0168', 'CRE0169', 'CRE0170-label', 'CRE0171', 'CRE0194', 'CRE0202', 'CRE0203', 'CRE0205', 'CRE0241', 'CRE0278', 'CRE0279'];
+    if (typeof window.renderProductPortfolioCards === 'function') {
+      window.renderProductPortfolioCards('dermaplanerazors', DERMAPLANERAZORS_SKUS, 'Dermaplane Razors');
+    }
+    if (typeof window.renderSimpleKeywordStrategy === 'function') {
+      window.renderSimpleKeywordStrategy('dermaplanerazors-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.dermaplanerazors);
+    }
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-dermaplanerazors-container', 'Dermaplane Razors');
+    }
+
+    const MASCARA_SKUS = ['CRE0266', 'CRE0457'];
+    if (typeof window.renderProductPortfolioCards === 'function') {
+      window.renderProductPortfolioCards('mascara', MASCARA_SKUS, 'Mascara');
+    }
+    if (typeof window.renderSimpleKeywordStrategy === 'function') {
+      window.renderSimpleKeywordStrategy('mascara-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.mascara);
+    }
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-mascara-container', 'Mascara');
+    }
+
+    // Spa Headband — first "big category" build, added 2026-09-16 per
+    // Jaclyn: 68 raw rows -> 41 live distinct SKUs after the usual
+    // DELETED-status exclusion + same-ASIN dedup. Uses the collapsible
+    // card + search pattern (renderProductPortfolioCards populates the
+    // same ids regardless of the .collapsible CSS class, so no JS
+    // changes were needed there) and the pie charts auto-bucket into
+    // Top 10 + "All Others" once a category passes 15 products.
+    const SPAHEADBAND_SKUS = ['CRE0130', 'CRE0131', 'CRE0132', 'CRE0133', 'CRE0134', 'CRE0135', 'CRE0162', 'CRE0163-label', 'CRE0165', 'CRE0166', 'CRE0167', 'CRE0198', 'CRE0199', 'CRE0201', 'CRE0227', 'CRE0229', 'CRE0234', 'CRE0235', 'CRE0236', 'CRE0237', 'CRE0239-label', 'CRE0240', 'CRE0261', 'CRE0273', 'CRE0274', 'CRE0275-label', 'CRE0276', 'CRE0277', 'CRE0294', 'CRE0295-label', 'CRE0320', 'CRE0321', 'CRE0331-label', 'CRE0343', 'CRE0344-label', 'CRE0345', 'CRE0346', 'CRE0363', 'CRE0392', 'CRE0403', 'CRE0469'];
+    if (typeof window.renderProductPortfolioCards === 'function') {
+      window.renderProductPortfolioCards('spaheadband', SPAHEADBAND_SKUS, 'Spa Headband');
+    }
+    if (typeof window.renderSimpleKeywordStrategy === 'function') {
+      window.renderSimpleKeywordStrategy('spaheadband-keywords-container', COMPETITOR_GID_BY_PRODUCT_TYPE.spaheadband);
+    }
+    if (typeof window.renderCategorySessionsUnitsPies === 'function') {
+      window.renderCategorySessionsUnitsPies('perf-spaheadband-container', 'Spa Headband');
+    }
     if (typeof window.renderSearchQueryPerformance === 'function') {
       window.renderSearchQueryPerformance('ins-sqp-container');
     }
@@ -12512,6 +14185,10 @@ const SHEET_COMPETITOR_ID = '19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M';
 const COMPETITOR_GID_BY_PRODUCT_TYPE = {
   handcream: '813842918', // Hand Cream tab on the Competitor Sheet — added 2026-09-16 per Jaclyn
   acnepatches: '1568722320', // Acne Patches tab on the Competitor Sheet — added 2026-09-16 per Jaclyn
+  makeupwipes: 'MISSING-GID' /* TODO: need the Makeup Wipes tab's gid on the Competitor Sheet (19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M) */,
+  dermaplanerazors: 'MISSING-GID' /* TODO: need the Dermaplane Razors tab's gid on the Competitor Sheet (19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M) */,
+  mascara: 'MISSING-GID' /* TODO: need the Mascara tab's gid on the Competitor Sheet (19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M) */,
+  spaheadband: 'MISSING-GID' /* TODO: need the Spa Headband tab's gid on the Competitor Sheet (19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M) */,
 };
 
 function clFindSectionRow(rows, needle) {
@@ -12784,6 +14461,38 @@ function varRenderHeroTags(raw) {
 // replacing plain "4.3 ★ (210)" text. Half-stars are the "½" character
 // rather than a separate half-filled star glyph (no half-star icon is
 // used elsewhere in this dashboard to match against).
+// Big-category card interactions (collapse/expand + search filter) —
+// added 2026-09-16 per Jaclyn, piloted on Spa Headband.
+function togglePcard(hdEl) {
+  const card = hdEl.closest('.pcard-exec');
+  if (card) card.classList.toggle('expanded');
+}
+window.togglePcard = togglePcard;
+
+function filterPcardList(listId, query) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+  const q = query.trim().toLowerCase();
+  let anyVisible = false;
+  list.querySelectorAll(':scope > .pcard-exec').forEach(card => {
+    const match = !q || card.textContent.toLowerCase().includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) anyVisible = true;
+  });
+  let noResultsEl = list.querySelector('.pcard-no-results');
+  if (!anyVisible && q) {
+    if (!noResultsEl) {
+      noResultsEl = document.createElement('div');
+      noResultsEl.className = 'pcard-no-results';
+      list.appendChild(noResultsEl);
+    }
+    noResultsEl.textContent = `No products match "${query}".`;
+  } else if (noResultsEl) {
+    noResultsEl.remove();
+  }
+}
+window.filterPcardList = filterPcardList;
+
 function buildStarRatingHtml(rating, reviews) {
   if (isNaN(rating) || isNaN(reviews)) return '<span style="color:rgba(255,255,255,.5);font-size:12px;">—</span>';
   const rounded = Math.round(rating * 2) / 2; // nearest 0.5
@@ -13073,23 +14782,60 @@ async function renderCategorySessionsUnitsPies(containerId, categoryLabel) {
       return;
     }
 
-    const shortLabel = e => e.name.length > 60 ? e.name.slice(0, 59).trim() + '…' : e.name;
-    const sessionsData = entries.map(e => e.sessions);
-    const unitsData = entries.map(e => e.units);
-    const labels = entries.map(shortLabel);
-    const colors = entries.map((_, i) => PIE_PALETTE[i % PIE_PALETTE.length]);
+    const shortLabel = e => e.name.length > 90 ? e.name.slice(0, 89).trim() + '…' : e.name;
+
+    // Top 10 by revenue + "All Others" — added 2026-09-16 per Jaclyn,
+    // piloted on Spa Headband (41 live SKUs). A pie chart with dozens of
+    // slices isn't readable regardless of card size; bucketing the long
+    // tail into one slice keeps it usable while still surfacing the
+    // products that actually matter. Threshold-gated so small categories
+    // (Hand Cream, Acne Patches, etc.) keep showing every SKU — bucketing
+    // an 8-13 item category would hide real detail for no reason.
+    const BIG_CATEGORY_THRESHOLD = 15;
+    let pieEntries = entries;
+    let bucketNote = '';
+    if (entries.length > BIG_CATEGORY_THRESHOLD) {
+      const sorted = [...entries].sort((a, b) => b.revenue - a.revenue);
+      const top = sorted.slice(0, 10);
+      const rest = sorted.slice(10);
+      pieEntries = top;
+      if (rest.length) {
+        pieEntries = [...top, {
+          name: `All Others (${rest.length} SKUs)`,
+          sessions: rest.reduce((s, e) => s + e.sessions, 0),
+          units: rest.reduce((s, e) => s + e.units, 0),
+        }];
+        bucketNote = ` · Top 10 by revenue + ${rest.length} others grouped`;
+      }
+    }
+
+    const sessionsData = pieEntries.map(e => e.sessions);
+    const unitsData = pieEntries.map(e => e.units);
+    const labels = pieEntries.map(shortLabel);
+    const colors = pieEntries.map((_, i) => PIE_PALETTE[i % PIE_PALETTE.length]);
     const monthLabel = `${OV_MONTH_ABBR[month - 1]} ${year}`;
 
+    // Height scales with item count so Chart.js's legend has enough
+    // vertical room to lay out in one column instead of wrapping into a
+    // second column once it runs out of height — added 2026-09-16 per
+    // Jaclyn ("make them all fit in one column tall"). ~32px per legend
+    // row plus headroom for the pie itself; a small future category
+    // (e.g. 3-4 SKUs) won't get an oversized empty card, a bigger one
+    // gets the room it actually needs. Uses pieEntries (post-bucketing),
+    // not the raw entries count, so a 41-SKU category sizes for its
+    // actual 11 rendered slices, not 41.
+    const chartHeight = Math.max(300, pieEntries.length * 32 + 80);
+
     container.innerHTML = `<div class="card">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon · ${monthLabel}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon · ${monthLabel}${bucketNote}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div>
           <div style="text-align:center;font-family:var(--font-subheader);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:12px;">Sessions by SKU</div>
-          <div style="height:280px;"><canvas id="${containerId}-sessions-pie"></canvas></div>
+          <div style="height:${chartHeight}px;"><canvas id="${containerId}-sessions-pie"></canvas></div>
         </div>
         <div>
           <div style="text-align:center;font-family:var(--font-subheader);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:12px;">Units by SKU</div>
-          <div style="height:280px;"><canvas id="${containerId}-units-pie"></canvas></div>
+          <div style="height:${chartHeight}px;"><canvas id="${containerId}-units-pie"></canvas></div>
         </div>
       </div>
     </div>`;
