@@ -5075,18 +5075,27 @@ async function initSns() {
     const stopYear   = now.getFullYear();
     const stopMonth  = now.getMonth(); // 0-indexed = last full month (1-indexed)
 
-    const COLORS = {
-      0: { border: '#24e9a3', bg: 'rgba(36,233,163,0.08)', fill: true  }, // current year
-      1: { border: '#001f60', bg: 'transparent',           fill: false }, // -1
-      2: { border: '#f4dfd0', bg: 'transparent',           fill: false }, // -2
-      3: { border: '#ccd3d5', bg: 'transparent',           fill: false }, // -3
-    };
+    // Color by calendar year, not by "how many years back" — a given
+    // year keeps the same color going forward instead of drifting from
+    // navy to sand to grey as new years roll on. Current year stays the
+    // highlighted green/filled line; past years use the same fixed
+    // YEAR_COLORS map as the Subscriptions chart (2025 slate, 2024 sand),
+    // so "2025" is always the same visual color everywhere in the
+    // dashboard. Added 2026-09-16 per Jaclyn — 2025 data wasn't showing
+    // in its expected color once it aged into the "-1 year" offset slot.
+    const YEAR_COLORS = { 2024: '#f4dfd0', 2025: '#6b7ba2', 2026: '#001f60' };
+    const distinctYears = [...new Set(parsed.map(r => r.year))]
+      .filter(yr => yr <= currentYear)
+      .sort((a, b) => b - a)
+      .slice(0, 4);
 
     const datasets = [];
-    for (let offset = 0; offset <= 3; offset++) {
-      const yr     = currentYear - offset;
-      const color  = COLORS[offset];
-      const data   = months12.map((_, idx) => {
+    for (const yr of distinctYears) {
+      const isCurrent = yr === currentYear;
+      const color = isCurrent
+        ? { border: '#24e9a3', bg: 'rgba(36,233,163,0.08)', fill: true }
+        : { border: YEAR_COLORS[yr] || '#ccd3d5', bg: 'transparent', fill: false };
+      const data = months12.map((_, idx) => {
         const mo = idx + 1; // 1-indexed
         // Don't plot future months for the current year
         if (yr === stopYear && mo > stopMonth) return null;
@@ -6763,18 +6772,27 @@ async function initSns() {
     const stopYear   = now.getFullYear();
     const stopMonth  = now.getMonth(); // 0-indexed = last full month (1-indexed)
 
-    const COLORS = {
-      0: { border: '#24e9a3', bg: 'rgba(36,233,163,0.08)', fill: true  }, // current year
-      1: { border: '#001f60', bg: 'transparent',           fill: false }, // -1
-      2: { border: '#f4dfd0', bg: 'transparent',           fill: false }, // -2
-      3: { border: '#ccd3d5', bg: 'transparent',           fill: false }, // -3
-    };
+    // Color by calendar year, not by "how many years back" — a given
+    // year keeps the same color going forward instead of drifting from
+    // navy to sand to grey as new years roll on. Current year stays the
+    // highlighted green/filled line; past years use the same fixed
+    // YEAR_COLORS map as the Subscriptions chart (2025 slate, 2024 sand),
+    // so "2025" is always the same visual color everywhere in the
+    // dashboard. Added 2026-09-16 per Jaclyn — 2025 data wasn't showing
+    // in its expected color once it aged into the "-1 year" offset slot.
+    const YEAR_COLORS = { 2024: '#f4dfd0', 2025: '#6b7ba2', 2026: '#001f60' };
+    const distinctYears = [...new Set(parsed.map(r => r.year))]
+      .filter(yr => yr <= currentYear)
+      .sort((a, b) => b - a)
+      .slice(0, 4);
 
     const datasets = [];
-    for (let offset = 0; offset <= 3; offset++) {
-      const yr     = currentYear - offset;
-      const color  = COLORS[offset];
-      const data   = months12.map((_, idx) => {
+    for (const yr of distinctYears) {
+      const isCurrent = yr === currentYear;
+      const color = isCurrent
+        ? { border: '#24e9a3', bg: 'rgba(36,233,163,0.08)', fill: true }
+        : { border: YEAR_COLORS[yr] || '#ccd3d5', bg: 'transparent', fill: false };
+      const data = months12.map((_, idx) => {
         const mo = idx + 1; // 1-indexed
         // Don't plot future months for the current year
         if (yr === stopYear && mo > stopMonth) return null;
