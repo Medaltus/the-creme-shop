@@ -12928,12 +12928,21 @@ async function renderProductPortfolioCards(productTypeKey, productIds, categoryL
       // are CRE-prefixed, e.g. CRE0258 -> suffix "0258"). Fixed 2026-09-16
       // per Jaclyn while wiring up the Hand Cream tab.
       const suffix = sku.replace(/^[A-Za-z]+/, '');
-      const entry = master.bySku[sku];
+      // Fixed 2026-09-16 per Jaclyn — master.bySku/itemTypeBySku are both
+      // keyed uppercase (getProductMaster/getItemTypeBySku both uppercase
+      // their sku keys), but sku here comes as-typed from the hardcoded
+      // HANDCREAM_SKUS/ACNEPATCHES_SKUS list. Every SKU without a lowercase
+      // suffix happened to already be all-caps, which is exactly why this
+      // only ever broke on CRE0327-label and CRE0020-stickerless — the two
+      // SKUs in those lists with a lowercase suffix — while every other
+      // card looked fine.
+      const skuUpper = sku.toUpperCase();
+      const entry = master.bySku[skuUpper];
       if (!entry) { console.warn('[Variations] no Product Short Name entry found for', sku); return; }
 
       setPerfCellText(`pcard-name-${suffix}`, entry.name || sku);
       setPerfCellText(`pcard-sku-${suffix}`, entry.sku || sku);
-      setPerfCellText(`pcard-itemtype-${suffix}`, itemTypeBySku[sku] || '');
+      setPerfCellText(`pcard-itemtype-${suffix}`, itemTypeBySku[skuUpper] || '');
       setPerfCellText(`pcard-asin-${suffix}`, entry.asin || '—');
       setPerfCellText(`pcard-price-${suffix}`, entry.price ? '$' + entry.price.toFixed(2) : '—');
 
@@ -12955,7 +12964,7 @@ async function renderProductPortfolioCards(productTypeKey, productIds, categoryL
       // Subcat BSR sits under the name; Rating next to the status pill;
       // Revenue/Sessions/Units/Conversion as a compact KPI strip above
       // ingredients.
-      const m = metricsBySku[sku.toUpperCase()] || {};
+      const m = metricsBySku[skuUpper] || {};
       const bsrLineEl = document.getElementById(`pcard-bsr-${suffix}`);
       if (bsrLineEl) bsrLineEl.innerHTML = `BSR ${m.bsrText || '—'} · Subcat BSR ${m.subBsrText || '—'}`;
       const ratingEl = document.getElementById(`pcard-rating-${suffix}`);
@@ -12976,7 +12985,7 @@ async function renderProductPortfolioCards(productTypeKey, productIds, categoryL
       if (cardBody) {
         const existingOverlay = cardBody.querySelector('.pcard-oos-overlay');
         if (existingOverlay) existingOverlay.remove();
-        if (oosBySku[sku.toUpperCase()]) {
+        if (oosBySku[skuUpper]) {
           const overlay = document.createElement('div');
           overlay.className = 'pcard-oos-overlay';
           overlay.innerHTML = '<span class="prodcol-oos-pill">Out of Stock</span>';
@@ -13064,7 +13073,7 @@ async function renderCategorySessionsUnitsPies(containerId, categoryLabel) {
       return;
     }
 
-    const shortLabel = e => e.name.length > 28 ? e.name.slice(0, 27).trim() + '…' : e.name;
+    const shortLabel = e => e.name.length > 60 ? e.name.slice(0, 59).trim() + '…' : e.name;
     const sessionsData = entries.map(e => e.sessions);
     const unitsData = entries.map(e => e.units);
     const labels = entries.map(shortLabel);
