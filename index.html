@@ -11566,16 +11566,21 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
   <!-- ══ LISTING AUDIT (internal only) ══ -->
   <div class="page" id="page-listing">
     <div class="page-hd">
-      <div><div class="page-title">Listing Audit</div><div class="page-sub">Live listing copy · Title · Item Highlights · Bullets 1–5 · Description · Backend Keywords</div></div>
+      <div><div class="page-title">Listing Audit</div><div class="page-sub">Live listing copy · Title · Item Highlights · Bullets 1–5 · Description · Backend Keywords &middot; pulled from Amazon Products Cache</div></div>
     </div>
-    <div class="card" style="padding:40px;text-align:center;color:var(--muted);">
-      <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:8px;">Listing Audit not yet built for The Crème Shop</div>
-      <div style="font-size:12.5px;max-width:520px;margin:0 auto;line-height:1.6;">
-        Évolis's version of this page is hardcoded per-SKU listing copy for its own 19 hair-care ASINs —
-        not a reusable template. This page needs to be rebuilt from The Crème Shop's real listing data
-        (the <code>amazon-listing-audit</code> skill is the right tool for that), which we're doing as a
-        separate follow-up.
-      </div>
+
+    <!-- Pilot build 2026-09-16 per Jaclyn: Hand Cream first, other
+         categories to follow once this shape is signed off. Unlike
+         évolis's old page, each product gets its own tab (nested inside
+         its category tab) rather than every product's cards stacked and
+         always visible. Top 10 by revenue per category/sub-category;
+         Hand Cream has 8 live SKUs so all of them show. -->
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="showSubTab('page-listing','la-cat-handcream',this)">Hand Cream</button>
+    </div>
+
+    <div class="sub-page active" id="la-cat-handcream">
+      <div id="la-handcream-container"><div style="color:var(--muted);font-size:12px;padding:20px 0;">Loading…</div></div>
     </div>
   </div>
 
@@ -12231,6 +12236,14 @@ function showPage(id, btn) {
   // click into Rank Tracker first. initRankTracker caches internally, so
   // this is a no-op on subsequent visits to the page.
   if (id === 'organic' && typeof window.initRankTracker === 'function') window.initRankTracker('activators');
+
+  // Listing Audit — lazy-loaded on first visit (Products Cache is a large
+  // fetch, no reason to pull it unless someone actually opens this page).
+  // Guard flag matches the initOverviewLive pattern above.
+  if (id === 'listing' && !window._listingAuditInit && typeof window.renderListingAuditCategory === 'function') {
+    window._listingAuditInit = true;
+    window.renderListingAuditCategory('la-handcream', ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'], 'Hand Cream', 'la-handcream-container');
+  }
 
   // Export PDF Report button — only shown on the three "performance" pages
   // (Sales, Marketing, Events). Hidden everywhere else (Overview, Inventory,
@@ -20124,7 +20137,7 @@ const LISTING_AUDIT_EVOLIS_GID = 'MISSING-GID' /* TODO: creme-shop gid not yet i
 const OV_SUMMARY_SHEET_ID        = '16QNnDh7-dTDzI-O7UI-WlzMtOmovssV23nd-quiYPR0';
 const OV_SUMMARY_GID = '1139810717';  // evolis tab
 const OV_PRODUCTS_CACHE_SHEET_ID = '1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s';
-const OV_PRODUCTS_CACHE_GID = '1255096066';  // evolis tab
+const OV_PRODUCTS_CACHE_GID = '1255096066';  // the crème shop tab — corrected 2026-09-16 per Jaclyn (was mislabeled "evolis tab"; verified live against the sheet — 318/324 SKUs on this tab are CRE-prefixed, this has been the correct Crème Shop tab all along)
 // Consignment Inventory sheet — ShipStation-sourced brands (miguard,
 // prohibition, high-on-love) have real tabs today. The Crème Shop's own
 // consignment inventory is on Cin7 Core, not yet built (email-based
@@ -20734,6 +20747,204 @@ function stripCategoryBrandPrefix(raw) {
   return (raw || '').trim().replace(/^[A-Za-z0-9]+\s*[•\-–]\s*/, '').trim();
 }
 let _productMasterPromise = null;
+// Products Cache — live Amazon listing content (title/item highlights/
+// bullets/description/backend keywords/ingredients) by SKU. Added
+// 2026-09-16 per Jaclyn, for the Listing Audit rebuild. One row per SKU
+// per sync day (49-50 rows per SKU currently); takes the most recent
+// date's row, same convention as computeCategoryProductMetrics's
+// "most recent month present in the sheet" logic elsewhere in this file.
+// Note: bullets/description/backend_keywords/ingredients are frequently
+// EMPTY for a given SKU even when title/item_highlights are populated —
+// verified directly against this sheet (5 of Hand Cream's 7 cached SKUs
+// have no bullets, description, or backend keywords at all). This is a
+// gap in what's actually been synced from Amazon's Catalog API, not a
+// rendering bug — callers must handle empty fields gracefully rather
+// than assume they'll always have content.
+let _productsCacheBySkuPromise = null;
+function getProductsCacheBySku() {
+  if (_productsCacheBySkuPromise) return _productsCacheBySkuPromise;
+  _productsCacheBySkuPromise = (async () => {
+    const csv = await fetch(ovCsvUrl(OV_PRODUCTS_CACHE_SHEET_ID, OV_PRODUCTS_CACHE_GID) + `&_cb=${Date.now()}`)
+      .then(r => r.ok ? r.text() : '').catch(() => '');
+    const rows = parseCsvToRows(csv);
+    const bySku = {};
+    rows.forEach(r => {
+      const sku = (r.sku || '').trim().toUpperCase();
+      if (!sku) return;
+      if (!bySku[sku] || (isValidDateStr(r.date) && (!isValidDateStr(bySku[sku].date) || r.date > bySku[sku].date))) {
+        bySku[sku] = r;
+      }
+    });
+    console.log('[ProductsCache][qa] resolved listing-cache rows for', Object.keys(bySku).length, 'SKU(s).');
+    return { bySku };
+  })();
+  return _productsCacheBySkuPromise;
+}
+
+// Listing Audit — category-per-tab, product-per-tab. Added 2026-09-16
+// per Jaclyn, replacing the "not yet built" placeholder. Piloted on Hand
+// Cream first before rolling out to every built category; deliberately
+// NOT the same pattern as évolis's old page (per-category cards all
+// stacked and always visible — see the 2026-07-16 .product-card-block
+// comment above) since Jaclyn asked for one tab per product this time.
+//
+// This shows CURRENT LIVE listing content pulled from Products Cache
+// (title/item highlights/bullets/description/backend keywords/
+// ingredients) for reference — it does NOT run compliance checks or
+// flag issues. That's the amazon-listing-audit skill's job, invoked
+// separately per SKU; this page has no compliance rules engine of its
+// own, so nothing here should be read as a pass/fail verdict.
+//
+// Starts with the top 10 SKUs by revenue (computeCategoryProductMetrics,
+// same revenue figure as the Insights > Products cards) per Jaclyn — for
+// categories with 10 or fewer live SKUs (Hand Cream: 8) this includes
+// everything; larger categories (Face Masks: 55) will only show the
+// top 10 until this is expanded.
+function escapeLaText(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function laCopyRow(numLabel, text, emptyMsg) {
+  if (!text || !text.trim()) {
+    return `<div style="font-size:11.5px;color:var(--muted);padding-left:34px;">${emptyMsg}</div>`;
+  }
+  return `<div class="la-copy-row"><div class="la-num">${numLabel}</div><div class="la-copy-block">${escapeLaText(text)}</div></div>`;
+}
+
+function renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow, active) {
+  const name = (masterEntry && masterEntry.name) || sku;
+  const asin = (masterEntry && masterEntry.asin) || (cacheRow && cacheRow.asin) || '—';
+  const price = masterEntry && masterEntry.price ? '$' + masterEntry.price.toFixed(2) : '—';
+
+  if (!cacheRow) {
+    // Genuine data gap, not a lookup bug — verified against the sheet
+    // directly (e.g. CRE0441 has zero rows in Products Cache despite
+    // being a live product per Product Short Name).
+    return `
+        <div class="sub-page-inner${active ? ' active' : ''}" id="${catKey}-prod-${suf}">
+          <div class="la-hero">
+            <div class="la-hero-left">
+              <div class="la-hero-meta">${escapeLaText(sku)} &middot; ${escapeLaText(asin)}</div>
+              <div class="la-hero-title">${escapeLaText(name)}</div>
+              <div class="la-hero-tags"><span class="la-hero-tag bsr">${price}</span></div>
+            </div>
+          </div>
+          <div class="la-card">
+            <div style="color:var(--muted);font-size:12.5px;">No Products Cache data found for this SKU — it may not have been synced yet. Check the Amazon Products Cache sheet directly.</div>
+          </div>
+        </div>`;
+  }
+
+  const title = cacheRow.title || '';
+  const highlights = cacheRow.item_highlights || '';
+  const bullets = [1,2,3,4,5].map(i => cacheRow['bullet_' + i] || '').filter(b => b.trim());
+  const description = cacheRow.description || '';
+  const backend = cacheRow.backend_keywords || '';
+  const ingredients = cacheRow.ingredients || '';
+  const status = cacheRow.status || '—';
+  const salesRank = cacheRow.sales_ranks || '—';
+  const lastSynced = cacheRow.last_synced ? cacheRow.last_synced.slice(0, 10) : '—';
+
+  let bulletsHtml;
+  if (bullets.length) {
+    bulletsHtml = bullets.map((b, i) => laCopyRow(i + 1, b, '')).join('');
+  } else {
+    bulletsHtml = `<div style="font-size:11.5px;color:var(--muted);">No bullet copy currently cached for this SKU — may need a fresh Products Cache sync.</div>`;
+  }
+
+  return `
+        <div class="sub-page-inner${active ? ' active' : ''}" id="${catKey}-prod-${suf}">
+          <div class="la-hero">
+            <div class="la-hero-left">
+              <div class="la-hero-meta">${escapeLaText(sku)} &middot; ${escapeLaText(asin)} &middot; Last synced ${escapeLaText(lastSynced)}</div>
+              <div class="la-hero-title">${escapeLaText(name)}</div>
+              <div class="la-hero-tags">
+                <span class="la-hero-tag bsr">${escapeLaText(salesRank)}</span>
+                <span class="la-hero-tag bsr">${price}</span>
+                <span class="la-hero-tag bsr">${escapeLaText(status)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Title</div>
+            <div class="la-char-info">${title.length} characters</div>
+            ${laCopyRow('T', title, 'No title currently cached for this SKU.')}
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Item Highlights</div>
+            <div class="la-char-info">${highlights.length} characters</div>
+            ${laCopyRow('H', highlights, 'No item highlights currently cached for this SKU.')}
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Bullet Points</div>
+            ${bulletsHtml}
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Description</div>
+            ${description.trim() ? `<div class="la-backend-block">${escapeLaText(description)}</div>` : `<div style="font-size:11.5px;color:var(--muted);">No description currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Backend Search Terms</div>
+            ${backend.trim() ? `<div class="la-backend-block">${escapeLaText(backend)}</div>` : `<div style="font-size:11.5px;color:var(--muted);">No backend keywords currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
+          </div>
+
+          <div class="la-card">
+            <div class="la-card-label">Ingredients</div>
+            ${ingredients.trim() ? `<div class="la-backend-block">${escapeLaText(ingredients)}</div>` : `<div style="font-size:11.5px;color:var(--muted);">No ingredients currently cached for this SKU.</div>`}
+          </div>
+        </div>`;
+}
+
+async function renderListingAuditCategory(catKey, allSkus, categoryLabel, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  try {
+    const [master, cache, catMetrics] = await Promise.all([
+      getProductMaster(),
+      getProductsCacheBySku(),
+      computeCategoryProductMetrics(categoryLabel),
+    ]);
+    const { metricsBySku } = catMetrics;
+
+    // Rank by revenue desc (same figure the Insights > Products cards
+    // use), top 10 — for a category with <=10 live SKUs this keeps all
+    // of them.
+    const ranked = allSkus.slice().sort((a, b) => {
+      const revA = (metricsBySku[a.toUpperCase()] || {}).revenue || 0;
+      const revB = (metricsBySku[b.toUpperCase()] || {}).revenue || 0;
+      return revB - revA;
+    }).slice(0, 10);
+
+    let tabsHtml = '';
+    let panelsHtml = '';
+    ranked.forEach((sku, i) => {
+      const suf = sku.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const masterEntry = master.bySku[sku.toUpperCase()];
+      const cacheRow = cache.bySku[sku.toUpperCase()] || null;
+      const label = (masterEntry && masterEntry.name) || sku;
+      const shortLabel = label.length > 40 ? label.slice(0, 37) + '…' : label;
+      tabsHtml += `<button class="sub-tab${i === 0 ? ' active' : ''}" onclick="window.showNestedSubTab('${containerId}','${catKey}-prod-${suf}',this)" title="${escapeLaText(label)}">${escapeLaText(shortLabel)}</button>`;
+      panelsHtml += renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow, i === 0);
+    });
+
+    if (allSkus.length > 10) {
+      tabsHtml += `<span style="font-size:11px;color:var(--muted);align-self:center;margin-left:8px;">+${allSkus.length - 10} more not shown yet (top 10 by revenue)</span>`;
+    }
+
+    container.innerHTML = `<div class="sub-tabs">${tabsHtml}</div>${panelsHtml}`;
+  } catch (err) {
+    console.warn('[ListingAudit] render failed for', catKey, err.message);
+    container.innerHTML = `<div class="card" style="padding:24px;color:var(--muted);">Couldn't load listing audit data — see console for details.</div>`;
+  }
+}
+window.renderListingAuditCategory = renderListingAuditCategory;
+
 function getProductMaster() {
   if (_productMasterPromise) return _productMasterPromise;
   _productMasterPromise = (async () => {
