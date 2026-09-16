@@ -11580,6 +11580,13 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
     </div>
 
     <div class="sub-page active" id="la-cat-handcream">
+      <div style="margin-bottom:18px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+        <button class="audit-run-btn" id="run-audit-btn-handcream" onclick="runCategoryListingAudit('handcream', 'Hand Cream', ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'], this)">
+          <div class="spinner"></div>
+          <span class="btn-label">📋 Run Listing Audit — Hand Cream</span>
+        </button>
+        <span class="upload-status" id="la-audit-status-handcream"></span>
+      </div>
       <div id="la-handcream-container"><div style="color:var(--muted);font-size:12px;padding:20px 0;">Loading…</div></div>
     </div>
   </div>
@@ -20104,7 +20111,7 @@ const SHEET_LISTINGS_ID       = '1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s'; 
 // audit backend call needs the new sheet, since run-listing-audit.js was
 // rewritten to expect SHEET_PRODUCT_INVENTORY's column layout.
 const SHEET_PRODUCT_INVENTORY_ID = '1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s';
-const SHEET_LISTINGS_GID = '1255096066'; // changed 2026-08-07 per Jaclyn — was '1253931757' (the old dedicated Listings sheet); this is the "evolis" tab on the Products Cache sheet, same one already used server-side as the audit's own input
+const SHEET_LISTINGS_GID = '1255096066'; // the crème shop tab on the Products Cache sheet — corrected 2026-09-16 per Jaclyn (was mislabeled "evolis tab", same stale-comment issue fixed on OV_PRODUCTS_CACHE_GID above; this is the same gid, verified live)
 const KEYWORD_STRATEGY_SHEET_ID = '1B50P142KObEcwtgxzNzofRAidZ9efePts0_8RSnt5mg';
 const SKU_KW_GID_MAP = {
   'EVO0001': '363437774',
@@ -20944,6 +20951,83 @@ async function renderListingAuditCategory(catKey, allSkus, categoryLabel, contai
   }
 }
 window.renderListingAuditCategory = renderListingAuditCategory;
+
+// Run Listing Audit — per-category button. Added 2026-09-16 per Jaclyn:
+// the whole-catalog version of this (runListingAudit, on the Insights >
+// Log page) derives item-type groups dynamically and batches them, but
+// running the ENTIRE catalog from one button is slow and, per Jaclyn,
+// times out on other brands' dashboards. This reuses the exact same
+// approach — same button styling/class (.audit-run-btn), same ≤5-SKU
+// batching, same skuFilter param the backend already supports — but
+// scoped to ONE category's fixed SKU list per call, so each category's
+// button only ever audits that category. No backend change needed:
+// run-listing-audit.js's skuFilter array param already exists for
+// exactly this (comment there literally says "array from batch").
+//
+// This runs the audit and writes results to the audit sheet — it does
+// NOT yet render the audit output (title_rewrite, bullets_rewrite, etc.)
+// into these per-product tabs. That's a natural next step, not built
+// yet; for now this only reports run status, same as the existing
+// whole-catalog button does before its own separate results-reload step.
+async function runCategoryListingAudit(catKey, categoryLabel, skus, btn) {
+  const statusEl = document.getElementById('la-audit-status-' + catKey);
+  btn.classList.add('running');
+  btn.disabled = true;
+  if (statusEl) { statusEl.className = 'upload-status'; statusEl.textContent = ''; }
+
+  const MAX_SKUS_PER_BATCH = 5;
+  const batches = [];
+  for (let i = 0; i < skus.length; i += MAX_SKUS_PER_BATCH) {
+    batches.push(skus.slice(i, i + MAX_SKUS_PER_BATCH));
+  }
+
+  let totalSkus = 0;
+  const failedBatches = [];
+
+  for (let i = 0; i < batches.length; i++) {
+    const batch = batches[i];
+    if (statusEl) statusEl.textContent = '▶ Auditing batch ' + (i + 1) + '/' + batches.length + ' — ' + batch.length + ' SKUs…';
+
+    try {
+      const res = await fetch('/api/run-listing-audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brand:          INSIGHTS_BRAND_TAB,
+          sourceSheetId:  SHEET_PRODUCT_INVENTORY_ID,
+          auditSheetId:   LISTING_AUDIT_SHEET_ID,
+          keywordSheetId: KEYWORD_STRATEGY_SHEET_ID,
+          skuGidMap:      SKU_KW_GID_MAP,
+          uploadsSheetId: UPLOADS_SHEET_ID,
+          uploadsGid:     UPLOADS_EVOLIS_GID,
+          skuFilter:      batch
+        })
+      });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error('HTTP ' + res.status + ': ' + (errBody.error || 'unknown error') + (errBody.detail ? ' — ' + errBody.detail : ''));
+      }
+      const data = await res.json();
+      totalSkus += (data.skuCount || 0);
+    } catch (err) {
+      console.error('[listing-audit][' + catKey + '] batch ' + (i + 1) + ' failed:', err.message);
+      failedBatches.push('batch ' + (i + 1) + ': ' + err.message);
+    }
+  }
+
+  btn.classList.remove('running');
+  btn.disabled = false;
+
+  if (statusEl) {
+    if (failedBatches.length) {
+      statusEl.textContent = '⚠ Partial — ' + totalSkus + ' SKUs audited, failed: ' + failedBatches.join('; ');
+    } else {
+      statusEl.textContent = '✓ ' + categoryLabel + ' audit complete — ' + totalSkus + ' SKUs — ' + new Date().toLocaleTimeString() + '. Results written to the audit sheet — viewing them here isn\u2019t built yet.';
+      statusEl.className = 'upload-status success';
+    }
+  }
+}
+window.runCategoryListingAudit = runCategoryListingAudit;
 
 function getProductMaster() {
   if (_productMasterPromise) return _productMasterPromise;
