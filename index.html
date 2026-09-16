@@ -12796,42 +12796,42 @@ function buildStarRatingHtml(rating, reviews) {
 
 async function computeCategoryProductMetrics(categoryLabel) {
   const norm = s => (s || '').trim().toLowerCase();
-  const { year, month } = ovGetLastFullMonth();
-  const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
 
-  const [master, kwCsv, bizCsv, amzCsv, wmtCsv, webCsv, oosBySku] = await Promise.all([
+  // Revenue/Sessions/Units/Conversion all come from the Business Report
+  // sheet ONLY — fixed 2026-09-16 per Jaclyn. This used to blend Business
+  // Report (sessions, revenue) with a separate Order Sync/Walmart/Website
+  // units count, which could disagree with Amazon's own reported
+  // units_ordered/conversion_rate for the same ASIN/month — that mismatch
+  // was the actual bug behind "the dashboard is wrong." Business Report
+  // already carries units_ordered and conversion_rate natively (same
+  // columns ppcLoadProductPerformance already uses), so there's no
+  // blending needed, and matching by ASIN means a SKU rename (e.g.
+  // CRE0327 -> CRE0327-label) is already handled — one row per ASIN per
+  // month, however the SKU was spelled at the time.
+  const [master, kwCsv, bizCsv, oosBySku] = await Promise.all([
     getProductMaster(),
     fetch(ovCsvUrl(KEYWORD_TRACKER_SUMMARY_SHEET_ID, KEYWORD_TRACKER_SUMMARY_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
     fetch(ovCsvUrl(OV_BUSINESS_REPORT_SHEET_ID, OV_BUSINESS_REPORT_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-    fetch(ovCsvUrl(OV_ORDER_SYNC_SHEET_ID, OV_ORDER_SYNC_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-    fetch(ovCsvUrl(OV_WMT_ORDERS_SHEET_ID, OV_WMT_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
-    fetch(ovCsvUrl(OV_WEB_ORDERS_SHEET_ID, OV_WEB_ORDERS_GID)).then(r => r.ok ? r.text() : '').catch(() => ''),
     getOosStatusBySku(),
   ]);
 
   const kwRows  = parseCsvToRows(kwCsv);
   const bizRows = parseCsvToRows(bizCsv);
-  const amzRows = parseCsvToRows(amzCsv);
-  const wmtRows = parseCsvToRows(wmtCsv);
-  const webRows = parseCsvToRows(webCsv);
+
+  // Most recent month PRESENT IN THE SHEET, not calendar-computed — per
+  // Jaclyn: "it has one entry per asin per month so use the most recent
+  // month's data." Empirical (same convention as Products Cache/Inventory
+  // elsewhere in this file) rather than assuming today's date tells you
+  // what's actually been synced.
+  let year = null, month = null;
+  bizRows.forEach(r => {
+    const ry = parseInt(r.year, 10), rm = parseInt(r.month, 10);
+    if (!ry || !rm) return;
+    if (year === null || ry > year || (ry === year && rm > month)) { year = ry; month = rm; }
+  });
 
   const allEntries = Object.values(master.bySku);
   const isBundleOrKit = e => norm(e.skuType).includes('bundle') || norm(e.skuType).includes('kit');
-
-  // Same product, different SKU string — added 2026-09-16 per Jaclyn.
-  // A rename (e.g. CRE0327 -> CRE0327-label, same ASIN B0D42FB2GJ) means
-  // Amazon order/session data (matched by ASIN below) already merges
-  // fine, but Walmart/website order rows are only ever recorded by SKU
-  // string, not ASIN — so sales that happened under the OLD sku before
-  // the rename would otherwise go missing from the still-live sku's
-  // card entirely. Builds every sku string (live or deleted) that
-  // shares an ASIN, so those rows get matched no matter which of the
-  // sibling skus they were recorded under.
-  const siblingSkusByAsin = {};
-  allEntries.forEach(e => {
-    if (!e.asin) return;
-    (siblingSkusByAsin[e.asin] = siblingSkusByAsin[e.asin] || new Set()).add(e.sku);
-  });
 
   let products = allEntries.filter(e => norm(e.category) === norm(categoryLabel) && !isBundleOrKit(e));
   let fuzzy = false;
@@ -12842,7 +12842,7 @@ async function computeCategoryProductMetrics(categoryLabel) {
   products = products.filter(e => e.sku && e.asin);
 
   const uniqueCategories = [...new Set(allEntries.map(e => e.category).filter(Boolean))];
-  console.log(`[CategoryMetrics][${categoryLabel}] matched ${products.length} product(s)${fuzzy ? ' (FUZZY substring match — no exact match found)' : ''}. All unique categories on the sheet:`, JSON.stringify(uniqueCategories));
+  console.log(`[CategoryMetrics][${categoryLabel}] matched ${products.length} product(s)${fuzzy ? ' (FUZZY substring match — no exact match found)' : ''}. Business Report latest month: ${year}-${month}. All unique categories on the sheet:`, JSON.stringify(uniqueCategories));
 
   const metricsBySku = {};
   products.forEach(p => {
@@ -12870,37 +12870,20 @@ async function computeCategoryProductMetrics(categoryLabel) {
     const bizRow = bizRows.find(r => (r.asin || '').trim().toUpperCase() === p.asin
       && parseInt(r.year, 10) === year && parseInt(r.month, 10) === month);
     const sessions = bizRow ? (parseInt(bizRow.sessions, 10) || 0) : 0;
-
-    const siblingSkus = siblingSkusByAsin[p.asin] || new Set([p.sku]);
-    const amzOrderRows = amzRows.filter(r => (r.asin || '').trim().toUpperCase() === p.asin
-      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-    const wmtOrderRows = wmtRows.filter(r => siblingSkus.has((r.sku || '').trim().toUpperCase())
-      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-    const webOrderRows = webRows.filter(r => siblingSkus.has((r.sku || '').trim().toUpperCase())
-      && ovNormalizeDate(r.date).substring(0, 7) === monthPrefix);
-    const amzUnits = amzOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-    const wmtUnits = wmtOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-    const webUnits = webOrderRows.reduce((s, r) => s + (parseInt(r.unit_count, 10) || 0), 0);
-    const totalUnits = amzUnits + wmtUnits + webUnits;
-
-    const amzRevenue = bizRow ? parseAmt(bizRow.ordered_product_sales) : 0;
-    const wmtRevenue = wmtOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
-    const webRevenue = webOrderRows.reduce((s, r) => s + parseAmt(r.item_price) * (parseInt(r.unit_count, 10) || 0), 0);
-    const totalRevenue = amzRevenue + wmtRevenue + webRevenue;
-
-    const conv = sessions > 0 ? (totalUnits / sessions * 100) : null;
+    const units = bizRow ? (parseInt(bizRow.units_ordered, 10) || 0) : 0;
+    const revenue = bizRow ? parseAmt(bizRow.ordered_product_sales) : 0;
+    const conv = bizRow ? (parseFloat(bizRow.conversion_rate) || 0) : null;
 
     metricsBySku[p.sku.toUpperCase()] = {
       name: p.name || p.sku, sku: p.sku,
       bsrText, subBsrText, ratingHtml,
-      sessions, units: totalUnits, revenue: totalRevenue,
-      convText: conv != null ? conv.toFixed(2) + '%' : '—',
+      sessions, units, revenue,
+      convText: (conv != null && bizRow) ? conv.toFixed(2) + '%' : '—',
     };
   });
 
   return { products, metricsBySku, oosBySku, year, month };
 }
-
 async function renderProductPortfolioCards(productTypeKey, productIds, categoryLabel) {
   try {
     const gid = COMPETITOR_GID_BY_PRODUCT_TYPE[productTypeKey];
@@ -13063,7 +13046,11 @@ window.renderProductPortfolioCards = renderProductPortfolioCards;
 // volume is coming from). Reuses the same brand color palette used
 // elsewhere (YEAR_COLORS' navy/slate/sand + a few extensions), cycling
 // if a category ever has more SKUs than colors.
-const PIE_PALETTE = ['#001f60', '#24e9a3', '#6b7ba2', '#c87d2f', '#f4dfd0', '#1db88a', '#8a94a6', '#ccd3d5', '#0d3494', '#a3634b', '#4a7c8c', '#d1a54f'];
+// Bright/fun palette — updated 2026-09-16 per Jaclyn ("neons, k beauty
+// colors" — the muted brand navy/slate/sand palette read too corporate
+// for a product-mix breakdown). Not the dashboard's usual brand colors;
+// scoped to this chart only.
+const PIE_PALETTE = ['#FF4FA3', '#00D9C0', '#FFD23F', '#A66DFF', '#FF7A5C', '#4FD8EB', '#FF9ECD', '#7ED957', '#5B8DEF', '#FFC85C', '#C084FC', '#3DDC97'];
 
 async function renderCategorySessionsUnitsPies(containerId, categoryLabel) {
   const container = document.getElementById(containerId);
@@ -13085,15 +13072,14 @@ async function renderCategorySessionsUnitsPies(containerId, categoryLabel) {
     const monthLabel = `${OV_MONTH_ABBR[month - 1]} ${year}`;
 
     container.innerHTML = `<div class="card">
-      <div class="card-title" style="margin-bottom:2px;">Sessions &amp; Units by SKU — ${monthLabel}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Amazon · ${monthLabel}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div>
-          <div class="sec-lbl" style="margin-top:0;">Sessions by SKU</div>
+          <div style="text-align:center;font-family:var(--font-subheader);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:12px;">Sessions by SKU</div>
           <div style="height:280px;"><canvas id="${containerId}-sessions-pie"></canvas></div>
         </div>
         <div>
-          <div class="sec-lbl" style="margin-top:0;">Units Ordered by SKU</div>
+          <div style="text-align:center;font-family:var(--font-subheader);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:12px;">Units by SKU</div>
           <div style="height:280px;"><canvas id="${containerId}-units-pie"></canvas></div>
         </div>
       </div>
