@@ -28246,6 +28246,24 @@ async function loadAuditResultsFromSheet() {
     return status !== 'cancelled' && status !== 'canceled';
   }
 
+  // ADDED 2026-09-17 — pre-existing bug found while diagnosing why the
+  // Overview page was stuck on "Loading…": isValidWebRow was referenced
+  // by webMtd/webPrev below but never defined anywhere in this file,
+  // throwing "ReferenceError: isValidWebRow is not defined" and aborting
+  // the rest of initOverviewLive before it ever reached the KPI/chart/
+  // Goals Tracker rendering — nothing after this point in the function
+  // ever ran. Unrelated to the Goals Tracker changes made the same day;
+  // this crash happens earlier in the function, before that code runs.
+  // Website has zero real rows for Crème Shop today (confirmed live —
+  // webRows.length is 0), so this never actually filters anything right
+  // now; modeled on isValidWalmartRow's same simple cancelled-status
+  // check rather than fabricating column semantics for a channel with
+  // no live data to verify against.
+  function isValidWebRow(row) {
+    const status = (row.status || '').toLowerCase().trim();
+    return status !== 'cancelled' && status !== 'canceled';
+  }
+
   // Aggregates rows whose (normalized) date falls within an inclusive
   // [startStr, endStr] range \u2014 this is the piece that lets us do true
   // month-to-date instead of only ever whole calendar months.
