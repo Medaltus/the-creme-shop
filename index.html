@@ -218,7 +218,7 @@ nav > .nav-btn:not(.active):hover{color:#fff;}
 
 /* ── Home page (adapted from Cosmette's dashboard) ── */
 .home-hero{background:linear-gradient(135deg,var(--navy) 0%,#0d3494 100%);border-radius:var(--radius);padding:32px 36px;margin-bottom:20px;position:relative;}
-.home-hero-logo{height:42px;width:auto;margin-left:-32px;display:block;}
+.home-hero-logo{height:42px;width:auto;display:block;}
 .home-badges{position:absolute;top:28px;right:32px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
 .home-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(36,233,163,0.16);border:1px solid rgba(36,233,163,0.35);color:var(--green);font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 12px;border-radius:20px;}
 .home-badge svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;}
@@ -1164,7 +1164,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 <aside class="sidebar">
   <div class="sb-brand">
     <div class="sb-brand-logo" style="display:flex;align-items:center;gap:6px;">
-      <img src="creme_shop_logo.svg" alt="The Crème Shop" style="height:18px;width:auto;filter:brightness(0) invert(1);">
+      <img src="creme_shop_logo.svg" alt="The Crème Shop" style="height:26px;width:auto;filter:brightness(0) invert(1);">
       <span style="color:var(--green);">•</span>
       <img src="Medaltus_Typeface Logo_dark bground_RGB.png" alt="Medaltus" style="height:18px;width:auto;">
     </div>
@@ -1289,7 +1289,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           <svg viewBox="0 0 16 16"><path d="M8 1l6 2.5v4c0 4-2.6 6.8-6 7.5-3.4-.7-6-3.5-6-7.5v-4L8 1z"/></svg>
           Brand Partner
         </span>
-        <span class="home-badge-channel">Amazon &middot; Website &middot; Walmart</span>
+        <span class="home-badge-channel">Amazon</span>
       </div>
       <div class="home-hero-title">Welcome to Your Medaltus Dashboard</div>
       <div class="home-hero-sub">Your real-time view into sales, inventory, and brand performance &mdash; powered by Medaltus.</div>
@@ -1302,7 +1302,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
          flush at the top regardless of content-height differences
          between them (was relying on the grid default before). -->
     <div class="home-grid" style="align-items:start;">
-      <div class="card">
+      <div class="card" style="align-self:start;">
         <div class="home-card-title">Your Medaltus Team</div>
         <div class="home-card-sub">Reach out anytime &mdash; we're here to help.</div>
 
@@ -1323,11 +1323,11 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           </div>
         </div>
         <div class="home-team-item">
-          <div class="home-team-avatar">JR</div>
+          <div class="home-team-avatar">LR</div>
           <div>
-            <div class="home-team-name">Jaclyn Risser</div>
+            <div class="home-team-name">Lindsay Rohde</div>
             <div class="home-team-role">Brand Manager</div>
-            <a class="home-team-email" href="mailto:jrisser@medaltus.com">jrisser@medaltus.com</a>
+            <a class="home-team-email" href="mailto:lrohde@medaltus.com">lrohde@medaltus.com</a>
           </div>
         </div>
         <div class="home-team-item">
@@ -1340,7 +1340,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" style="align-self:start;">
         <div class="home-card-title">Resources</div>
         <div class="home-card-sub">Shared files, routing guides, and brand docs.</div>
         <a class="home-resource-item" href="https://www.dropbox.com/scl/fo/779lwjw5d50lais1e6f2u/AOJK7AOPyNY0WC0-Z4q7-X8?rlkey=dudkg8i08xnsx3qcp8hqbvwhg&st=05ax0b6t&dl=0" target="_blank" rel="noopener">
@@ -2337,6 +2337,44 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       </div>
     </div>
 
+    <!-- ── THE core section: revenue comparison ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+        <div class="card-title" style="margin-bottom:0;">Walmart Revenue: Current vs. Projected</div>
+        <div id="legend-wm-revenue" style="display:flex;align-items:center;"></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;max-width:640px;">Crème Shop does not currently have a Walmart.com presence — current Walmart revenue is $0. The line below shows what that looks like next to a 12-month launch projection built from the tier model beneath it.</div>
+      <div style="position:relative;height:320px;"><canvas id="wm-revenue-chart"></canvas></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;">
+        <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Current Walmart Revenue (12 mo.)</div>
+          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$0</div>
+        </div>
+        <div style="background:rgba(36,233,163,.08);border:1px solid rgba(36,233,163,.25);border-radius:var(--radius-sm);padding:16px 18px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1a9c76;margin-bottom:6px;">Projected Revenue, Same 12 Months</div>
+          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$677,904</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tier model table ── -->
+    <div class="card">
+      <div class="card-title">Revenue Projection Model</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Tier</th><th>Active SKUs</th><th>Average Units / SKU</th><th>Total Monthly Units</th><th>Average Price</th><th>Monthly Revenue</th></tr></thead>
+          <tbody>
+            <tr><td>Tier 1 (Sept–Nov)</td><td>~150 SKUs</td><td>10</td><td>1,500</td><td>$11.50</td><td>$17,250</td></tr>
+            <tr><td>Tier 2 (Dec–Feb)</td><td>~300 SKUs</td><td>15</td><td>4,500</td><td>$10.80</td><td>$48,600</td></tr>
+            <tr><td>Tier 3 (Mar–Aug)</td><td>~450+ SKUs</td><td>26</td><td>11,700</td><td>$9.95</td><td>$116,415</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.6;margin-top:12px;border-left:2px solid var(--border);padding-left:12px;">
+        Revenue projections are based on conservative unit velocity assumptions derived from historical Amazon performance and adjusted to reflect realistic marketplace adoption within Walmart.com's e-commerce ecosystem. The month-by-month chart above interpolates linearly between the Tier 1/2/3 monthly-revenue figures above (Nov, Feb, and Aug) — it is not a separately modeled curve.
+      </div>
+    </div>
     <!-- ── Marketplace consideration chart ── -->
     <div class="card" style="margin-bottom:16px;">
       <div class="card-title">Marketplace Consideration</div>
@@ -2368,44 +2406,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       </div>
     </div>
 
-    <!-- ── THE core section: revenue comparison ── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
-        <div class="card-title" style="margin-bottom:0;">Walmart Revenue: Actual vs. Projected</div>
-        <div id="legend-wm-revenue" style="display:flex;align-items:center;"></div>
-      </div>
-      <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;max-width:640px;">Crème Shop does not currently have a Walmart.com presence — actual Walmart revenue to date is $0. The line below shows what that looks like next to a 12-month launch projection built from the tier model beneath it.</div>
-      <div style="position:relative;height:320px;"><canvas id="wm-revenue-chart"></canvas></div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;">
-        <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Actual Walmart Revenue (12 mo.)</div>
-          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$0</div>
-        </div>
-        <div style="background:rgba(36,233,163,.08);border:1px solid rgba(36,233,163,.25);border-radius:var(--radius-sm);padding:16px 18px;">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1a9c76;margin-bottom:6px;">Projected Revenue, Same 12 Months</div>
-          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$677,904</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Tier model table ── -->
-    <div class="card">
-      <div class="card-title">Revenue Projection Model</div>
-      <div style="overflow-x:auto;">
-        <table class="data-table">
-          <thead><tr><th>Tier</th><th>Active SKUs</th><th>Average Units / SKU</th><th>Total Monthly Units</th><th>Average Price</th><th>Monthly Revenue</th></tr></thead>
-          <tbody>
-            <tr><td>Tier 1 (Month 1–3)</td><td>~150 SKUs</td><td>10</td><td>1,500</td><td>$11.50</td><td>$17,250</td></tr>
-            <tr><td>Tier 2 (Month 4–6)</td><td>~300 SKUs</td><td>15</td><td>4,500</td><td>$10.80</td><td>$48,600</td></tr>
-            <tr><td>Tier 3 (Month 7–12)</td><td>~450+ SKUs</td><td>26</td><td>11,700</td><td>$9.95</td><td>$116,415</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.6;margin-top:12px;border-left:2px solid var(--border);padding-left:12px;">
-        Revenue projections are based on conservative unit velocity assumptions derived from historical Amazon performance and adjusted to reflect realistic marketplace adoption within Walmart.com's e-commerce ecosystem. The month-by-month chart above interpolates linearly between the Tier 1/2/3 monthly-revenue figures above (months 3, 6, and 12) — it is not a separately modeled curve.
-      </div>
-    </div>
   </div>
 
 
@@ -21231,7 +21231,12 @@ function initWalmartOpportunityPage() {
   // ── The core chart: actual ($0, flat) vs. projected revenue ──
   const revenueCanvas = document.getElementById('wm-revenue-chart');
   if (revenueCanvas && window.Chart) {
-    const monthLabels = Array.from({ length: 12 }, (_, i) => 'Month ' + (i + 1));
+    // Named months, not "Month 1"–"Month 12" — Sept 2026 was supposed to
+    // be Crème Shop's first full month live on Walmart, so the 12-month
+    // window is anchored to that real intended start date rather than a
+    // generic "month 1" placeholder. Updated 2026-09-17 per Jaclyn.
+    const WM_LAUNCH_MONTH_NAMES = ['Sept', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+    const monthLabels = WM_LAUNCH_MONTH_NAMES;
 
     // Linear interpolation between the tier model's own anchor points
     // (month 3 = $17,250, month 6 = $48,600, month 12 = $116,415),
@@ -21266,7 +21271,7 @@ function initWalmartOpportunityPage() {
             borderWidth: 2.5,
           },
           {
-            label: 'Actual Walmart revenue',
+            label: 'Current Walmart revenue',
             data: actual,
             borderColor: '#001f60',
             backgroundColor: 'transparent',
