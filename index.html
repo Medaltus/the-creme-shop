@@ -20812,17 +20812,56 @@ function escapeLaText(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function laCopyRow(numLabel, text, emptyMsg) {
+// Character-limit compliance pill — matches évolis's page exactly
+// (.char-info / .char-pill ok|warn|error). Restyled 2026-09-16 per
+// Jaclyn: the original Crème Shop build showed raw character counts
+// with no limit context and no color coding at all — this computes the
+// same ok/warn/error signal évolis's page shows, from real text length
+// vs Amazon's actual field limits (200/125/250 — general Amazon policy
+// limits, not brand-specific, so these hold for Crème Shop too).
+// warn = within 10% of the cap; error = over it; ok = otherwise —
+// inferred from évolis's own examples (166/200 and 152/200 both "ok",
+// 140/125 and 141/125 both "error") since none of évolis's real cards
+// happened to land in the "close but not over" zone to confirm the warn
+// boundary directly.
+function laCharPillHtml(length, limit) {
+  const cls = length > limit ? 'error' : (length >= limit * 0.9 ? 'warn' : 'ok');
+  return `<span class="char-pill ${cls}">${length} chars used</span>`;
+}
+function laCopyBlockClass(length, limit) {
+  return length > limit ? 'error' : (length >= limit * 0.9 ? 'warn' : 'ok');
+}
+
+const LA_TITLE_LIMIT = 200;
+const LA_HIGHLIGHTS_LIMIT = 125;
+const LA_BACKEND_LIMIT = 250;
+
+function laCopyRow(numLabel, text, blockClass, emptyMsg) {
   if (!text || !text.trim()) {
     return `<div style="font-size:11.5px;color:var(--muted);padding-left:34px;">${emptyMsg}</div>`;
   }
-  return `<div class="la-copy-row"><div class="la-num">${numLabel}</div><div class="la-copy-block">${escapeLaText(text)}</div></div>`;
+  return `<div class="la-copy-row"><div class="la-num">${numLabel}</div><div class="la-copy-block${blockClass ? ' ' + blockClass : ''}">${escapeLaText(text)}</div></div>`;
+}
+
+// Honest placeholder for the notes/keyword-coverage area évolis's page
+// fills with hand-written analysis (specific ABA%, award callouts, etc.
+// for its own 19 SKUs — not something that can be reproduced generically
+// for Crème Shop). Rather than fabricate that kind of commentary or
+// silently drop the .la-note entirely (which would make this look
+// visually different from évolis for no real reason), this says plainly
+// that a note isn't available yet — the "Run Listing Audit" button above
+// is what will eventually populate this from the audit sheet's real
+// title_notes/bullets_notes/etc columns (not built yet, per the standing
+// note about this in renderListingAuditCategory below).
+function laNotePlaceholder() {
+  return `<div class="la-note">Not yet audited — run Listing Audit above to generate compliance notes and keyword coverage for this field.</div>`;
 }
 
 function renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow, active) {
   const name = (masterEntry && masterEntry.name) || sku;
   const asin = (masterEntry && masterEntry.asin) || (cacheRow && cacheRow.asin) || '—';
   const price = masterEntry && masterEntry.price ? '$' + masterEntry.price.toFixed(2) : '—';
+  const category = (masterEntry && masterEntry.category) || '';
 
   if (!cacheRow) {
     // Genuine data gap, not a lookup bug — verified against the sheet
@@ -20832,7 +20871,7 @@ function renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow,
         <div class="sub-page-inner${active ? ' active' : ''}" id="${catKey}-prod-${suf}">
           <div class="la-hero">
             <div class="la-hero-left">
-              <div class="la-hero-meta">${escapeLaText(sku)} &middot; ${escapeLaText(asin)}</div>
+              <div class="la-hero-meta">${escapeLaText(sku)} &nbsp;&middot;&nbsp; ASIN ${escapeLaText(asin)}${category ? ' &nbsp;&middot;&nbsp; ' + escapeLaText(category) : ''}</div>
               <div class="la-hero-title">${escapeLaText(name)}</div>
               <div class="la-hero-tags"><span class="la-hero-tag bsr">${price}</span></div>
             </div>
@@ -20853,18 +20892,32 @@ function renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow,
   const salesRank = cacheRow.sales_ranks || '—';
   const lastSynced = cacheRow.last_synced ? cacheRow.last_synced.slice(0, 10) : '—';
 
+  // Bullets — one .la-card PER bullet, matching évolis exactly (not
+  // grouped into one card like the original build did). Only the first
+  // bullet's card carries the "Active Bullet Points" label; the rest
+  // have an empty label + their own "BULLET N" sublabel, same as évolis.
   let bulletsHtml;
   if (bullets.length) {
-    bulletsHtml = bullets.map((b, i) => laCopyRow(i + 1, b, '')).join('');
+    bulletsHtml = bullets.map((b, i) => `
+        <div class="la-card">
+          <div class="la-card-label">${i === 0 ? 'Active Bullet Points' : ''}</div>
+          <div class="la-card-sublabel">BULLET ${i + 1}</div>
+          ${laCopyRow(i + 1, b, null, '')}
+          ${laNotePlaceholder()}
+        </div>`).join('');
   } else {
-    bulletsHtml = `<div style="font-size:11.5px;color:var(--muted);">No bullet copy currently cached for this SKU — may need a fresh Products Cache sync.</div>`;
+    bulletsHtml = `
+        <div class="la-card">
+          <div class="la-card-label">Active Bullet Points</div>
+          <div style="font-size:11.5px;color:var(--muted);">No bullet copy currently cached for this SKU — may need a fresh Products Cache sync.</div>
+        </div>`;
   }
 
   return `
         <div class="sub-page-inner${active ? ' active' : ''}" id="${catKey}-prod-${suf}">
           <div class="la-hero">
             <div class="la-hero-left">
-              <div class="la-hero-meta">${escapeLaText(sku)} &middot; ${escapeLaText(asin)} &middot; Last synced ${escapeLaText(lastSynced)}</div>
+              <div class="la-hero-meta">${escapeLaText(sku)} &nbsp;&middot;&nbsp; ASIN ${escapeLaText(asin)}${category ? ' &nbsp;&middot;&nbsp; ' + escapeLaText(category) : ''}</div>
               <div class="la-hero-title">${escapeLaText(name)}</div>
               <div class="la-hero-tags">
                 <span class="la-hero-tag bsr">${escapeLaText(salesRank)}</span>
@@ -20872,33 +20925,44 @@ function renderListingAuditProductPanel(catKey, suf, sku, masterEntry, cacheRow,
                 <span class="la-hero-tag bsr">${escapeLaText(status)}</span>
               </div>
             </div>
+            <div class="la-hero-actives">
+              <div class="la-hero-actives-lbl">Sync Status</div>
+              <div class="la-hero-actives-primary">Last synced ${escapeLaText(lastSynced)}</div>
+              <div class="la-hero-actives-rest">Products Cache (Amazon Products Cache sheet)</div>
+            </div>
           </div>
 
           <div class="la-card">
-            <div class="la-card-label">Title</div>
-            <div class="la-char-info">${title.length} characters</div>
-            ${laCopyRow('T', title, 'No title currently cached for this SKU.')}
+            <div class="la-card-label">Active Title</div>
+            <div class="la-char-info">&le;${LA_TITLE_LIMIT} chars &nbsp;&middot;&nbsp; ${laCharPillHtml(title.length, LA_TITLE_LIMIT)}</div>
+            ${laCopyRow(1, title, laCopyBlockClass(title.length, LA_TITLE_LIMIT), 'No title currently cached for this SKU.')}
+            ${title.trim() ? laNotePlaceholder() : ''}
           </div>
 
           <div class="la-card">
             <div class="la-card-label">Item Highlights</div>
-            <div class="la-char-info">${highlights.length} characters</div>
-            ${laCopyRow('H', highlights, 'No item highlights currently cached for this SKU.')}
+            <div class="la-card-sublabel">&le;${LA_HIGHLIGHTS_LIMIT} CHARS &middot; SEARCHABLE &middot; VISIBLE IN SEARCH RESULTS &amp; PDPS</div>
+            <div class="la-char-info">&le;${LA_HIGHLIGHTS_LIMIT} chars &nbsp;&middot;&nbsp; ${laCharPillHtml(highlights.length, LA_HIGHLIGHTS_LIMIT)}</div>
+            ${laCopyRow(2, highlights, laCopyBlockClass(highlights.length, LA_HIGHLIGHTS_LIMIT), 'No item highlights currently cached for this SKU.')}
+            ${highlights.trim() ? laNotePlaceholder() : ''}
+          </div>
+
+          ${bulletsHtml}
+
+          <div class="la-card">
+            <div class="la-card-label">Active Product Description</div>
+            ${description.trim()
+              ? `<div class="la-copy-row"><div class="la-num">${bullets.length + 1}</div><div class="la-copy-block">${escapeLaText(description)}</div></div>${laNotePlaceholder()}`
+              : `<div style="font-size:11.5px;color:var(--muted);">No description currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
           </div>
 
           <div class="la-card">
-            <div class="la-card-label">Bullet Points</div>
-            ${bulletsHtml}
-          </div>
-
-          <div class="la-card">
-            <div class="la-card-label">Description</div>
-            ${description.trim() ? `<div class="la-backend-block">${escapeLaText(description)}</div>` : `<div style="font-size:11.5px;color:var(--muted);">No description currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
-          </div>
-
-          <div class="la-card">
-            <div class="la-card-label">Backend Search Terms</div>
-            ${backend.trim() ? `<div class="la-backend-block">${escapeLaText(backend)}</div>` : `<div style="font-size:11.5px;color:var(--muted);">No backend keywords currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
+            <div class="la-card-label">Backend Keywords &mdash; Spaces Only</div>
+            ${backend.trim() ? `
+            <div class="la-char-info">&le;${LA_BACKEND_LIMIT} chars &nbsp;&middot;&nbsp; ${laCharPillHtml(backend.length, LA_BACKEND_LIMIT)}</div>
+            <div class="la-backend-block">${escapeLaText(backend)}</div>
+            <button class="la-copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('.la-backend-block').textContent)">&#128203; Copy Backend Keywords</button>
+            ${laNotePlaceholder()}` : `<div style="font-size:11.5px;color:var(--muted);">No backend keywords currently cached for this SKU — may need a fresh Products Cache sync.</div>`}
           </div>
 
           <div class="la-card">
