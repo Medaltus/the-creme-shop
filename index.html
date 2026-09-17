@@ -1422,18 +1422,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
          the page's own period toggle right above this section). Moved
          above the KPI rows, 2026-09-11 per Jaclyn. -->
     <div class="card-title" style="font-size:16px;">Goal Tracker</div>
-    <div class="two-col" style="margin-bottom:22px;align-items:stretch;">
-      <div class="card" id="ov-goals-card-amz" style="margin-top:0;background:var(--sand);border:none;border-top:3px solid var(--navy);">
-        <div class="card-title" id="ov-goals-title-amz" style="font-size:16px;">Amazon + Walmart</div>
-        <div id="ov-goals-body-amz" style="display:flex;gap:16px;">
-          <div style="color:var(--muted);flex:1;text-align:center;padding:20px;">Loading…</div>
-        </div>
-      </div>
-      <div class="card" id="ov-goals-card-web" style="margin-top:0;background:var(--sand);border:none;border-top:3px solid var(--navy);">
-        <div class="card-title" id="ov-goals-title-web" style="font-size:16px;">Website</div>
-        <div id="ov-goals-body-web" style="display:flex;gap:16px;">
-          <div style="color:var(--muted);flex:1;text-align:center;padding:20px;">Loading…</div>
-        </div>
+    <div class="card" id="ov-goals-card-amz" style="margin-top:0;margin-bottom:22px;background:var(--sand);border:none;border-top:3px solid var(--navy);">
+      <div class="card-title" id="ov-goals-title-amz" style="font-size:16px;">Amazon</div>
+      <div id="ov-goals-body-amz" style="display:flex;gap:16px;">
+        <div style="color:var(--muted);flex:1;text-align:center;padding:20px;">Loading…</div>
       </div>
     </div>
 
@@ -29161,37 +29153,36 @@ async function loadAuditResultsFromSheet() {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // GOALS TRACKER — added 2026-09-04 per Jaclyn. v1/mockup, framed
-      // explicitly as a first pass to react to, not a finished feature.
+      // GOALS TRACKER — added 2026-09-04 per Jaclyn, refreshed 2026-09-17
+      // per Jaclyn: consolidated to Amazon-only (Crème Shop doesn't sell
+      // on Website or Walmart yet — the old "Amazon + Walmart" / "Website"
+      // split was leftover multi-channel plumbing this brand doesn't use),
+      // pointed at a cleaner reorganized goals tab, and added the
+      // cancellation-rate-adjusted projection ported from MiGuard's
+      // dashboard (spec: pool the brand's own historical order-cancel
+      // rate — order-level, not line-item, Vine excluded, current
+      // in-progress month excluded — and discount the MTD run-rate
+      // projection by it instead of assuming zero future cancellations).
       //
-      // Real data-structure findings from directly inspecting both real
-      // sheets before building this (not assumed):
-      //  - Column A is "MMM-YY" text (e.g. "Sep-26"), one row per MONTH,
-      //    not per day — this whole tracker reads ONE row per period,
-      //    not a range to sum.
-      //  - Column O ("Dollar Sales Goal") and AD ("Ads Sales Goal") are
-      //    confirmed real, consistently-used columns on both sheets.
-      //  - Column T is NOT what it looks like from the main header row
-      //    (blank there) — for most of this sheet's history it was a
-      //    free-text Notes column; only starting around Jun-26 did
-      //    someone repurpose it to hold real "Organic Goal" dollar
-      //    values, with a label placed directly on the Jun-26 row
-      //    itself rather than in the sheet's actual header row. Reading
-      //    older rows' column T as a goal number would silently read
-      //    garbled text instead — this only works reliably for the
-      //    recent months this tracker actually needs.
-      //  - Website's own AD column is confirmed BLANK for the last 3
-      //    months (Jul/Aug/Sep-26) — no separate Ads goal is currently
-      //    set for Website, Overall and Organic are identical. Handled
-      //    below by showing "No goal set" rather than a fake 0%.
-      //  - "Count all pending orders since this is live data" — the
-      //    rest of this page's Amazon aggregation (isValidAmazonRow)
-      //    excludes pending status. This tracker uses a separate
-      //    validity function that keeps pending, still excludes
-      //    cancelled and Vine. Walmart's and Website's EXISTING validity
-      //    functions already don't exclude pending at all — confirmed
-      //    by reading them directly rather than assuming — so no new
-      //    variant was needed for those two.
+      // Goals sheet: same spreadsheet as before (1trsHDgVSLprsOOjOuFWG
+      // ZRDqVOV-eII3), new gid (521249346) — real column positions
+      // confirmed directly against this tab per Jaclyn: Total Sales Goal
+      // = column N (index 13), Organic Sales Goal = column S (index 18),
+      // Ads Sales Goal = column Z (index 25). These do NOT match the old
+      // tab's O/T/AD positions (14/19/29) — different tab, different
+      // layout, not a typo carried over from the old gid.
+      //
+      // Cancellation rate pool source: amzRows, already in scope on this
+      // page (order_id/date/status/promotion_ids all present, confirmed
+      // by the existing goalsIsValidAmazonRow/order_id usage elsewhere on
+      // this page). IMPORTANT caveat worth knowing: this dashboard's
+      // Orders sheet is a rolling ~90-day cache (SHEET_ORDERS, per
+      // sheets.js), not permanent full history — so unlike a brand whose
+      // Orders sheet retains everything, this pooled rate only ever
+      // reflects roughly the trailing 2-3 full months, and that window
+      // silently drifts forward over time rather than accumulating
+      // deeper history the way the original MiGuard spec describes.
+      // Flagged here rather than silently treated as true all-time data.
       try {
         function goalsIsValidAmazonRow(r) {
           const status = (r.status || '').toLowerCase().trim();
@@ -29209,39 +29200,64 @@ async function loadAuditResultsFromSheet() {
           return rows.find(r => (r[0] || '').trim() === target) || null;
         }
 
-        const [goalsAmzCsv, goalsWebCsv] = await Promise.all([
-          fetch('https://docs.google.com/spreadsheets/d/1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3/export?format=csv&gid=154860784' + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => ''),
-          fetch('https://docs.google.com/spreadsheets/d/1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3/export?format=csv&gid=1655791223' + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => ''),
-        ]);
+        // Cancellation-rate pool — ported from MiGuard's Goal Tracker
+        // spec, 2026-09-17 per Jaclyn. Order-level (not line-item):
+        // group by order_id, an order counts as cancelled if ANY of its
+        // line items shows status 'cancelled'. Vine orders excluded
+        // entirely (any Vine line item on an order excludes the whole
+        // order, same order-level treatment as cancellation). The
+        // currently-viewed month is excluded from the pool — a partial
+        // month hasn't had time to actually cancel yet, so including it
+        // would understate the true rate. Every other month present in
+        // amzRows is pooled together as one all-time rate (not a rolling
+        // window, not per-month) — total cancelled orders ÷ total orders.
+        // Returns null (never a fabricated 0%) when there's no
+        // qualifying historical data at all.
+        function computeAmazonCancelRate(rows, excludeYear, excludeMonth) {
+          const excludePrefix = `${excludeYear}-${String(excludeMonth).padStart(2, '0')}`;
+          const orders = {}; // order_id -> { cancelled: bool }
+          rows.forEach(r => {
+            const orderId = r.order_id;
+            if (!orderId) return;
+            const dateStr = normalizeDate(r.date || '');
+            if (!dateStr || dateStr.slice(0, 7) === excludePrefix) return; // exclude in-progress month
+            if ((r.promotion_ids || '').toLowerCase().includes('vine')) {
+              orders[orderId] = orders[orderId] || { cancelled: false, vine: false };
+              orders[orderId].vine = true;
+              return;
+            }
+            orders[orderId] = orders[orderId] || { cancelled: false, vine: false };
+            if ((r.status || '').toLowerCase().trim() === 'cancelled') {
+              orders[orderId].cancelled = true;
+            }
+          });
+          const qualifying = Object.values(orders).filter(o => !o.vine);
+          if (!qualifying.length) return null;
+          const cancelledCount = qualifying.filter(o => o.cancelled).length;
+          return cancelledCount / qualifying.length;
+        }
+        const amazonCancelRate = computeAmazonCancelRate(amzRows, cfg.year, cfg.month);
+        console.log('[GoalsTracker][qa] pooled Amazon cancel rate:', amazonCancelRate == null ? 'no history yet' : (amazonCancelRate * 100).toFixed(1) + '%');
+
+        const goalsAmzCsv = await fetch('https://docs.google.com/spreadsheets/d/1trsHDgVSLprsOOjOuFWGZRDqVOV-eII3/export?format=csv&gid=521249346' + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => '');
         const goalsAmzRows = parseCsv2D(goalsAmzCsv);
-        const goalsWebRows = parseCsv2D(goalsWebCsv);
 
         const goalsRowAmz = findGoalsRow(goalsAmzRows, cfg.year, cfg.month);
-        const goalsRowWeb = findGoalsRow(goalsWebRows, cfg.year, cfg.month);
-        console.log('[GoalsTracker][qa] Amazon+Walmart goals row found:', !!goalsRowAmz, goalsRowAmz ? { overall: goalsRowAmz[14], organic: goalsRowAmz[19], ads: goalsRowAmz[29] } : null);
-        console.log('[GoalsTracker][qa] Website goals row found:', !!goalsRowWeb, goalsRowWeb ? { overall: goalsRowWeb[14], organic: goalsRowWeb[19], ads: goalsRowWeb[29] } : null);
+        console.log('[GoalsTracker][qa] Amazon goals row found:', !!goalsRowAmz, goalsRowAmz ? { overall: goalsRowAmz[13], organic: goalsRowAmz[18], ads: goalsRowAmz[25] } : null);
 
         // Live actual revenue, pending-inclusive, netted against returns
         // (a returned sale shouldn't count toward a sales goal; a
         // pending one should, since it hasn't been returned).
         const amzGoalsActual = aggregateRange(amzRows, mtdStartStr, mtdEndStr, goalsIsValidAmazonRow).totalRevenue - amzReturnsMtd.totalAmt;
-        const wmtGoalsActual = wmtMtd.totalRevenue - wmtReturnsMtd.totalAmt; // wmtMtd already pending-inclusive, confirmed above
-        const webGoalsActual = webMtd.totalRevenue - webReturnsMtd.totalAmt; // webMtd already pending-inclusive, confirmed above
-        const amzWmtActual = amzGoalsActual + wmtGoalsActual;
 
-        // Amazon+Walmart's own Ad-attributed portion of amzWmtActual,
-        // reusing blendedSpend/blendedSales-style logic isn't available
-        // yet at this point in the function (computed further below) —
-        // approximated here from the same adOrdersCsv this function
-        // already has in scope, scoped to Amazon (Walmart's own ad-sales
-        // $ isn't separately available from wmtAdvRows at this point;
-        // flagged below rather than silently guessed).
+        // Ad-attributed portion of amzGoalsActual, from the same
+        // adOrdersCsv this function already has in scope.
         let amzAdActual = null;
         if (isCsv(adOrdersCsv)) {
           const adRowsForGoals = parseCsv(adOrdersCsv).filter(r => parseInt(r.year, 10) === cfg.year && parseInt(r.month, 10) === cfg.month);
           amzAdActual = adRowsForGoals.reduce((s, r) => s + parseAmt(r.sales), 0);
         }
-        const amzOrganicActual = amzAdActual != null ? Math.max(0, amzWmtActual - amzAdActual) : null;
+        const amzOrganicActual = amzAdActual != null ? Math.max(0, amzGoalsActual - amzAdActual) : null;
 
         // Progress ring — plain SVG, deliberately not Chart.js. A single-
         // value gauge like this doesn't need a charting library, and SVG
@@ -29264,11 +29280,11 @@ async function loadAuditResultsFromSheet() {
           </svg>`;
         }
 
-        function renderGoalsGroup(actualOverall, actualAds, actualOrganic, goalRow) {
+        function renderGoalsGroup(actualOverall, actualAds, actualOrganic, goalRow, cancelRate) {
           if (!goalRow) return `<div style="color:var(--muted);font-size:13px;flex:1;text-align:center;padding:20px;">No goals row found for this month.</div>`;
-          const overallGoal = parseGoalsDollar(goalRow[14]);
-          const organicGoal = parseGoalsDollar(goalRow[19]);
-          const adsGoal = parseGoalsDollar(goalRow[29]);
+          const overallGoal = parseGoalsDollar(goalRow[13]);
+          const organicGoal = parseGoalsDollar(goalRow[18]);
+          const adsGoal = parseGoalsDollar(goalRow[25]);
           const fmtD = n => '$' + n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
           function paceGauge(sublabel, actual, goal) {
@@ -29298,15 +29314,23 @@ async function loadAuditResultsFromSheet() {
             // to meet goal and red if projecting to miss goal" exactly
             // — no amber middle state.
             const actualPct = goal > 0 ? Math.round((actual / goal) * 100) : 0;
-            let projected = actual, statusText, statusColor;
+            let projected = actual, statusText, statusColor, cancelNote = '';
             if (cfg.isPartial) {
               // MTD — project the full month from what we're averaging
-              // per day so far, to decide the color only.
+              // per day so far, then discount by the pooled historical
+              // cancellation rate (ported from MiGuard's spec, 2026-09-17
+              // per Jaclyn) rather than assuming zero future
+              // cancellations. Ring color only — the ring's fill and
+              // actualPct above are untouched, same as before.
               const daysInMonth = new Date(cfg.year, cfg.month, 0).getDate();
-              projected = cfg.day > 0 ? (actual / cfg.day) * daysInMonth : actual;
+              const rawProjected = cfg.day > 0 ? (actual / cfg.day) * daysInMonth : actual;
+              projected = cancelRate != null ? rawProjected * (1 - cancelRate) : rawProjected;
               const projectedPct = goal > 0 ? Math.round((projected / goal) * 100) : 0;
               statusText = `Projecting ${fmtD(projected)}`;
               statusColor = projectedPct >= 100 ? 'var(--green)' : 'var(--danger)';
+              cancelNote = cancelRate != null
+                ? `adj. for ${Math.round(cancelRate * 100)}% avg. cancel rate`
+                : 'no cancel-rate history yet';
             } else {
               // Last Full Month — the month is over, actual IS final, no separate projection.
               statusText = actualPct >= 100 ? 'Hit goal' : 'Missed goal';
@@ -29320,6 +29344,7 @@ async function loadAuditResultsFromSheet() {
               </div>
               <div style="font-size:14px;color:var(--navy);font-weight:700;margin-top:8px;">${statusText}</div>
               <div style="font-size:14px;color:var(--navy);font-weight:700;">Goal ${fmtD(goal)}</div>
+              ${cancelNote ? `<div style="font-size:10.5px;color:var(--muted);font-style:italic;margin-top:3px;">${cancelNote}</div>` : ''}
             </div>`;
           }
 
@@ -29331,16 +29356,12 @@ async function loadAuditResultsFromSheet() {
         }
 
         const goalsBodyAmzEl = document.getElementById('ov-goals-body-amz');
-        const goalsBodyWebEl = document.getElementById('ov-goals-body-web');
-        if (goalsBodyAmzEl) goalsBodyAmzEl.innerHTML = renderGoalsGroup(amzWmtActual, amzAdActual, amzOrganicActual, goalsRowAmz);
-        if (goalsBodyWebEl) goalsBodyWebEl.innerHTML = renderGoalsGroup(webGoalsActual, null, webGoalsActual, goalsRowWeb);
+        if (goalsBodyAmzEl) goalsBodyAmzEl.innerHTML = renderGoalsGroup(amzGoalsActual, amzAdActual, amzOrganicActual, goalsRowAmz, amazonCancelRate);
       } catch (err) {
         console.warn('[GoalsTracker] failed:', err.message);
         const goalsBodyAmzEl = document.getElementById('ov-goals-body-amz');
-        const goalsBodyWebEl = document.getElementById('ov-goals-body-web');
         const failHtml = '<div style="color:var(--danger);flex:1;text-align:center;padding:20px;">Goals Tracker failed to load — check console.</div>';
         if (goalsBodyAmzEl) goalsBodyAmzEl.innerHTML = failHtml;
-        if (goalsBodyWebEl) goalsBodyWebEl.innerHTML = failHtml;
       }
 
       // -- Ad Spend / Blended ACOS -- Amazon (prorated monthly estimate) + Website (real MTD) --
