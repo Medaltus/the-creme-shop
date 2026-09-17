@@ -1185,6 +1185,17 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       <svg viewBox="0 0 16 16"><path d="M2 10V6l5-4h2v12H7l-5-4z"/><path d="M9 5.5c1.5.5 3 1.5 3 2.5s-1.5 2-3 2.5"/><path d="M9 3c2.5.8 5 2.5 5 5s-2.5 4.2-5 5"/></svg>Marketing
     </button>
 
+    <!-- Added 2026-09-16 per Jaclyn. Note: there is already an unrelated
+         "Opportunities (Internal)" section further down (Insights/
+         Listing Audit/PPC/Organic) — different purpose, different pages,
+         just the same word. Harmless (no id collision), but anyone who
+         toggles internal view on will see "Opportunities" listed twice
+         with different meanings underneath. -->
+    <div class="nav-section">Opportunities</div>
+    <button class="nav-btn" onclick="showPage('walmart-opportunity',this)">
+      <svg viewBox="0 0 16 16"><path d="M8 1l6 2.5v4c0 4-2.6 6.8-6 7.5-3.4-.7-6-3.5-6-7.5v-4L8 1z"/><path d="M5.5 8l1.8 1.8L10.5 6"/></svg>Walmart
+    </button>
+
     <!-- Internal-only section — everything currently built lives below this line -->
     <div id="nav-internal-section" style="display:none;">
     <div class="nav-internal-divider"></div>
@@ -2279,6 +2290,124 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       </div>
     </div>
   </div>
+  <!-- ══ WALMART OPPORTUNITY ══ -->
+  <!-- Added 2026-09-16 per Jaclyn. Purpose stated directly: make the
+       cost of waiting visible through the data itself, not through sales
+       language — no urgency copy, no exclamation points, no "act now."
+       The industry stats in the top section (marketplace consideration,
+       cross-shopping behavior) are cited from 2025 Stella Rising - Path
+       to Purchase, the same source Jaclyn's reference deck used — real,
+       sourced numbers, not brand-specific claims. The revenue comparison
+       below is the actual point of the page: Crème Shop's real Walmart
+       revenue is $0 (they have no Walmart presence at all right now,
+       not a data gap — this is a factual zero), plotted against the
+       projection model Jaclyn provided (Tier 1–3, hard anchors at
+       month 3/$17,250, month 6/$48,600, month 12/$116,415). The months
+       between those anchors are linearly interpolated — documented
+       plainly in the page itself, not disguised as more precise than
+       it is. -->
+  <div class="page" id="page-walmart-opportunity">
+    <div class="page-hd">
+      <div><div class="page-title">Walmart Opportunity</div><div class="page-sub">Where Crème Shop stands relative to the Walmart.com marketplace opportunity</div></div>
+    </div>
+
+    <!-- ── Hero stat block ── -->
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#0d3494 100%);border-radius:10px;padding:32px 36px;margin-bottom:20px;color:#fff;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px;">The Walmart Opportunity</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+        <div>
+          <div style="font-family:Georgia,serif;font-size:52px;line-height:1;color:var(--green);margin-bottom:6px;">120M</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.65);margin-bottom:20px;">Monthly shoppers on Walmart.com</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;">
+              <div style="font-family:Georgia,serif;font-size:20px;color:var(--green);">#3</div>
+              <div style="font-size:10.5px;color:rgba(255,255,255,.6);margin-top:2px;">Beauty marketplace consideration</div>
+            </div>
+            <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;">
+              <div style="font-family:Georgia,serif;font-size:20px;color:var(--green);">32M+</div>
+              <div style="font-size:10.5px;color:rgba(255,255,255,.6);margin-top:2px;">Walmart+ subscribers, growing</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px;">Amazon beauty shoppers also buy at</div>
+          <div id="wm-crossshop-bars"></div>
+          <div style="font-size:9.5px;color:rgba(255,255,255,.35);margin-top:10px;">*2025 Stella Rising — Path to Purchase</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Marketplace consideration chart ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Marketplace Consideration</div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;">Walmart.com is an established, growing marketplace for beauty shoppers — already the third most-considered destination, ahead of Ulta.com and brand-owned websites.</div>
+      <div style="position:relative;height:220px;"><canvas id="wm-consideration-chart"></canvas></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;">*2025 Stella Rising — Path to Purchase</div>
+    </div>
+
+    <!-- ── Benefits ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Establishing a Presence on Walmart.com</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;margin-top:14px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Controlled Pricing &amp; Buy Box</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Listing at MSRP puts Crème Shop in a stronger position against rogue sellers listing above the intended retail price, improving the odds of holding the Buy Box.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Managed Brand Experience</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">An official presence means titles, images, descriptions, and customer support are set and maintained deliberately, rather than left to whoever lists the product.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Scalable Growth</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Once a catalog foundation is in place, ads, a brand store, and new product launches compound growth the same way they do on Amazon today.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Fast, Nationwide Shipping</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Walmart's fulfillment network supports 1–2 day delivery nationwide, and Walmart+ membership — a strong signal of delivery-focused customer intent — continues to grow.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── THE core section: revenue comparison ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+        <div class="card-title" style="margin-bottom:0;">Walmart Revenue: Actual vs. Projected</div>
+        <div id="legend-wm-revenue" style="display:flex;align-items:center;"></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;max-width:640px;">Crème Shop does not currently have a Walmart.com presence — actual Walmart revenue to date is $0. The line below shows what that looks like next to a 12-month launch projection built from the tier model beneath it.</div>
+      <div style="position:relative;height:320px;"><canvas id="wm-revenue-chart"></canvas></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;">
+        <div style="background:rgba(0,31,96,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Actual Walmart Revenue (12 mo.)</div>
+          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$0</div>
+        </div>
+        <div style="background:rgba(36,233,163,.08);border:1px solid rgba(36,233,163,.25);border-radius:var(--radius-sm);padding:16px 18px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1a9c76;margin-bottom:6px;">Projected Revenue, Same 12 Months</div>
+          <div style="font-family:Georgia,serif;font-size:26px;color:var(--navy);">$677,904</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tier model table ── -->
+    <div class="card">
+      <div class="card-title">Revenue Projection Model</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Tier</th><th>Active SKUs</th><th>Average Units / SKU</th><th>Total Monthly Units</th><th>Average Price</th><th>Monthly Revenue</th></tr></thead>
+          <tbody>
+            <tr><td>Tier 1 (Month 1–3)</td><td>~150 SKUs</td><td>10</td><td>1,500</td><td>$11.50</td><td>$17,250</td></tr>
+            <tr><td>Tier 2 (Month 4–6)</td><td>~300 SKUs</td><td>15</td><td>4,500</td><td>$10.80</td><td>$48,600</td></tr>
+            <tr><td>Tier 3 (Month 7–12)</td><td>~450+ SKUs</td><td>26</td><td>11,700</td><td>$9.95</td><td>$116,415</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-style:italic;line-height:1.6;margin-top:12px;border-left:2px solid var(--border);padding-left:12px;">
+        Revenue projections are based on conservative unit velocity assumptions derived from historical Amazon performance and adjusted to reflect realistic marketplace adoption within Walmart.com's e-commerce ecosystem. The month-by-month chart above interpolates linearly between the Tier 1/2/3 monthly-revenue figures above (months 3, 6, and 12) — it is not a separately modeled curve.
+      </div>
+    </div>
+  </div>
+
 
   <!-- ══ EVENTS ══ -->
   <div class="page" id="page-events">
@@ -12252,6 +12381,16 @@ function showPage(id, btn) {
     window.renderListingAuditCategory('la-handcream', ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'], 'Hand Cream', 'la-handcream-container');
   }
 
+  // Walmart Opportunity — lazy-loaded on first visit. No fetch to defer
+  // here (everything's a cited stat or a computed projection), but the
+  // Chart.js canvases still need the page visible/laid-out before they
+  // build, or they render at 0 width — same reason Listing Audit above
+  // is lazy, different reason.
+  if (id === 'walmart-opportunity' && !window._walmartOppInit && typeof window.initWalmartOpportunityPage === 'function') {
+    window._walmartOppInit = true;
+    window.initWalmartOpportunityPage();
+  }
+
   // Export PDF Report button — only shown on the three "performance" pages
   // (Sales, Marketing, Events). Hidden everywhere else (Overview, Inventory,
   // Fulfillment, Insights, Listing Audit, PPC, Organic).
@@ -21015,6 +21154,149 @@ async function renderListingAuditCategory(catKey, allSkus, categoryLabel, contai
   }
 }
 window.renderListingAuditCategory = renderListingAuditCategory;
+
+// Walmart Opportunity page — added 2026-09-16 per Jaclyn. Everything on
+// this page is either a cited industry stat (2025 Stella Rising, same
+// source as the reference deck) or a computed figure from the tier
+// projection model Jaclyn provided directly — nothing here is a live
+// sheet fetch, so this builds synchronously rather than following the
+// async fetch-then-render pattern used elsewhere. Deliberately no
+// urgency/sales copy anywhere in this function's output — the $0-vs-
+// projection chart is meant to make the case on its own.
+function initWalmartOpportunityPage() {
+  // Mini cross-shop bars in the dark hero block (Amazon beauty shoppers
+  // also buy at...) — plain HTML bars, not a Chart.js canvas, since
+  // they're small and sit inside the gradient hero rather than a card.
+  const crossShop = [
+    { label: 'Walmart.com', pct: 81, highlight: true },
+    { label: 'Sephora',     pct: 59 },
+    { label: 'Drug Store',  pct: 54 },
+    { label: 'ULTA',        pct: 51 },
+    { label: 'Target',      pct: 47 },
+  ];
+  const crossShopEl = document.getElementById('wm-crossshop-bars');
+  if (crossShopEl) {
+    crossShopEl.innerHTML = crossShop.map(r => `
+      <div style="margin-bottom:9px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+          <span style="color:${r.highlight ? 'var(--green)' : 'rgba(255,255,255,.7)'};font-weight:${r.highlight ? '700' : '400'};">${r.label}</span>
+          <span style="color:${r.highlight ? 'var(--green)' : 'rgba(255,255,255,.7)'};font-weight:700;">${r.pct}%</span>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:4px;height:6px;overflow:hidden;">
+          <div style="background:${r.highlight ? 'var(--green)' : 'rgba(255,255,255,.35)'};height:100%;width:${r.pct}%;border-radius:4px;"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Marketplace Consideration bar chart — horizontal bars, Walmart.com
+  // highlighted green among competing marketplaces.
+  const considerationCanvas = document.getElementById('wm-consideration-chart');
+  if (considerationCanvas && window.Chart) {
+    const rows = [
+      { label: 'Amazon.com',     pct: 78 },
+      { label: 'Sephora.com',    pct: 63 },
+      { label: 'Walmart.com',    pct: 57, highlight: true },
+      { label: 'Ulta.com',       pct: 54 },
+      { label: 'Brand Website',  pct: 47 },
+      { label: 'Target.com',     pct: 41 },
+    ];
+    if (window._wmConsiderationChart) window._wmConsiderationChart.destroy();
+    window._wmConsiderationChart = new Chart(considerationCanvas, {
+      type: 'bar',
+      data: {
+        labels: rows.map(r => r.label),
+        datasets: [{
+          data: rows.map(r => r.pct),
+          backgroundColor: rows.map(r => r.highlight ? '#24e9a3' : '#6b7ba2'),
+          borderRadius: 3,
+          maxBarThickness: 26,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x}%` } },
+        },
+        scales: {
+          x: { min: 0, max: 80, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v + '%' } },
+          y: { grid: { display: false } },
+        },
+      },
+    });
+  }
+
+  // ── The core chart: actual ($0, flat) vs. projected revenue ──
+  const revenueCanvas = document.getElementById('wm-revenue-chart');
+  if (revenueCanvas && window.Chart) {
+    const monthLabels = Array.from({ length: 12 }, (_, i) => 'Month ' + (i + 1));
+
+    // Linear interpolation between the tier model's own anchor points
+    // (month 3 = $17,250, month 6 = $48,600, month 12 = $116,415),
+    // starting from $0 at month 0. Documented in the card's own caption
+    // too, not just here — this is not a separately-modeled curve.
+    const anchors = [[0, 0], [3, 17250], [6, 48600], [12, 116415]];
+    const projected = monthLabels.map((_, i) => {
+      const m = i + 1;
+      let seg = 0;
+      while (m > anchors[seg + 1][0]) seg++;
+      const [m0, v0] = anchors[seg], [m1, v1] = anchors[seg + 1];
+      return Math.round(v0 + (v1 - v0) * (m - m0) / (m1 - m0));
+    });
+    const actual = monthLabels.map(() => 0);
+
+    const fmtDollar = v => v == null ? '' : '$' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v.toFixed(0));
+
+    if (window._wmRevenueChart) window._wmRevenueChart.destroy();
+    window._wmRevenueChart = new Chart(revenueCanvas, {
+      type: 'line',
+      data: {
+        labels: monthLabels,
+        datasets: [
+          {
+            label: 'Projected (if launched)',
+            data: projected,
+            borderColor: '#24e9a3',
+            backgroundColor: 'rgba(36,233,163,0.08)',
+            fill: true,
+            pointRadius: 2,
+            tension: 0.3,
+            borderWidth: 2.5,
+          },
+          {
+            label: 'Actual Walmart revenue',
+            data: actual,
+            borderColor: '#001f60',
+            backgroundColor: 'transparent',
+            fill: false,
+            pointRadius: 2,
+            tension: 0,
+            borderWidth: 2.5,
+            borderDash: [4, 3],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmtDollar(ctx.parsed.y)}` } },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(0,0,0,0.04)' } },
+          y: { min: 0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: fmtDollar } },
+        },
+      },
+    });
+    if (typeof window.renderExternalLegend === 'function') {
+      window.renderExternalLegend(window._wmRevenueChart, 'legend-wm-revenue');
+    }
+  }
+}
+window.initWalmartOpportunityPage = initWalmartOpportunityPage;
 
 // Run Listing Audit — per-category button. Added 2026-09-16 per Jaclyn:
 // the whole-catalog version of this (runListingAudit, on the Insights >
