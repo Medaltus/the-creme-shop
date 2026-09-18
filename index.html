@@ -26727,15 +26727,27 @@ function injectAuditResults(results) {
 // already no-ops safely via its `if (!el) continue;` guard when the
 // element doesn't exist, so this causes no harm and keeps the map
 // complete against the button's real SKU list.
+// FIXED 2026-09-18 per Jaclyn (round 2) — confirmed via live console log
+// ("el for CRE0258: null") that the container ids below were still
+// wrong even after the last fix. Root cause: there are TWO different
+// catKey conventions in this file for the same category — the Listing
+// Audit "Run" button uses 'handcream' (runCategoryListingAudit('hand
+// cream', ...)), but the panel-RENDERING call (renderListingAuditCategory,
+// in the showPage('listing') lazy-load trigger) uses 'la-handcream' —
+// WITH the la- prefix. The real container id is built from THIS second
+// one (`${catKey}-prod-${suf}`), so it's actually la-handcream-prod-
+// CRE0258, not handcream-prod-CRE0258. Confirmed directly against the
+// exact renderListingAuditCategory call site this time, not inferred
+// from the other function's convention.
 const SKU_TO_PAGE_ID = {
-  'CRE0258':       'handcream-prod-CRE0258',
-  'CRE0304':       'handcream-prod-CRE0304',
-  'CRE0327-label': 'handcream-prod-CRE0327LABEL',
-  'CRE0381':       'handcream-prod-CRE0381',
-  'CRE0382':       'handcream-prod-CRE0382',
-  'CRE0440':       'handcream-prod-CRE0440',
-  'CRE0441':       'handcream-prod-CRE0441',
-  'CRE0471':       'handcream-prod-CRE0471',
+  'CRE0258':       'la-handcream-prod-CRE0258',
+  'CRE0304':       'la-handcream-prod-CRE0304',
+  'CRE0327-label': 'la-handcream-prod-CRE0327LABEL',
+  'CRE0381':       'la-handcream-prod-CRE0381',
+  'CRE0382':       'la-handcream-prod-CRE0382',
+  'CRE0440':       'la-handcream-prod-CRE0440',
+  'CRE0441':       'la-handcream-prod-CRE0441',
+  'CRE0471':       'la-handcream-prod-CRE0471',
 };
 
 // Bundles — added 2026-08-10 per Jaclyn. Deliberately simpler than the
