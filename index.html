@@ -12369,9 +12369,24 @@ function showPage(id, btn) {
   // Listing Audit — lazy-loaded on first visit (Products Cache is a large
   // fetch, no reason to pull it unless someone actually opens this page).
   // Guard flag matches the initOverviewLive pattern above.
+  //
+  // FIXED 2026-09-18 per Jaclyn — this used to only build the current-
+  // listing-copy panels, with no follow-up to inject saved audit
+  // results into them. Results only ever appeared immediately after
+  // clicking "Run Listing Audit" in that same session (a separate call
+  // site already does this correctly) — simply navigating back to this
+  // page later, in a new session, showed the panels with no audit
+  // findings at all, since nothing re-fetched and re-injected them.
+  // renderListingAuditCategory is async and builds the DOM panels
+  // injectAuditResults needs to already exist before it can find
+  // anything to attach to — chained with .then() rather than awaited
+  // directly since showPage itself isn't async and making it so would
+  // touch every other caller in this function for one fix.
   if (id === 'listing' && !window._listingAuditInit && typeof window.renderListingAuditCategory === 'function') {
     window._listingAuditInit = true;
-    window.renderListingAuditCategory('la-handcream', ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'], 'Hand Cream', 'la-handcream-container');
+    window.renderListingAuditCategory('la-handcream', ['CRE0258', 'CRE0304', 'CRE0327-label', 'CRE0381', 'CRE0382', 'CRE0440', 'CRE0441', 'CRE0471'], 'Hand Cream', 'la-handcream-container')
+      .then(() => { if (typeof window.loadAuditResultsFromSheet === 'function') return window.loadAuditResultsFromSheet(); })
+      .catch(err => console.warn('[ListingAudit] results injection after render failed:', err.message));
   }
 
   // Walmart Opportunity — lazy-loaded on first visit. No fetch to defer
@@ -20244,13 +20259,50 @@ const SHEET_LISTINGS_ID       = '1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s'; 
 // rewritten to expect SHEET_PRODUCT_INVENTORY's column layout.
 const SHEET_PRODUCT_INVENTORY_ID = '1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s';
 const SHEET_LISTINGS_GID = '1255096066'; // the crème shop tab on the Products Cache sheet — corrected 2026-09-16 per Jaclyn (was mislabeled "evolis tab", same stale-comment issue fixed on OV_PRODUCTS_CACHE_GID above; this is the same gid, verified live)
-const KEYWORD_STRATEGY_SHEET_ID = '1B50P142KObEcwtgxzNzofRAidZ9efePts0_8RSnt5mg';
+// FIXED 2026-09-18 per Jaclyn — this sheet ID and map were leftover from
+// the évolis port and never updated for Crème Shop: KEYWORD_STRATEGY_
+// SHEET_ID pointed at évolis's own keyword-strategy sheet, and
+// SKU_KW_GID_MAP only had 3 évolis SKUs (EVO0001/0005/0009) hardcoded in
+// it. Every Crème Shop listing audit was silently pulling évolis's top20
+// keyword targets (or nothing at all, for any SKU not in that stale
+// map) instead of Crème Shop's own — confirmed live: the audit log
+// showed "EVO0001: 1 top20 keywords loaded" during a Crème Shop run.
+// Crème Shop's real "Top 20 Keywords" / "Top 20 Opportunity Keywords" /
+// "Top 20 Reach for the stars keywords" columns live on the per-category
+// Competitor & Variation Data sheet instead (one tab per product
+// category, e.g. "Hand Creams") — confirmed live against the real sheet,
+// same column names the audit script already parses, so no script
+// change was needed, just pointing this map at the right place.
+// Only Hand Cream has a real, confirmed gid and a working Listing Audit
+// button today — wired up below with its real 8 SKUs. Every other
+// category (Makeup Wipes, Dermaplane Razors, Spa Headband, Face Masks,
+// Under Eye Patches, and everything under Kits/Lips/Makeup/Cosmetic
+// Tools/Skincare/Nails/Acne/Misc) still needs its own competitor-sheet
+// gid confirmed and a Listing Audit run button built before it can be
+// added here — deliberately left out rather than guessed, so an
+// unmapped SKU falls through cleanly (no top20 keywords loaded, no tier
+// 1/2/3 context) instead of silently pulling the wrong brand's data
+// again.
+const KEYWORD_STRATEGY_SHEET_ID = '19SfYJ99fMtqXna4VKGr8TtNMNxg6z52b0yDQPm7yI9M';
 const SKU_KW_GID_MAP = {
-  'EVO0001': '363437774',
-  'EVO0005': '473016522',
-  'EVO0009': '1211203597',
+  'CRE0258':       '813842918',
+  'CRE0304':       '813842918',
+  'CRE0327-label': '813842918',
+  'CRE0381':       '813842918',
+  'CRE0382':       '813842918',
+  'CRE0440':       '813842918',
+  'CRE0441':       '813842918',
+  'CRE0471':       '813842918',
 };
-const LISTING_AUDIT_EVOLIS_GID = 'MISSING-GID' /* TODO: creme-shop gid not yet in Dashboard Mapping — was evolis 2075287627 */;
+// FIXED 2026-09-18 per Jaclyn — was 'MISSING-GID' (this exact placeholder
+// is the source of every "gid=MISSING-GID" 400 error seen in the console
+// during Overview/Listing Audit loads). Real tab confirmed live: the
+// "creme-shop" tab on the Listing Audit results sheet, auto-created by
+// ensureAuditHeaders' first real run for this brand (see run-listing-
+// audit.js fix, 2026-09-18). Kept the constant's existing name rather
+// than renaming it — it's referenced in three places below and a rename
+// risks missing one of them for a purely cosmetic gain.
+const LISTING_AUDIT_EVOLIS_GID = '1564721831';
 
 // ═══════════════════════════════════════════════════════════════════
 // INSIGHTS OVERVIEW — units chart, Active/Peak/Total SKU KPIs, and
@@ -26651,15 +26703,27 @@ function injectAuditResults(results) {
 // ═══════════════════════════════════════════════════════════════════
 
 // Maps SKU → sub-page id
+// FIXED 2026-09-18 per Jaclyn — this was entirely évolis SKUs, none of
+// which exist in Crème Shop's catalog, so injectAuditResults had nowhere
+// real to write to. Container IDs below are the actual ids
+// renderListingAuditProductPanel assigns (`${catKey}-prod-${suf}`, where
+// suf strips non-alphanumerics from the SKU — confirmed directly from
+// that function, not guessed) — only Hand Cream is wired up today,
+// matching the one category with a working Listing Audit run button.
+// CRE0441 is included for completeness even though it has no live panel
+// (zero rows in Products Cache, confirmed earlier) — injectAuditResults
+// already no-ops safely via its `if (!el) continue;` guard when the
+// element doesn't exist, so this causes no harm and keeps the map
+// complete against the button's real SKU list.
 const SKU_TO_PAGE_ID = {
-  'EVO0001':'la-evo0001', 'EVO0005':'la-evo0005', 'EVO0009':'la-evo0009',
-  'EVO0002':'la-evo0002', 'EVO0006':'la-evo0006', 'EVO0010':'la-evo0010',
-  'EVO0014':'la-evo0014', 'EVO0016':'la-evo0016',
-  'EVO0003':'la-cond-evo0003', 'EVO0007':'la-cond-evo0007', 'EVO0011':'la-cond-evo0011',
-  'EVO0015':'la-cond-evo0015', 'EVO0017':'la-cond-evo0017',
-  'EVO0004':'la-mask-evo0004', 'EVO0008':'la-mask-evo0008',
-  'EVO0018':'la-mask-evo0018', 'EVO0019':'la-mask-evo0019',
-  'EVO0012':'la-dryshampoo'
+  'CRE0258':       'handcream-prod-CRE0258',
+  'CRE0304':       'handcream-prod-CRE0304',
+  'CRE0327-label': 'handcream-prod-CRE0327LABEL',
+  'CRE0381':       'handcream-prod-CRE0381',
+  'CRE0382':       'handcream-prod-CRE0382',
+  'CRE0440':       'handcream-prod-CRE0440',
+  'CRE0441':       'handcream-prod-CRE0441',
+  'CRE0471':       'handcream-prod-CRE0471',
 };
 
 // Bundles — added 2026-08-10 per Jaclyn. Deliberately simpler than the
@@ -26910,7 +26974,7 @@ async function loadAuditResultsFromSheet() {
     if (results.length) {
       console.log('[audit-debug] results[0]:', JSON.stringify(results[0]));
       console.log('[audit-debug] SKU_TO_PAGE_ID keys:', Object.keys(SKU_TO_PAGE_ID));
-      console.log('[audit-debug] el for EVO0001:', document.getElementById(SKU_TO_PAGE_ID['EVO0001']));
+      console.log('[audit-debug] el for CRE0258:', document.getElementById(SKU_TO_PAGE_ID['CRE0258']));
       injectAuditResults(results);
       console.log('[listings] Loaded audit results for', results.length, 'SKUs (most recent per SKU by audited_at)');
     }
@@ -26918,6 +26982,12 @@ async function loadAuditResultsFromSheet() {
     console.warn('[listings] Could not load audit results:', err.message);
   }
 }
+// FIXED 2026-09-18 per Jaclyn — was never exposed on window, unlike
+// renderListingAuditCategory right above it. showPage() (a different
+// <script> block, confirmed by this block boundary right below) needs
+// to call this after lazily rendering the Listing Audit panels, so a
+// plain page visit shows saved results, not just a fresh "Run".
+window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
 </script>
 
 <!-- ══════════════════════════════════════════════════════════════
