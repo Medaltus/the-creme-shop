@@ -144,11 +144,45 @@ const KEYWORD_TRACKER_SHEET_ID = '1geNDQgd_1ensLDyZOuXZBnvQrFT_RC85l9rHHGpgJe4';
 // target, not "anything not page 1."
 const PAGE1_RANK_CUTOFF = 48;
 const CLOSE_TO_PAGE1_MAX = 100;
-// How long a keyword needs to have sat unchanged in the listing with zero
-// ranking progress before it's worth questioning whether it's simply too
-// competitive to win. Adjustable — 30 days was chosen as "long enough to
-// rule out normal indexing lag," not because of any specific data point.
-const LONG_TENURE_DAYS = 30;
+// FIXED 2026-09-18 per Jaclyn — 30 days was never grounded in real SEO
+// timing (see prior comment: chosen only to rule out indexing lag), and
+// organic ranking movement genuinely takes much longer than that —
+// realistically 6-12 months, and NOT a flat number: how long is
+// reasonable depends heavily on how competitive the keyword is. A
+// broad, low-competition term can move in a couple months; a
+// competitive head term can legitimately take the better part of a
+// year. Flagging every keyword as "stuck" after just 30 days would
+// have meant suggesting a reach-for-the-stars swap for the vast
+// majority of keywords almost immediately — nowhere near enough
+// runway for real organic movement, regardless of competitiveness.
+//
+// Search volume is used here as the competitiveness proxy, since it's
+// the one signal already flowing into this script per-keyword (from
+// the keyword tracker sheet) — not a perfect stand-in for true
+// competitiveness (title density, number of competing listings, and
+// CPR all factor in too, and none of those are wired into this script
+// today), but a reasonable, defensible one: higher-volume terms
+// generally draw more competing sellers chasing the same traffic.
+// When volume is unknown (keyword tracker sheet not yet populated for
+// this brand — true for Crème Shop today, confirmed live: 0 rows
+// loaded), this defaults to the LONGEST tier rather than the
+// shortest — better to wait too long on an unknown than to flag it as
+// stuck prematurely.
+//
+// These bucket boundaries are a starting point matching the 6-12
+// month range as stated, not a precise science — adjust the volume
+// cutoffs or day counts here once there's real experience with how
+// long Crème Shop's own keywords actually take to move.
+const TENURE_THRESHOLDS_BY_VOLUME = [
+  { maxVolume: 1000,      days: 180 },  // low competition — ~6 months
+  { maxVolume: 10000,     days: 270 },  // moderate competition — ~9 months
+  { maxVolume: Infinity,  days: 365 },  // high competition — ~12 months
+];
+function tenureThresholdForVolume(volume) {
+  if (volume == null) return TENURE_THRESHOLDS_BY_VOLUME[TENURE_THRESHOLDS_BY_VOLUME.length - 1].days; // unknown competitiveness — assume the longest, most conservative case
+  const tier = TENURE_THRESHOLDS_BY_VOLUME.find(t => volume <= t.maxVolume);
+  return tier.days;
+}
 
 function normTerm(s) { return String(s || '').trim().toLowerCase(); }
 
@@ -248,7 +282,8 @@ function buildTier3Reconsiderations(otherKeywords, sku, allRawRowsForSku, reachK
   otherKeywords.forEach(({ keyword, rank, volume }) => {
     if (rank !== null) return; // it IS ranking somewhere past 100 — not the "stuck" case being asked about here
     const tenureDays = computeKeywordTenureDays(sku, keyword, allRawRowsForSku);
-    if (tenureDays === null || tenureDays < LONG_TENURE_DAYS) return;
+    const threshold = tenureThresholdForVolume(volume);
+    if (tenureDays === null || tenureDays < threshold) return;
     const alternative = reachKeywords.find(rk => {
       const key = normTerm(rk);
       return !alreadyUsedReach.has(key) && key !== normTerm(keyword);
@@ -258,6 +293,7 @@ function buildTier3Reconsiderations(otherKeywords, sku, allRawRowsForSku, reachK
       keyword,
       volume,
       tenure_days: tenureDays,
+      tenure_threshold_applied: threshold, // surfaced so the reasoning is auditable, not a silent internal decision
       suggested_alternative: alternative || null,
     });
   });
@@ -501,12 +537,39 @@ module.exports = async function handler(req, res) {
 
         if (top20Idx < 0) { console.warn(`[listing-audit] No keyword headers found for ${skuKey}`); continue; }
 
-        // Collect keywords from all data rows for those columns
+        // Collect keywords from all data rows for those columns.
+        //
+        // FIXED 2026-09-18 per Jaclyn — this used to scan every row from
+        // the keyword data down to the literal bottom of the tab, with
+        // no stopping point. Confirmed against the real Competitor &
+        // Variation Data sheet (Hand Creams tab): column E holds "Top 20
+        // Keywords" in row 2's header, but the SAME column E is reused
+        // for "Product Name" in row 5, the header row of that tab's
+        // separate "Current Competitors" table further down. With no
+        // row boundary, colKws was picking up the literal string
+        // "Product Name" as a fake keyword today, and would pick up
+        // every real competitor product name as a "keyword" too, the
+        // moment that table gets filled in — the exact same column-
+        // index collision, just with real contamination instead of one
+        // stray header string.
+        //
+        // Fix: stop as soon as column A goes non-blank. Confirmed
+        // directly against the real sheet: column A is blank on the
+        // keyword data row (row 3) and non-blank on every row from that
+        // point on — a section title ("Current Competitors — Data:
+        // Helium 10"), a header row ("#"), or a row number (1, 2, 3…).
+        // That makes column A a reliable, already-present signal for
+        // "we've left the keyword-strategy block" without needing to
+        // guess at a fixed row count, which wouldn't generalize if a
+        // future category's tab needs more than one data row for its
+        // keyword list.
         function colKws(colIdx) {
           if (colIdx < 0) return [];
           const kws = [];
           for (let r = 2; r < csvLines.length; r++) {
             const cells = parseSimpleCsv(csvLines[r]);
+            const colA = (cells[0] || '').trim();
+            if (colA) break; // left the keyword-strategy block
             const val = (cells[colIdx] || '').trim();
             if (val) {
               val.split(/\n|\r|,/).map(k => k.trim()).filter(Boolean).forEach(k => kws.push(k));
@@ -673,8 +736,8 @@ ${tier1Protect.length ? tier1Protect.map(fmt).join(', ') : 'None currently on pa
 TIER 2 — PUSH (rank ${PAGE1_RANK_CUTOFF + 1}-${CLOSE_TO_PAGE1_MAX}, sorted by volume — closest realistic wins, prioritize placement for these over anything unranked):
 ${tier2Push.length ? tier2Push.map(fmt).join(', ') : 'None in this range currently.'}
 ${tier3.length ? `
-TIER 3 — RECONSIDER (already in the listing ${LONG_TENURE_DAYS}+ consecutive days per daily listing snapshots, still not ranking at all — raise as a QUESTION, not a directive: is this keyword too competitive to win, and would a lower-volume alternative be more attainable?):
-${tier3.map(t => `"${t.keyword}"${t.volume !== null ? ` (${t.volume}/mo)` : ''} — in listing ${t.tenure_days} days, no rank${t.suggested_alternative ? `. Consider substituting: "${t.suggested_alternative}"` : ''}`).join('; ')}` : ''}
+TIER 3 — RECONSIDER (in the listing well past a competitiveness-scaled threshold per daily listing snapshots — longer for higher-volume/more-competitive terms, shorter for lower-volume ones — still not ranking at all — raise as a QUESTION, not a directive: is this keyword too competitive to win, and would a lower-volume alternative be more attainable?):
+${tier3.map(t => `"${t.keyword}"${t.volume !== null ? ` (${t.volume}/mo)` : ''} — in listing ${t.tenure_days} days (past the ${t.tenure_threshold_applied}-day threshold for its volume tier), no rank${t.suggested_alternative ? `. Consider substituting: "${t.suggested_alternative}"` : ''}`).join('; ')}` : ''}
 
 FIELD PRIORITY FOR PLACEMENT (highest SEO weight to lowest): Title > Item Highlights > Bullets > Product Description > Backend Keywords. When a Tier 1 or Tier 2 keyword is missing, place it in the HIGHEST-weight field it can compliantly fit in that's currently missing it — do not default to backend just because there's room there.`;
         } else if (Object.keys(kwRankings).length > 0) {
@@ -831,9 +894,55 @@ async function ensureAuditHeaders(sheetId, tabName, token) {
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(tabName + '!A1:T1')}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
-  if (!checkRes.ok) return;
-  const data = await checkRes.json();
-  if (data.values && data.values[0] && data.values[0].length > 0) return;
+
+  // FIXED 2026-09-18 per Jaclyn — this used to just `return` here on any
+  // non-ok response, which silently no-opped for BOTH kinds of failure it
+  // could mean: (a) some other real error (auth, rate limit, etc — fine to
+  // bail and let the caller's own logging surface it), and (b) the tab
+  // for this brand doesn't exist in the audit-results spreadsheet yet,
+  // which is NOT fine to silently skip — it let execution fall through to
+  // the append step below, which then failed for real with "Unable to
+  // parse range: <tab>!A2" (exactly what happened on Crème Shop's first
+  // real audit run: its tab was simply never created in
+  // LISTING_AUDIT_SHEET_ID, and this function's silence hid that until
+  // the append blew up with a much less useful error two steps later).
+  // Every new brand this script gets pointed at will hit this same gap
+  // on its first run unless its tab already happens to exist, so this is
+  // fixed at the source rather than as a one-off "go add a tab" — a
+  // brand-new tab is created automatically now, exactly like a brand-new
+  // Google Sheet does when you type a name that doesn't exist yet.
+  if (!checkRes.ok) {
+    let body = '';
+    try { body = await checkRes.text(); } catch (_) { /* ignore */ }
+    const isMissingTab = checkRes.status === 400 && /Unable to parse range/i.test(body);
+    if (!isMissingTab) {
+      console.error(`[listing-audit] ensureAuditHeaders: header check failed for tab "${tabName}" (${checkRes.status}): ${body.slice(0, 300)}`);
+      return;
+    }
+    console.warn(`[listing-audit] tab "${tabName}" not found in audit sheet — creating it now`);
+    const createRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requests: [{ addSheet: { properties: { title: tabName } } }]
+        })
+      }
+    );
+    if (!createRes.ok) {
+      const createErr = await createRes.text().catch(() => '');
+      console.error(`[listing-audit] failed to create tab "${tabName}" (${createRes.status}): ${createErr.slice(0, 300)}`);
+      return;
+    }
+    console.warn(`[listing-audit] tab "${tabName}" created — writing headers`);
+    // Fall through to the header write below — the tab now exists but is
+    // brand new, so its A1:T1 is empty and needs headers exactly like the
+    // "existing tab, empty header row" path this function already handles.
+  } else {
+    const data = await checkRes.json();
+    if (data.values && data.values[0] && data.values[0].length > 0) return;
+  }
 
   await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(tabName + '!A1')}?valueInputOption=RAW`,
