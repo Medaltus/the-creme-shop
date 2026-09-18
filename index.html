@@ -26623,6 +26623,18 @@ function injectAuditResults(results) {
       });
       if (!card) return;
       if (!note && !rewrite) return;
+      // FIXED 2026-09-18 per Jaclyn — laNotePlaceholder() writes its
+      // "Not yet audited" text directly into the card at render time,
+      // before this injection logic existed (see its own comment: "not
+      // built yet" at the time it was written). This never got updated
+      // to remove that placeholder once real findings exist — it only
+      // ever appended a new zone alongside it, so even a fully
+      // successful injection left the stale "Not yet audited" message
+      // sitting there right next to real compliance notes, which reads
+      // as if nothing happened at all. Removing it here, once real note
+      // or rewrite content exists for this field.
+      const staleNote = card.querySelector('.la-note');
+      if (staleNote) staleNote.remove();
       const chars = rewrite ? rewrite.length : 0;
       const isClean = !note || note.toLowerCase().startsWith('no violation');
       const charInfo = (charLimit > 0 && rewrite)
