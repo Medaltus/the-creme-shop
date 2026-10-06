@@ -28915,15 +28915,32 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       // cancelled" flag, so there was no clean way to net an order COUNT
       // against them).
 
-      // Pending Orders — a live snapshot, intentionally NOT date-scoped
-      // (an order still sitting in Pending from any date is still open and
-      // worth surfacing, not just ones placed this month). Amazon only,
-      // per Jaclyn's source (SHEET_ORDERS).
+      // Pending Orders — CHANGED 2026-10-06 per Jaclyn to match Cosmette's
+      // card: now tied to the period toggle instead of "all open orders
+      // from any date." Counts orders placed in the toggled month (MTD =
+      // current calendar month, Last Month = last full month) whose status
+      // is still 'pending' as of the latest sync. A live status read, not
+      // a snapshot: Last Month's number shrinks toward zero as Amazon
+      // resolves those orders on later syncs.
+      // Source rows: amzRows — SHEET_ORDERS filtered to Crème Shop only
+      // (brand = the creme shop, or a CRE-prefixed SKU), with NO validity
+      // filter, same as Cosmette. The normal validity filter drops pending
+      // rows, so this card must read the unfiltered ones.
+      // One deliberate difference from Cosmette: this counts unique
+      // order_ids, not rows. The sheet is one row per line item, so
+      // Cosmette's row count reports a two-product pending order as 2.
+      // This card already counted unique orders before this change, and
+      // the label says "Orders", so that was kept rather than regressed.
+      // Like Cosmette, Vine orders are NOT excluded here.
+      const pendingRefPrefix = `${refYear}-${String(refMonth).padStart(2, '0')}`;
       const pendingOrderIds = new Set(
-        amzRows.filter(r => (r.status || '').trim().toLowerCase() === 'pending')
-               .map(r => r.order_id).filter(Boolean)
+        amzRows.filter(r => {
+          const d = normalizeDate(r.date || '');
+          if (!d || d.substring(0, 7) !== pendingRefPrefix) return false;
+          return (r.status || '').trim().toLowerCase() === 'pending';
+        }).map(r => r.order_id).filter(Boolean)
       );
-      setKpiPlain('ov-kpi-pending', pendingOrderIds.size.toLocaleString(), 'Currently open');
+      setKpiPlain('ov-kpi-pending', pendingOrderIds.size.toLocaleString(), cfg.isPartial ? 'Current month' : 'Last month');
 
       const heroRevEl = document.getElementById('ov-hero-revenue');
       if (heroRevEl) heroRevEl.textContent = mtd.revenue >= 1000 ? '$' + (mtd.revenue / 1000).toFixed(1) + 'K' : '$' + mtd.revenue.toFixed(0);
