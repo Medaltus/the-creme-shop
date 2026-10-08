@@ -278,6 +278,16 @@ nav > .nav-btn:not(.active):hover{color:#fff;}
 
 /* ── Inline editor panel ── */
 .insight-editor{display:none;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-top:8px;}
+.insight-editor-label{font-size:11px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.insight-editor input,.insight-editor textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid rgba(0,31,96,0.20);border-radius:var(--radius-sm);font-family:var(--font);font-size:12.5px;color:var(--navy);resize:vertical;min-height:72px;background:var(--white);outline:none;line-height:1.6;margin-bottom:10px;}
+.insight-editor input{min-height:auto;}
+.insight-editor input:focus,.insight-editor textarea:focus{border-color:var(--navy);}
+.acc-image-inputs{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border2);}
+.insight-image-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.insight-image-upload-btn{background:none;border:1px solid rgba(0,31,96,0.20);border-radius:var(--radius-sm);padding:4px 10px;font-size:10.5px;color:var(--muted);cursor:pointer;transition:all .13s;font-family:var(--font);white-space:nowrap;flex-shrink:0;}
+.insight-image-upload-btn.uploading{color:var(--muted);cursor:wait;}
+.insight-image-upload-btn.uploaded{border-color:#1db88a;color:#1db88a;}
+.insight-image-upload-btn.upload-error{border-color:var(--danger);color:var(--danger);}
 .insight-editor textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid rgba(0,31,96,0.20);border-radius:var(--radius-sm);font-family:var(--font);font-size:12.5px;color:var(--navy);resize:vertical;min-height:72px;background:var(--white);outline:none;line-height:1.6;}
 .insight-editor textarea:focus{border-color:var(--navy);}
 .editor-footer{display:flex;gap:8px;margin-top:8px;justify-content:flex-end;align-items:center;}
@@ -796,6 +806,8 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 .ppc-kw-targets .rank-pill{font-size:12.5px;font-weight:600;padding:5px 12px;white-space:normal;line-height:1.4;max-width:100%;}
 .opp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
 .opp-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.opp-card-images{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.opp-card-img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border);background:var(--bg2);}
 .opp-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px;}
 .opp-subtitle{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;}
 .opp-body{font-size:12.5px;color:var(--muted);line-height:1.6;}
@@ -1009,6 +1021,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 /* flex:1 fills all remaining vertical space below the navy block (up to the full 11in page); justify-content:center vertically centers the pill/headline/columns within that remaining space, per the request to justify this content to the middle of the space below the navy area. */
 .pdfx-cover-white{padding:40px 60px;flex:1;display:flex;flex-direction:column;justify-content:center;}
 .pdfx-pill{display:inline-block;align-self:flex-start;background:rgba(36,233,163,.14);border:1px solid rgba(36,233,163,.35);border-radius:20px;padding:5px 16px;font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--green);margin-bottom:24px;}
+.pdfx-pill-sand{background:#f4dfd0;border-color:rgba(200,125,47,.35);color:var(--warn);} /* What's Been Accomplished — sand per Jaclyn 2026-10-01, matches évolis's .pdfx-pill-sand */
 .pdfx-cover-headline{font-family:var(--font-subheader);font-size:20px;font-weight:600;color:var(--navy);line-height:1.35;margin-bottom:28px;}
 .pdfx-cover-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:8px;}
 .pdfx-cover-col{font-size:12px;color:#48557a;line-height:1.75;}
@@ -2074,6 +2087,162 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
           <div id="legend-sns" style="display:flex;align-items:center;"></div>
         </div>
         <div style="position:relative;height:320px;"><canvas id="chart-sns"></canvas></div>
+      </div>
+
+      <!-- Subscriptions Key Insight — added 2026-10-06 per Jaclyn; same markup
+           and wiring as the Key Insight card below, saved to the
+           subscriptions_key_insight column. -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:0;">Subscriptions Key Insight</div>
+          <button class="btn-edit" id="subsinsight-edit-btn">✏️ Edit</button>
+        </div>
+        <div class="insight-text" id="subsinsight-disp" data-placeholder="No insight added yet — click Edit to add one."></div>
+        <div class="insight-editor" id="subsinsight-editor" style="display:none;">
+          <textarea id="subsinsight-textarea"></textarea>
+          <div class="editor-footer">
+            <span class="editor-note">Saves directly to the report sheet as a draft.</span>
+            <button class="btn-cancel" id="subsinsight-cancel">Cancel</button>
+            <button class="btn-save-stage" id="subsinsight-save">Save</button>
+          </div>
+        </div>
+      </div>
+
+            <!-- What's Been Accomplished — 4 entries; 1 and 2 have up to 6 image
+           slots, 3 and 4 are text only. CORRECTED 2026-10-06: field names are
+           accomplished1_title / accomplished1_image1 … (the real column
+           names on the Report Insights tab), NOT acc1_title. The
+           earlier acc1_* names matched an older backend schema that wrote
+           by position and put this content in the wrong columns. Reuses
+           window.reportInsightsFetchRow/SaveFields like Future
+           Opportunities below. -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="display:inline-block;background:rgba(0,31,96,.06);border:1px solid rgba(0,31,96,.15);border-radius:4px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);">What's Been Accomplished</div>
+          <button class="btn-edit" id="acc-edit-btn">✏️ Edit</button>
+        </div>
+        <div class="insight-grid" id="acc-grid">
+          <div class="opp-card" id="acc-card-1" style="display:none;">
+            <div class="opp-title" id="acc-title-1"></div>
+            <div class="opp-subtitle" id="acc-subtitle-1"></div>
+            <div class="opp-body" id="acc-body-1"></div>
+            <div class="opp-card-images" id="acc1-images-disp" style="display:none;"></div>
+          </div>
+          <div class="opp-card" id="acc-card-2" style="display:none;">
+            <div class="opp-title" id="acc-title-2"></div>
+            <div class="opp-subtitle" id="acc-subtitle-2"></div>
+            <div class="opp-body" id="acc-body-2"></div>
+            <div class="opp-card-images" id="acc2-images-disp" style="display:none;"></div>
+          </div>
+          <div class="opp-card" id="acc-card-3" style="display:none;">
+            <div class="opp-title" id="acc-title-3"></div>
+            <div class="opp-subtitle" id="acc-subtitle-3"></div>
+            <div class="opp-body" id="acc-body-3"></div>
+            
+          </div>
+          <div class="opp-card" id="acc-card-4" style="display:none;">
+            <div class="opp-title" id="acc-title-4"></div>
+            <div class="opp-subtitle" id="acc-subtitle-4"></div>
+            <div class="opp-body" id="acc-body-4"></div>
+            
+          </div>
+        </div>
+        <div id="acc-empty-state" style="display:none;color:var(--muted);font-size:12px;font-style:italic;">Nothing added yet — click Edit to add what's been accomplished this month.</div>
+        <div class="insight-editor" id="acc-editor" style="display:none;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="insight-editor-label">Accomplished 1 — Title</div><input type="text" id="acc1-title-input">
+          <div class="insight-editor-label">Subtitle <span style="font-weight:400;color:var(--muted);">(optional)</span></div><input type="text" id="acc1-subtitle-input">
+          <div class="insight-editor-label">Body</div><textarea id="acc1-body-input"></textarea>
+            <div class="acc-image-inputs">
+              <div class="insight-editor-label">Images (up to 6)</div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image1-input" placeholder="Image 1 URL">
+                <label class="insight-image-upload-btn" id="acc1-image1-btn" for="acc1-image1-file">📤 Upload</label>
+                <input type="file" id="acc1-image1-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image1-input','acc1-image1-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image2-input" placeholder="Image 2 URL">
+                <label class="insight-image-upload-btn" id="acc1-image2-btn" for="acc1-image2-file">📤 Upload</label>
+                <input type="file" id="acc1-image2-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image2-input','acc1-image2-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image3-input" placeholder="Image 3 URL">
+                <label class="insight-image-upload-btn" id="acc1-image3-btn" for="acc1-image3-file">📤 Upload</label>
+                <input type="file" id="acc1-image3-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image3-input','acc1-image3-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image4-input" placeholder="Image 4 URL">
+                <label class="insight-image-upload-btn" id="acc1-image4-btn" for="acc1-image4-file">📤 Upload</label>
+                <input type="file" id="acc1-image4-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image4-input','acc1-image4-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image5-input" placeholder="Image 5 URL">
+                <label class="insight-image-upload-btn" id="acc1-image5-btn" for="acc1-image5-file">📤 Upload</label>
+                <input type="file" id="acc1-image5-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image5-input','acc1-image5-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc1-image6-input" placeholder="Image 6 URL">
+                <label class="insight-image-upload-btn" id="acc1-image6-btn" for="acc1-image6-file">📤 Upload</label>
+                <input type="file" id="acc1-image6-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc1-image6-input','acc1-image6-btn')">
+              </div>
+            </div>
+        </div>
+        <div>
+          <div class="insight-editor-label">Accomplished 2 — Title</div><input type="text" id="acc2-title-input">
+          <div class="insight-editor-label">Subtitle <span style="font-weight:400;color:var(--muted);">(optional)</span></div><input type="text" id="acc2-subtitle-input">
+          <div class="insight-editor-label">Body</div><textarea id="acc2-body-input"></textarea>
+            <div class="acc-image-inputs">
+              <div class="insight-editor-label">Images (up to 6)</div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image1-input" placeholder="Image 1 URL">
+                <label class="insight-image-upload-btn" id="acc2-image1-btn" for="acc2-image1-file">📤 Upload</label>
+                <input type="file" id="acc2-image1-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image1-input','acc2-image1-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image2-input" placeholder="Image 2 URL">
+                <label class="insight-image-upload-btn" id="acc2-image2-btn" for="acc2-image2-file">📤 Upload</label>
+                <input type="file" id="acc2-image2-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image2-input','acc2-image2-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image3-input" placeholder="Image 3 URL">
+                <label class="insight-image-upload-btn" id="acc2-image3-btn" for="acc2-image3-file">📤 Upload</label>
+                <input type="file" id="acc2-image3-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image3-input','acc2-image3-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image4-input" placeholder="Image 4 URL">
+                <label class="insight-image-upload-btn" id="acc2-image4-btn" for="acc2-image4-file">📤 Upload</label>
+                <input type="file" id="acc2-image4-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image4-input','acc2-image4-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image5-input" placeholder="Image 5 URL">
+                <label class="insight-image-upload-btn" id="acc2-image5-btn" for="acc2-image5-file">📤 Upload</label>
+                <input type="file" id="acc2-image5-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image5-input','acc2-image5-btn')">
+              </div>
+              <div class="insight-image-row">
+                <input type="text" id="acc2-image6-input" placeholder="Image 6 URL">
+                <label class="insight-image-upload-btn" id="acc2-image6-btn" for="acc2-image6-file">📤 Upload</label>
+                <input type="file" id="acc2-image6-file" accept="image/*" style="display:none;" onchange="uploadInsightImage(this,'acc2-image6-input','acc2-image6-btn')">
+              </div>
+            </div>
+        </div>
+        <div>
+          <div class="insight-editor-label">Accomplished 3 — Title</div><input type="text" id="acc3-title-input">
+          <div class="insight-editor-label">Subtitle <span style="font-weight:400;color:var(--muted);">(optional)</span></div><input type="text" id="acc3-subtitle-input">
+          <div class="insight-editor-label">Body</div><textarea id="acc3-body-input"></textarea>
+        </div>
+        <div>
+          <div class="insight-editor-label">Accomplished 4 — Title</div><input type="text" id="acc4-title-input">
+          <div class="insight-editor-label">Subtitle <span style="font-weight:400;color:var(--muted);">(optional)</span></div><input type="text" id="acc4-subtitle-input">
+          <div class="insight-editor-label">Body</div><textarea id="acc4-body-input"></textarea>
+        </div>
+          </div>
+          <div class="editor-footer">
+            <span class="editor-note">Saves directly to the report sheet as a draft.</span>
+            <button class="btn-cancel" id="acc-cancel-btn">Cancel</button>
+            <button class="btn-save-stage" id="acc-save-btn">Save</button>
+          </div>
+        </div>
       </div>
 
       <div class="card" style="margin-bottom:16px;">
@@ -20079,6 +20248,13 @@ async function initSnsExternal() {
 document.addEventListener('DOMContentLoaded', function() {
   if (typeof window.wireInsightBlock !== 'function') { console.warn('[ReportInsights] wireInsightBlock not loaded'); return; }
 
+  // Subscriptions Key Insight — added 2026-10-06, same wiring as above.
+  window.wireInsightBlock({
+    scope: 'monthly',
+    fields: [{ key: 'subscriptions_key_insight', displayId: 'subsinsight-disp', textareaId: 'subsinsight-textarea', placeholder: 'No insight added yet — click Edit to add one.' }],
+    editBtnId: 'subsinsight-edit-btn', saveBtnId: 'subsinsight-save', cancelBtnId: 'subsinsight-cancel', editorId: 'subsinsight-editor',
+  });
+
   window.wireInsightBlock({
     scope: 'monthly',
     fields: [
@@ -20161,7 +20337,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // cards based on whether Title is filled, and collapse the Subtitle line
   // when it's blank — not just fill-or-placeholder per field.
   (function wireOpportunities() {
-    const BRAND = 'the creme shop';
+    // FIXED 2026-10-07: was 'the creme shop', which isn't a tab, so saved
+    // opportunities never loaded back. The Report Insights tab is 'creme-shop'.
+    const BRAND = 'creme-shop';
     const editBtn = document.getElementById('opp-edit-btn');
     const saveBtn = document.getElementById('opp-save-btn');
     const cancelBtn = document.getElementById('opp-cancel-btn');
@@ -20234,6 +20412,166 @@ document.addEventListener('DOMContentLoaded', function() {
           fields[`opp${n}_title`]    = (document.getElementById(`textarea-opp${n}-title`).value || '').trim();
           fields[`opp${n}_subtitle`] = (document.getElementById(`textarea-opp${n}-subtitle`).value || '').trim();
           fields[`opp${n}_body`]     = (document.getElementById(`textarea-opp${n}-body`).value || '').trim();
+        });
+        await window.reportInsightsSaveFields({ scope: 'monthly', year, month, fields, action: 'save' });
+        await load();
+        editorEl.style.display = 'none';
+      } catch (e) {
+        alert('Save failed: ' + e.message);
+      } finally {
+        saveBtn.disabled = false; saveBtn.textContent = origLabel;
+      }
+    });
+
+    load();
+  })();
+
+  // ── Image upload for Accomplished cards ────────────────────────────────
+  // Ported 2026-09-30, generic and unmodified — takes element ids as
+  // arguments, nothing hardcoded to a specific field, so it works for any
+  // image slot without needing a copy per field.
+  window.uploadInsightImage = async function (fileInputEl, targetInputId, statusBtnId) {
+    const file = fileInputEl.files && fileInputEl.files[0];
+    if (!file) return;
+    const targetInput = document.getElementById(targetInputId);
+    const statusBtn = document.getElementById(statusBtnId);
+    const originalLabel = statusBtn ? statusBtn.textContent : '📤 Upload';
+    const MAX_BYTES = 4 * 1024 * 1024; // stay comfortably under Vercel's 4.5MB body limit once base64-inflated ~33%
+    if (file.size > MAX_BYTES) {
+      if (statusBtn) { statusBtn.textContent = '✗ Too large (max 4MB)'; statusBtn.classList.remove('uploading', 'uploaded'); statusBtn.classList.add('upload-error'); }
+      fileInputEl.value = '';
+      return;
+    }
+    try {
+      if (statusBtn) { statusBtn.textContent = '⟳ Uploading…'; statusBtn.classList.remove('uploaded', 'upload-error'); statusBtn.classList.add('uploading'); }
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+        reader.onerror = () => reject(new Error('Could not read file'));
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch('/api/upload-insight-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: file.name, mimeType: file.type, imageBase64: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || ('HTTP ' + res.status));
+      if (targetInput) targetInput.value = data.url;
+      if (statusBtn) { statusBtn.textContent = '✓ Uploaded'; statusBtn.classList.remove('uploading'); statusBtn.classList.add('uploaded'); }
+    } catch (err) {
+      console.error('[uploadInsightImage]', err);
+      if (statusBtn) { statusBtn.textContent = '✗ Upload failed'; statusBtn.classList.remove('uploading'); statusBtn.classList.add('upload-error'); }
+    } finally {
+      fileInputEl.value = '';
+    }
+  };
+
+  // FIXED 2026-09-30 — "Save failed: escapeHtml is not defined". This
+  // whole block (wireOpportunities/wireAccomplished/renderAccImages) sits
+  // in a separate <script> tag from wherever escapeHtml was originally
+  // declared elsewhere in this file, so it was never actually reachable
+  // here — confirmed by walking the real <script> tag boundaries, not
+  // assumed. The failure surfaced as a SAVE error specifically because
+  // renderAccImages() (which throws here) runs inside load(), which
+  // save's own success path calls to refresh the display — so a save
+  // that actually succeeded on the backend still showed as "failed" to
+  // the user. Small local copy, scoped to just this block.
+  function accEscapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = String(s == null ? '' : s);
+    return d.innerHTML;
+  }
+
+  function renderAccImages(containerId, urls) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const valid = (urls || []).map(u => (u || '').trim()).filter(Boolean);
+    if (!valid.length) { el.innerHTML = ''; el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    el.innerHTML = valid.map(u => `<img src="${accEscapeHtml(u)}" class="opp-card-img" alt="" onerror="this.style.display='none'">`).join('');
+  }
+
+  // ── What's Been Accomplished: up to 4 cards, entries 1-2 get up to 6
+  // image slots each ─────────────────────────────────────────────────────
+  // Same structure/pattern as wireOpportunities() directly above — copied
+  // deliberately rather than generalized into one shared function, since
+  // the image-handling makes the two genuinely different in a few places
+  // (renderAccImages calls, the extra image fields to read/write) and
+  // this file's own convention elsewhere has been one clear, readable
+  // copy per block rather than a config-driven abstraction over two
+  // slightly different shapes.
+  (function wireAccomplished() {
+    const BRAND = 'creme-shop';
+    const editBtn = document.getElementById('acc-edit-btn');
+    const saveBtn = document.getElementById('acc-save-btn');
+    const cancelBtn = document.getElementById('acc-cancel-btn');
+    const editorEl = document.getElementById('acc-editor');
+    if (!editBtn || !saveBtn || !editorEl) return;
+
+    function getLastFullMonthLocal3() {
+      const now = new Date();
+      let year = now.getFullYear(), month = now.getMonth();
+      if (month === 0) { month = 12; year--; }
+      return { year, month };
+    }
+
+    async function load() {
+      const { year, month } = getLastFullMonthLocal3();
+      const row = await window.reportInsightsFetchRow(BRAND, { year: String(year), month: String(month) });
+      let anyVisible = false;
+      [1, 2, 3, 4].forEach(n => {
+        const title    = row ? (row[`accomplished${n}_title`]    || '') : '';
+        const subtitle = row ? (row[`accomplished${n}_subtitle`] || '') : '';
+        const body     = row ? (row[`accomplished${n}_body`]     || '') : '';
+        const card = document.getElementById(`acc-card-${n}`);
+        if (title) {
+          anyVisible = true;
+          card.style.display = '';
+          document.getElementById(`acc-title-${n}`).textContent = title;
+          const subEl = document.getElementById(`acc-subtitle-${n}`);
+          if (subtitle) { subEl.textContent = subtitle; subEl.style.display = ''; }
+          else { subEl.textContent = ''; subEl.style.display = 'none'; }
+          document.getElementById(`acc-body-${n}`).textContent = body;
+        } else {
+          card.style.display = 'none';
+        }
+        const taTitle = document.getElementById(`acc${n}-title-input`);
+        const taSub   = document.getElementById(`acc${n}-subtitle-input`);
+        const taBody  = document.getElementById(`acc${n}-body-input`);
+        if (taTitle) taTitle.value = title;
+        if (taSub)   taSub.value = subtitle;
+        if (taBody)  taBody.value = body;
+        if (n === 1 || n === 2) {
+          const imgUrls = [1,2,3,4,5,6].map(i => row ? (row[`accomplished${n}_image${i}`] || '') : '');
+          imgUrls.forEach((url, i) => { const inp = document.getElementById(`acc${n}-image${i+1}-input`); if (inp) inp.value = url; });
+          renderAccImages(`acc${n}-images-disp`, imgUrls);
+        }
+      });
+      document.getElementById('acc-empty-state').style.display = anyVisible ? 'none' : 'block';
+      return row;
+    }
+
+    editBtn.addEventListener('click', () => {
+      editorEl.style.display = editorEl.style.display === 'none' ? 'block' : 'none';
+    });
+    if (cancelBtn) cancelBtn.addEventListener('click', () => { editorEl.style.display = 'none'; });
+
+    saveBtn.addEventListener('click', async () => {
+      const origLabel = saveBtn.textContent;
+      saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+      try {
+        const { year, month } = getLastFullMonthLocal3();
+        const fields = {};
+        [1, 2, 3, 4].forEach(n => {
+          fields[`accomplished${n}_title`]    = (document.getElementById(`acc${n}-title-input`).value || '').trim();
+          fields[`accomplished${n}_subtitle`] = (document.getElementById(`acc${n}-subtitle-input`).value || '').trim();
+          fields[`accomplished${n}_body`]     = (document.getElementById(`acc${n}-body-input`).value || '').trim();
+          if (n === 1 || n === 2) {
+            [1,2,3,4,5,6].forEach(i => {
+              fields[`accomplished${n}_image${i}`] = (document.getElementById(`acc${n}-image${i}-input`).value || '').trim();
+            });
+          }
         });
         await window.reportInsightsSaveFields({ scope: 'monthly', year, month, fields, action: 'save' });
         await load();
@@ -27738,8 +28076,14 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       '<div class="pdfx-header-divider"></div>';
   }
 
-  function pdfxFooter(monthYear) {
-    return '<div class="pdfx-footer">' +
+  function pdfxFooter(monthYear, compact) {
+    // compact — added 2026-09-17, Opportunities page only. Overrides the
+    // shared .pdfx-footer's divider line + generous top spacing (36px
+    // margin, 16px padding, border-top) inline, so every OTHER page's
+    // footer is completely unaffected — the shared CSS rule itself isn't
+    // touched, only this one call site opts out of it.
+    const style = compact ? ' style="margin-top:6px;padding-top:0;border-top:none;"' : '';
+    return '<div class="pdfx-footer"' + style + '>' +
       '<div><div class="pdfx-footer-brand">medaltus.</div><div class="pdfx-footer-tag">A trusted partner for your brand.</div></div>' +
       '<div class="pdfx-footer-right">Generated: ' + pdfxEscape(monthYear) + '<br><span class="pdfx-footer-conf">CONFIDENTIAL</span></div>' +
       '</div>';
@@ -27869,8 +28213,15 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       '</div>';
   }
 
+  // FIXED 2026-10-01 — was querying '#m-opportunities .opp-card', which
+  // matched BOTH Future Opportunities cards AND Accomplished cards (both
+  // use the .opp-card class, and both now live inside #m-opportunities
+  // since Stage 3 added Accomplished to this same page) — would have
+  // silently mixed the two sections together in the PDF. Scoped to
+  // #opp-grid specifically, the Future Opportunities cards' own
+  // container, not their shared parent page.
   function pdfxFutureOpportunitiesBlock() {
-    const cards = Array.prototype.map.call(document.querySelectorAll('#m-opportunities .opp-card'), function (card) {
+    const cards = Array.prototype.map.call(document.querySelectorAll('#opp-grid .opp-card'), function (card) {
       const title = pdfxText('.opp-title', card);
       if (!title) return ''; // blank Title = this slot is unused, per Jaclyn 2026-07-18
       const subtitle = pdfxText('.opp-subtitle', card);
@@ -27885,28 +28236,70 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
     // Same pill-badge + headline pattern as Executive Summary on the cover
     // page (.pdfx-pill / .pdfx-cover-cols), so the two sections match
     // exactly as designed on the live dashboard. Per Jaclyn 2026-07-14.
-    return '<div class="pdfx-card" style="margin-top:14px;">' +
-      '<span class="pdfx-pill" style="margin-bottom:16px;">Future Opportunities</span>' +
-      '<div class="pdfx-cover-cols">' + cards + '</div>' +
+    return '<div class="pdfx-card" style="margin-top:0;">' +
+      '<span class="pdfx-pill" style="margin-bottom:12px;">Future Opportunities</span>' +
+      '<div class="pdfx-cover-cols" style="gap:24px;">' + cards + '</div>' +
       '</div>';
   }
 
-  
+  // What's Been Accomplished — added 2026-10-01, matching
+  // pdfxFutureOpportunitiesBlock's exact pattern, scoped to #acc-grid
+  // specifically (Accomplished cards' own container) so it can never
+  // pick up Future Opportunities cards even though both share the
+  // .opp-card class. Also renders each card's images, if any — acc1/
+  // acc2 can have up to 6; acc3/acc4 never do.
+  function pdfxAccomplishedBlock() {
+    const cards = Array.prototype.map.call(document.querySelectorAll('#acc-grid .opp-card'), function (card) {
+      const title = pdfxText('.opp-title', card);
+      if (!title) return ''; // blank Title = this slot is unused
+      const subtitle = pdfxText('.opp-subtitle', card);
+      const body = pdfxText('.opp-body', card);
+      const imgs = Array.prototype.map.call(card.querySelectorAll('.opp-card-img'), function (img) {
+        // class pdfx-acc-img: lets pdfxGrowAccomplishedImages() enlarge these
+        // when the Opportunities page has spare room (56px is the floor).
+        return '<img class="pdfx-acc-img" src="' + pdfxEscape(img.getAttribute('src') || '') + '" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--border);margin:6px 6px 0 0;">';
+      }).join('');
+      return '<div>' +
+        '<div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">' + pdfxEscape(title) + '</div>' +
+        (subtitle ? '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;">' + pdfxEscape(subtitle) + '</div>' : '') +
+        '<div style="font-size:11.5px;color:#48557a;line-height:1.6;">' + pdfxEscape(body) + '</div>' +
+        (imgs ? '<div style="display:flex;flex-wrap:wrap;margin-top:4px;">' + imgs + '</div>' : '') +
+        '</div>';
+    }).join('');
+    if (!cards) return '';
+    return '<div class="pdfx-card" style="margin-top:0;margin-bottom:22px;">' +
+      '<span class="pdfx-pill pdfx-pill-sand" style="margin-bottom:12px;">What&rsquo;s Been Accomplished</span>' +
+      '<div class="pdfx-cover-cols" style="gap:24px;">' + cards + '</div>' +
+      '</div>';
+  }
 
   function buildOpportunitiesPage(monthYear) {
+    // REBUILT 2026-10-07 to match Just Bjorn: What's Been Accomplished +
+    // Future Opportunities, using Just Bjorn's own blocks and compact
+    // footer. Unlike Just Bjorn, Crème Shop's Subscribe & Save still lives
+    // on this tab, so it stays at the top of this page, with the
+    // Subscriptions Key Insight under its chart (same as Just Bjorn's
+    // Insights page renders it). Empty insight = omitted.
     const kpis = ['kpi-active-subs', 'kpi-retention'].map(pdfxKpi);
+    const subsInsight = pdfxText('#subsinsight-disp');
     return '' +
       '<div class="pdfx-page">' +
-        '<div class="pdfx-inner">' +
+        '<div class="pdfx-inner" style="padding:22px 46px 26px;">' +
           pdfxHeaderBand(monthYear, 'Opportunities') +
-          '<div class="pdfx-chlabel">Subscribe &amp; Save</div>' +
-          '<div class="pdfx-kpis n2" style="margin-top:6px;">' + kpis.map(pdfxKpiCardHtml).join('') + '</div>' +
-          '<div class="pdfx-card"><div class="pdfx-card-title">Active Subscriptions by Month</div>' + pdfxChartBlock('_snsChart') + '</div>' +
+          '<div class="pdfx-card" style="margin-bottom:14px;">' +
+            '<div class="pdfx-card-title">Subscribe &amp; Save</div>' +
+            '<div class="pdfx-kpis n2" style="margin-bottom:10px;">' + kpis.map(pdfxKpiCardHtml).join('') + '</div>' +
+            '<div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;">Active Subscriptions by Month</div>' +
+            pdfxChartBlock('_snsChart') +
+            (subsInsight ? '<div class="pdfx-insight" style="margin-top:10px;">' + pdfxEscape(subsInsight) + '</div>' : '') +
+          '</div>' +
+          pdfxAccomplishedBlock() +
           pdfxFutureOpportunitiesBlock() +
-          pdfxFooter(monthYear) +
+          pdfxFooter(monthYear, true) +
         '</div>' +
       '</div>';
   }
+
 
   // Static content — mirrors the Strategy tab's own text (#ev-strategy).
   // Hardcoded here rather than read from the DOM since it's a fixed
