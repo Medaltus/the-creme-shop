@@ -28045,6 +28045,88 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       : '<span style="font-family:Georgia,\'Times New Roman\',serif;font-style:italic;">the crème shop<sup style="font-size:.5em;">®</sup></span>';
   }
 
+  // ADDED 2026-10-08 per Jaclyn — event Top Sellers charts print as true
+  // vectors (inline SVG: sharp at any zoom, text selectable/searchable)
+  // instead of a captured canvas image. Drawn from the live Chart.js
+  // object's own data so it always matches the dashboard: same bars,
+  // colours, on-bar values (inside when they fit, outside when not), and
+  // the same YOY pill rule ("New" when last year was 0, otherwise the
+  // same pct() maths). Returns '' if the chart isn't loaded, and the
+  // caller falls back to the old image capture.
+  function pdfxTopSellersSvg(prefix) {
+    const chart = window['_' + prefix + 'TopSellersChart'];
+    if (!chart || !chart.data || !chart.data.datasets || chart.data.datasets.length < 2) return '';
+    const names = chart.data.labels || [];
+    const prevDs = chart.data.datasets[0], currDs = chart.data.datasets[1];
+    const prev = prevDs.data || [], curr = currDs.data || [];
+    if (!names.length) return '';
+    const prevColor = prevDs.backgroundColor || '#8a94a6';
+    const currColor = currDs.backgroundColor || '#1b2559';
+
+    const W = 686;
+    const LABEL_W = 210, LABEL_PAD = 10, PILL_W = 58;
+    const plotX = LABEL_W + LABEL_PAD;
+    const plotW = W - plotX - PILL_W - 10;
+    const BAR_H = 12, BAR_GAP = 3, ROW_GAP = 12;
+    const LINE_H = 11, LABEL_FS = 9.5, VAL_FS = 8.5, PILL_FS = 8.5;
+    const max = Math.max(1, ...prev.map(Number), ...curr.map(Number));
+    const esc = pdfxEscape;
+    const approxW = (s, fs) => String(s).length * fs * 0.58;
+    // word-wrap at ~38 chars (wrapBarLabel lives inside the event IIFEs, so
+    // it isn't reachable from here)
+    const wrap = (s) => {
+      const words = String(s).split(/\s+/).filter(Boolean), out = [];
+      let cur = '';
+      words.forEach(w => { if (cur && (cur + ' ' + w).length > 38) { out.push(cur); cur = w; } else { cur = cur ? cur + ' ' + w : w; } });
+      if (cur) out.push(cur);
+      return out.length ? out : [''];
+    };
+    const pctFn = (c, pv) => { const b = (!pv || pv === 0) ? 0.01 : pv; return Math.round(((c - b) / b) * 100); };
+
+    let y = 4, body = '';
+    names.forEach((name, i) => {
+      const pv = Number(prev[i]) || 0, cv = Number(curr[i]) || 0;
+      const lines = wrap(name);
+      const barsH = BAR_H * 2 + BAR_GAP;
+      const labelH = lines.length * LINE_H;
+      const rowH = Math.max(barsH, labelH);
+      const barsTop = y + (rowH - barsH) / 2;
+      const midY = barsTop + barsH / 2;
+
+      // product name, right-aligned, vertically centred on the bar pair
+      const labelTop = midY - labelH / 2 + LINE_H * 0.78;
+      body += '<text x="' + LABEL_W + '" y="' + labelTop.toFixed(1) + '" text-anchor="end" font-size="' + LABEL_FS + '" fill="#3d4a6b">' +
+        lines.map((ln, j) => '<tspan x="' + LABEL_W + '" dy="' + (j ? LINE_H : 0) + '">' + esc(ln) + '</tspan>').join('') + '</text>';
+
+      [[pv, prevColor, barsTop], [cv, currColor, barsTop + BAR_H + BAR_GAP]].forEach(([v, col, by]) => {
+        const bw = Math.max(0, (v / max) * plotW);
+        if (bw > 0) body += '<rect x="' + plotX + '" y="' + by.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + BAR_H + '" rx="2.5" fill="' + esc(col) + '"/>';
+        const label = String(v);
+        const ty = (by + BAR_H / 2 + VAL_FS * 0.35).toFixed(1);
+        if (bw > approxW(label, VAL_FS) + 12) {
+          body += '<text x="' + (plotX + bw - 6).toFixed(1) + '" y="' + ty + '" text-anchor="end" font-size="' + VAL_FS + '" font-weight="600" fill="#fff">' + esc(label) + '</text>';
+        } else {
+          body += '<text x="' + (plotX + bw + 5).toFixed(1) + '" y="' + ty + '" font-size="' + VAL_FS + '" font-weight="600" fill="#8a94a6">' + esc(label) + '</text>';
+        }
+      });
+
+      const isNew = !pv && cv > 0;
+      const p = pctFn(cv, pv);
+      const pill = isNew ? 'New' : (p > 0 ? '+' : '') + p + '%';
+      const good = isNew || p >= 0;
+      const pw = approxW(pill, PILL_FS) + 12, ph = 15;
+      const px = W - PILL_W + 4;
+      body += '<rect x="' + px + '" y="' + (midY - ph / 2).toFixed(1) + '" width="' + pw.toFixed(1) + '" height="' + ph + '" rx="3" fill="' + (good ? 'rgba(36,233,163,.15)' : 'rgba(219,55,45,.12)') + '"/>' +
+        '<text x="' + (px + 6) + '" y="' + (midY + PILL_FS * 0.35).toFixed(1) + '" font-size="' + PILL_FS + '" font-weight="700" fill="' + (good ? '#1a9b6f' : '#c0392b') + '">' + esc(pill) + '</text>';
+
+      y += rowH + ROW_GAP;
+    });
+    const H = Math.ceil(y - ROW_GAP + 4);
+    // thin axis line where the bars start, like the live chart
+    body = '<line x1="' + plotX + '" y1="0" x2="' + plotX + '" y2="' + H + '" stroke="#e3e7ef" stroke-width="1"/>' + body;
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="display:block;width:' + W + 'px;height:' + H + 'px;font-family:inherit;">' + body + '</svg>';
+  }
+
   function pdfxChartBlock(varName, fallbackLabel) {
     const img = pdfxChartImg(varName);
     if (img) {
@@ -28510,7 +28592,7 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
             '<div class="pdfx-card-title" style="margin-bottom:0;">Top Sellers — Units Sold</div>' + legendHtml +
           '</div>' +
-          pdfxChartBlock('_' + prefix + 'TopSellersChart') + '</div>'
+          (pdfxTopSellersSvg(prefix) || pdfxChartBlock('_' + prefix + 'TopSellersChart')) + '</div>'
       : '';
 
     return '' +
