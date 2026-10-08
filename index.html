@@ -19735,7 +19735,22 @@ async function initSnsExternal() {
         // toggling the grid off while keeping ticks/border.
         scales: {
           x: { display: false, beginAtZero: true },
-          y: { grid: { display: false }, ticks: { callback: function (value) { return wrapBarLabel(this.getLabelForValue(value), 16); } } }
+          // FIXED 2026-10-08: Crème Shop product names are long. Wrapping at 16
+          // characters made 4-5 line labels that collided, so Chart.js's
+          // autoSkip silently dropped every other name. Now: wider label
+          // column (28% of the chart, capped at 320px so the PDF capture
+          // still has room for bars), 34-char wrap, and autoSkip off so
+          // every row always shows its name.
+          y: {
+            grid: { display: false },
+            afterFit: function (scale) { scale.width = Math.min(320, Math.max(180, Math.round(scale.chart.width * 0.28))); },
+            ticks: {
+              autoSkip: false,
+              font: { size: 11 },
+              color: '#3d4a6b',
+              callback: function (value) { return wrapBarLabel(this.getLabelForValue(value), 34); }
+            }
+          }
         }
       }
     });
@@ -20156,7 +20171,22 @@ async function initSnsExternal() {
         },
         scales: {
           x: { display: false, beginAtZero: true },
-          y: { grid: { display: false }, ticks: { callback: function (value) { return wrapBarLabel(this.getLabelForValue(value), 16); } } }
+          // FIXED 2026-10-08: Crème Shop product names are long. Wrapping at 16
+          // characters made 4-5 line labels that collided, so Chart.js's
+          // autoSkip silently dropped every other name. Now: wider label
+          // column (28% of the chart, capped at 320px so the PDF capture
+          // still has room for bars), 34-char wrap, and autoSkip off so
+          // every row always shows its name.
+          y: {
+            grid: { display: false },
+            afterFit: function (scale) { scale.width = Math.min(320, Math.max(180, Math.round(scale.chart.width * 0.28))); },
+            ticks: {
+              autoSkip: false,
+              font: { size: 11 },
+              color: '#3d4a6b',
+              callback: function (value) { return wrapBarLabel(this.getLabelForValue(value), 34); }
+            }
+          }
         }
       }
     });
