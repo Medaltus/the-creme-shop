@@ -28475,8 +28475,42 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
             .map(pdfxKpiCardHtml).join('') +
         '</div>'
       : '';
+    // Year legend — ADDED 2026-10-08 per Jaclyn (it was missing from
+    // another brand's export). The live legend is a separate HTML element
+    // (#<prefix>-legend), not part of the chart canvas, so the chart image
+    // alone never carried it. Built from the chart's own datasets (colour +
+    // the 4-digit year at the end of each dataset label) so it always
+    // matches the bars; falls back to the live legend's text if needed.
+    const tsChart = window['_' + prefix + 'TopSellersChart'];
+    let legendItems = [];
+    if (tsChart && tsChart.data && tsChart.data.datasets) {
+      legendItems = tsChart.data.datasets.map(function (ds) {
+        const m = String(ds.label || '').match(/(\d{4})\s*$/);
+        return { color: ds.backgroundColor, text: m ? m[1] : String(ds.label || '') };
+      }).filter(function (it) { return it.text; });
+    }
+    if (!legendItems.length) {
+      const liveLegend = pdfxById(prefix + '-legend');
+      if (liveLegend) {
+        legendItems = Array.prototype.map.call(liveLegend.querySelectorAll('span'), function (sp) {
+          const sw = sp.querySelector('i');
+          return { color: sw ? sw.style.background : '#8a94a6', text: (sp.textContent || '').trim() };
+        }).filter(function (it) { return it.text; });
+      }
+    }
+    const legendHtml = legendItems.length
+      ? '<div style="display:flex;gap:14px;align-items:center;">' + legendItems.map(function (it) {
+          return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);font-weight:600;">' +
+            '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + pdfxEscape(it.color) + ';"></span>' +
+            pdfxEscape(it.text) + '</span>';
+        }).join('') + '</div>'
+      : '';
     const chartHtml = hasKpis
-      ? '<div class="pdfx-card" style="margin-top:14px;"><div class="pdfx-card-title">Top Sellers — Units Sold</div>' + pdfxChartBlock('_' + prefix + 'TopSellersChart') + '</div>'
+      ? '<div class="pdfx-card" style="margin-top:14px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+            '<div class="pdfx-card-title" style="margin-bottom:0;">Top Sellers — Units Sold</div>' + legendHtml +
+          '</div>' +
+          pdfxChartBlock('_' + prefix + 'TopSellersChart') + '</div>'
       : '';
 
     return '' +
