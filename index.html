@@ -266,6 +266,8 @@ nav > .nav-btn:not(.active):hover{color:#fff;}
 .insight-bar{background:var(--sand);border:1px solid rgba(0,31,96,0.10);border-radius:var(--radius-sm);padding:12px 16px;margin-top:14px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;}
 .insight-bar strong{font-size:12px;color:var(--navy);white-space:nowrap;}
 .insight-text{font-size:12.5px;color:var(--navy);flex:1;line-height:1.6;}
+/* Dazzle Dry's Key Insight box (VBC .evo-page .key-insight), ported 2026-10-08 for the Marketing → Insights tab */
+.key-insight{background:var(--sand);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;padding:12px 16px}
 .insight-actions{display:flex;gap:7px;align-items:center;margin-left:auto;}
 .btn-edit{background:none;border:1px solid rgba(0,31,96,0.20);border-radius:var(--radius-sm);padding:4px 11px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .13s;font-family:var(--font);}
 .btn-edit:hover{border-color:var(--navy);color:var(--navy);}
@@ -1272,6 +1274,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-walmart" style="margin:0;"> Walmart</label>
         <!-- Marketing pages — same default-checked reasoning as Sales above. -->
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-stewardship" checked style="margin:0;"> Stewardship</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-insights" checked style="margin:0;"> Insights</label>
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;"><input type="checkbox" id="pdf-include-opportunities" checked style="margin:0;"> Opportunities</label>
         <!-- Events pages — existing checkboxes, unchanged; default UNCHECKED
              as before. -->
@@ -1639,7 +1642,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <button class="ch-tab active" onclick="showChannel('sales','s-overview',this)">Overview</button>
         <button class="ch-tab" onclick="showChannel('sales','s-amazon',this)">Amazon</button>
         <button class="ch-tab" onclick="showChannel('sales','s-walmart',this)">Walmart</button>
-        <button class="ch-tab" onclick="showChannel('sales','s-brand-momentum',this)">Brand Momentum</button>
       </div>
       <!-- Shared period-selector row — added 2026-08-12 per Jaclyn, moved
            here (right-aligned next to the channel tabs) to match Skinuva's
@@ -1803,74 +1805,6 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       </div>
     </div>
 
-    <!-- Brand Momentum tab — added 2026-09-01 per Jaclyn, ported from
-         Skinside Seoul's proven build. -->
-    <div class="channel-page" id="s-brand-momentum">
-      <div class="channel-hdr">
-        <span style="font-size:16px;font-weight:600;color:var(--navy);">Brand Momentum</span>
-      </div>
-
-      <div class="kpi-row">
-        <div class="kpi-card" id="bm-kpi-reviews"><div class="kpi-label">Reviews Collected</div><div class="kpi-value">—</div></div>
-        <div class="kpi-card" id="bm-kpi-ranked-keywords"><div class="kpi-label">Keywords with Organic Rank</div><div class="kpi-value">—</div></div>
-        <div class="kpi-card" id="bm-kpi-sessions"><div class="kpi-label">Sessions</div><div class="kpi-value">—</div><div class="kpi-mom flat"></div></div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title">Sessions by Product</div>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead><tr><th>Product</th><th>Sessions</th><th>% vs Launch</th></tr></thead>
-            <tbody id="bm-sessions-tbody"><tr><td colspan="3" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title">Targeted Keyword Indexing Progress</div>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead><tr><th>Keyword</th><th>Product</th><th>Organic Rank</th><th>Search Volume</th></tr></thead>
-            <tbody id="bm-keyword-tbody"><tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-        <div class="ppc-note">ℹ Top 10 rows, keywords with real rank movement sorted first, then by rank ascending within each group.</div>
-      </div>
-
-      <div class="ppc-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-          <div class="ppc-card-title" style="margin-bottom:0;">Subcategory BSR by Product</div>
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
-            <input type="checkbox" id="bm-hide-negative-bsr" onchange="window.bmRenderBsrTable && window.bmRenderBsrTable()"> Hide negative changes
-          </label>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead><tr><th>Product</th><th>Subcategory BSR</th><th>Change Since First Recorded</th><th>Subcategory</th></tr></thead>
-            <tbody id="bm-bsr-tbody"><tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title">Review Velocity &amp; Quality</div>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead><tr><th>Product</th><th>Review Count</th><th>Avg. Rating</th></tr></thead>
-            <tbody id="bm-review-velocity-tbody"><tr><td colspan="3" style="color:var(--muted);">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="ppc-card">
-        <div class="ppc-card-title">What We're Tracking Next</div>
-        <ul style="margin:0;padding-left:20px;color:var(--text);font-size:13px;line-height:1.7;">
-          <li>Organic rank movement for our top-priority keyword set, month over month.</li>
-          <li>Subcategory BSR trends as a leading indicator of category-level momentum, independent of overall BSR.</li>
-          <li>Review velocity and rating trends as new products build up their own review base.</li>
-        </ul>
-      </div>
-    </div>
   </div>
 
   <!-- ══ SALES (EXTERNAL REPLICA) ══ -->
@@ -2008,6 +1942,8 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
     </div>
     <div class="channel-tabs">
       <button class="ch-tab active" onclick="showChannel('marketing','m-stewardship',this)">Brand Stewardship</button>
+      <button class="ch-tab" onclick="showChannel('marketing','m-insights',this)">Insights</button>
+      <button class="ch-tab" onclick="showChannel('marketing','s-brand-momentum',this)">Brand Momentum</button>
       <button class="ch-tab" onclick="showChannel('marketing','m-opportunities',this)">Opportunities</button>
     </div>
 
@@ -2074,39 +2010,124 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
       </div>
 
     </div>
-    <div class="channel-page" id="m-opportunities">
-
-      <div class="section-label">Subscribe &amp; Save</div>
-      <div class="kpi-row" style="margin-bottom:20px;">
-        <div class="kpi-card" id="kpi-active-subs"><div class="kpi-label">Active Subscriptions</div><div class="kpi-value" style="font-size:36px;">123</div><div class="kpi-mom flat">Loading…</div></div>
-        <div class="kpi-card" id="kpi-retention"><div class="kpi-label">Subscribe &amp; Save Retention (90 Days)</div><div class="kpi-value" style="font-size:36px;">70%</div><div class="kpi-mom flat">Loading…</div></div>
-      </div>
-      <div class="card" style="margin-bottom:20px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div class="card-title" style="margin-bottom:0;">Active Subscriptions by Month</div>
-          <div id="legend-sns" style="display:flex;align-items:center;"></div>
+    <!-- ═══ Insights — ADDED 2026-10-08 per Jaclyn, matching Dazzle Dry's
+         Sales → Insights tab (VBC dashboard) card for card: Unit Sales by
+         Product Category, Subscriptions (2 KPIs + year-over-year line
+         chart), and one Key Insight saved to category_key_insight.
+         Subscribe & Save moved here from Opportunities; element ids kept
+         (kpi-active-subs / kpi-retention / chart-sns) so initSns and the
+         PDF export still find them. ═══ -->
+    <div class="channel-page" id="m-insights">
+      <div class="card">
+        <!-- Legend is HTML (not Chart.js's in-canvas one) so it prints at a
+             readable size in the PDF; same top-right spot and look. -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="card-title" style="margin-bottom:0;">Unit Sales by Product Category</div>
+          <div id="legend-category" style="display:flex;align-items:center;"></div>
         </div>
-        <div style="position:relative;height:320px;"><canvas id="chart-sns"></canvas></div>
+        <div style="position:relative;height:300px;"><canvas id="chart-category-sales"></canvas></div>
       </div>
-
-      <!-- Subscriptions Key Insight — added 2026-10-06 per Jaclyn; same markup
-           and wiring as the Key Insight card below, saved to the
-           subscriptions_key_insight column. -->
-      <div class="card" style="margin-bottom:20px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div class="card-title" style="margin-bottom:0;">Subscriptions Key Insight</div>
-          <button class="btn-edit" id="subsinsight-edit-btn">✏️ Edit</button>
+      <div class="card">
+        <div class="card-title">Subscriptions</div>
+        <div class="kpi-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px;">
+          <div class="kpi-card" id="kpi-active-subs"><div class="kpi-label">Total Active Subscriptions</div><div class="kpi-value">—</div><div class="kpi-mom flat">Loading…</div></div>
+          <div class="kpi-card" id="kpi-retention"><div class="kpi-label">Subscribe &amp; Save Retention 90 Days</div><div class="kpi-value">—</div><div class="kpi-mom flat">Loading…</div></div>
         </div>
-        <div class="insight-text" id="subsinsight-disp" data-placeholder="No insight added yet — click Edit to add one."></div>
-        <div class="insight-editor" id="subsinsight-editor" style="display:none;">
-          <textarea id="subsinsight-textarea"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;">Active Subscriptions by Month <span style="font-weight:400;">(Year over Year)</span></div>
+          <div id="legend-subs" style="display:flex;align-items:center;"></div>
+        </div>
+        <div style="position:relative;height:260px;"><canvas id="chart-sns"></canvas></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:0;">Key Insight</div>
+          <button class="btn-edit" id="catinsight-edit-btn">✏️ Edit</button>
+        </div>
+        <div class="insight-text key-insight" id="catinsight-disp" data-placeholder="No insight yet — click Edit to add one."></div>
+        <div class="insight-editor" id="catinsight-editor" style="display:none;">
+          <textarea id="catinsight-input"></textarea>
           <div class="editor-footer">
-            <span class="editor-note">Saves directly to the report sheet as a draft.</span>
-            <button class="btn-cancel" id="subsinsight-cancel">Cancel</button>
-            <button class="btn-save-stage" id="subsinsight-save">Save</button>
+            <span class="editor-note">Saves to this month's report row. Any field can be left blank — nothing here is required.</span>
+            <button class="btn-cancel" id="catinsight-cancel-btn">Cancel</button>
+            <button class="btn-save-stage" id="catinsight-save-btn">Save</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Brand Momentum tab — added 2026-09-01 per Jaclyn, ported from
+         Skinside Seoul's proven build. MOVED 2026-10-08 per Jaclyn from the
+         Sales page to Marketing, right of the new Insights tab. Same id, so
+         showChannel's initBrandMomentum() hook works unchanged. -->
+    <div class="channel-page" id="s-brand-momentum">
+      <div class="channel-hdr">
+        <span style="font-size:16px;font-weight:600;color:var(--navy);">Brand Momentum</span>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card" id="bm-kpi-reviews"><div class="kpi-label">Reviews Collected</div><div class="kpi-value">—</div></div>
+        <div class="kpi-card" id="bm-kpi-ranked-keywords"><div class="kpi-label">Keywords with Organic Rank</div><div class="kpi-value">—</div></div>
+        <div class="kpi-card" id="bm-kpi-sessions"><div class="kpi-label">Sessions</div><div class="kpi-value">—</div><div class="kpi-mom flat"></div></div>
+      </div>
+
+      <div class="ppc-card">
+        <div class="ppc-card-title">Sessions by Product</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Product</th><th>Sessions</th><th>% vs Launch</th></tr></thead>
+            <tbody id="bm-sessions-tbody"><tr><td colspan="3" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ppc-card">
+        <div class="ppc-card-title">Targeted Keyword Indexing Progress</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Keyword</th><th>Product</th><th>Organic Rank</th><th>Search Volume</th></tr></thead>
+            <tbody id="bm-keyword-tbody"><tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="ppc-note">ℹ Top 10 rows, keywords with real rank movement sorted first, then by rank ascending within each group.</div>
+      </div>
+
+      <div class="ppc-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+          <div class="ppc-card-title" style="margin-bottom:0;">Subcategory BSR by Product</div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+            <input type="checkbox" id="bm-hide-negative-bsr" onchange="window.bmRenderBsrTable && window.bmRenderBsrTable()"> Hide negative changes
+          </label>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Product</th><th>Subcategory BSR</th><th>Change Since First Recorded</th><th>Subcategory</th></tr></thead>
+            <tbody id="bm-bsr-tbody"><tr><td colspan="4" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ppc-card">
+        <div class="ppc-card-title">Review Velocity &amp; Quality</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>Product</th><th>Review Count</th><th>Avg. Rating</th></tr></thead>
+            <tbody id="bm-review-velocity-tbody"><tr><td colspan="3" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ppc-card">
+        <div class="ppc-card-title">What We're Tracking Next</div>
+        <ul style="margin:0;padding-left:20px;color:var(--text);font-size:13px;line-height:1.7;">
+          <li>Organic rank movement for our top-priority keyword set, month over month.</li>
+          <li>Subcategory BSR trends as a leading indicator of category-level momentum, independent of overall BSR.</li>
+          <li>Review velocity and rating trends as new products build up their own review base.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="channel-page" id="m-opportunities">
 
             <!-- What's Been Accomplished — 4 entries; 1 and 2 have up to 6 image
            slots, 3 and 4 are text only. CORRECTED 2026-10-06: field names are
@@ -2118,7 +2139,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
            Opportunities below. -->
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="display:inline-block;background:rgba(0,31,96,.06);border:1px solid rgba(0,31,96,.15);border-radius:4px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);">What's Been Accomplished</div>
+          <div class="card-title" style="margin-bottom:0;">What's Been Accomplished</div>
           <button class="btn-edit" id="acc-edit-btn">✏️ Edit</button>
         </div>
         <div class="insight-grid" id="acc-grid">
@@ -2247,7 +2268,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="display:inline-block;background:rgba(36,233,163,.12);border:1px solid rgba(36,233,163,.3);border-radius:4px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);">Future Opportunities</div>
+          <div class="card-title" style="margin-bottom:0;">Opportunities</div>
           <button class="btn-edit" id="opp-edit-btn">✏️ Edit</button>
         </div>
         <div class="opp-grid" id="opp-grid">
@@ -2271,8 +2292,18 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
             <div class="opp-subtitle" id="opp-subtitle-4"></div>
             <div class="opp-body" id="opp-body-4"></div>
           </div>
+          <div class="opp-card" id="opp-card-5" style="display:none;">
+            <div class="opp-title" id="opp-title-5"></div>
+            <div class="opp-subtitle" id="opp-subtitle-5"></div>
+            <div class="opp-body" id="opp-body-5"></div>
+          </div>
+          <div class="opp-card" id="opp-card-6" style="display:none;">
+            <div class="opp-title" id="opp-title-6"></div>
+            <div class="opp-subtitle" id="opp-subtitle-6"></div>
+            <div class="opp-body" id="opp-body-6"></div>
+          </div>
         </div>
-        <div id="opp-empty-state" style="display:none;color:var(--muted);font-size:12px;padding:8px 0;">No opportunities added yet — click Edit to add up to 4.</div>
+        <div id="opp-empty-state" style="display:none;color:var(--muted);font-size:12px;padding:8px 0;">No opportunities added yet — click Edit to add up to 6.</div>
       </div>
       <div class="insight-editor" id="opp-editor">
         <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Up to 4 opportunity cards. Leave a card's Title blank to leave it out of the report entirely. Subtitle is optional — if left blank, the body text sits directly under the title.</div>
@@ -12599,7 +12630,9 @@ function showPage(id, btn) {
     if (cid && cid.indexOf('x-') === 0) window.initSalesExternalPage();
     if (cid && cid.indexOf('mx-') === 0) window.initMarketingExternalPage();
     if (cid==='m-stewardship')   window.initStewardshipLive();
-    if (cid==='m-opportunities' && !window._snsChart) initSns();
+    if (cid==='m-insights' && !window._snsChart) initSns();
+    if (cid==='m-insights') window.loadCategoryChart();
+    if (cid==='s-brand-momentum') window.initBrandMomentum();
   }
 }
 
@@ -12620,7 +12653,8 @@ function showChannel(page, channelId, btn) {
     if (channelId.indexOf('x-') === 0)   window.initSalesExternalPage();
     if (channelId.indexOf('mx-') === 0)  window.initMarketingExternalPage();
     if (channelId === 'm-stewardship')   window.initStewardshipLive();
-    if (channelId === 'm-opportunities' && !window._snsChart) initSns();
+    if (channelId === 'm-insights' && !window._snsChart) initSns();
+    if (channelId === 'm-insights')      window.loadCategoryChart();
     if (channelId === 'ev-primeday')     window.initPrimeDayReport();
     if (channelId === 'ev-spring')       window.initBigSpringSaleReport();
     if (channelId === 'ev-pbdd')         window.initPBDDReport();
@@ -12930,8 +12964,8 @@ async function initSns() {
   const RETENTION_SHEET_ID = '1i94keQYY21aSh8KP-ZpvqO1MF2g0nX5ThMD93y3wU48';  // Subscriptions cache — confirmed correct directly from Jaclyn's own URL text 2026-07-28 (my prior 'KR' correction was wrong — misread a screenshot; P and R look nearly identical in that font). The real bug was ONLY the gid below, which pointed at a tab with pbj's data instead of the crème shop's.
   const RETENTION_GID = '2030319683';                                   // ported from the crème shop's 'evolis' tab reference — creme-shop gid confirmed from Dashboard Mapping, NOT re-verified against a live screenshot
 
-  const kpiValues = document.querySelectorAll('#m-opportunities .kpi-value');
-  const subsKpiEl = kpiValues[0] || null;
+  // Card moved to Marketing → Insights 2026-10-08; select by id now.
+  const subsKpiEl = document.querySelector('#kpi-active-subs .kpi-value') || null;
   const retentionKpiEl = document.querySelector('#kpi-retention .kpi-value') || null;
 
   try {
@@ -12985,25 +13019,63 @@ async function initSns() {
       console.log('[Creme Shop][subscriptions] months actually plotted on the chart (trailing', TRAILING_MONTHS, 'of', labels.length, 'available):', trimmedLabels.join(', '));
 
       if (values.length) {
-        // Color by calendar year: 2024 sand, 2025 slate, 2026 navy. Falls
-        // back gracefully for any other year (older -> sand-ish, newer ->
-        // navy) so this doesn't quietly break once 2027 data shows up.
-        const YEAR_COLORS = { 2024: '#f4dfd0', 2025: '#6b7ba2', 2026: '#001f60' };
-        const distinctYears = [...new Set(trimmedYears)].sort((a, b) => a - b);
-        const bg = trimmedYears.map(y => {
-          if (YEAR_COLORS[y]) return YEAR_COLORS[y];
-          const idx = distinctYears.indexOf(y);
-          return idx <= 0 ? '#f4dfd0' : (idx === distinctYears.length - 1 ? '#001f60' : '#6b7ba2');
-        });
+        // CHANGED 2026-10-08 per Jaclyn: Dazzle Dry's year-over-year line
+        // chart (VBC yoyBuildDatasets/yoyChartOptions/renderYoyLegend),
+        // replacing the 13-month bar chart. Jan–Dec on the x-axis, one line
+        // per year (current + up to 3 prior), current year stops before the
+        // current (incomplete) month, legend lives in the card header.
+        const YOY_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const YOY_COLORS = {
+          0: { border:'#24e9a3', bg:'rgba(36,233,163,0.08)', fill:true  },
+          1: { border:'#001f60', bg:'transparent',           fill:false },
+          2: { border:'#f4dfd0', bg:'transparent',           fill:false },
+          3: { border:'#ccd3d5', bg:'transparent',           fill:false },
+        };
+        const now = new Date(), currentYear = now.getFullYear(), stopMonth = now.getMonth();
+        const datasets = [];
+        for (let offset = 0; offset <= 3; offset++) {
+          const yr = currentYear - offset, c = YOY_COLORS[offset];
+          const dataArr = YOY_MONTHS.map((_, idx) => {
+            const mo = idx + 1;
+            if (yr === currentYear && mo > stopMonth) return null;
+            const hit = withDate.find(x => x.y === yr && x.m === mo);
+            const v = hit ? num(hit.row.total_subscriptions ?? hit.row.total_subs ?? hit.row.subscriptions ?? hit.row.active_subscriptions) : null;
+            return v ? v : null; // 0 = not tracked yet, same rule as before
+          });
+          if (dataArr.every(v => v === null)) continue;
+          datasets.push({ label: String(yr), data: dataArr, borderColor: c.border, backgroundColor: c.bg, fill: c.fill, pointRadius: 2, tension: 0.3, borderWidth: 2.5 });
+        }
+        const fmtN = v => v == null ? '' : Math.round(v).toLocaleString();
+        if (window._snsChart) window._snsChart.destroy();
         window._snsChart = new Chart(canvas, {
-          type: 'bar',
-          data: { labels: trimmedLabels, datasets: [{ label: 'Active Subscriptions', data: trimmedValues, backgroundColor: bg }] },
+          type: 'line',
+          data: { labels: YOY_MONTHS, datasets },
           options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, beginAtZero: true } }
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor:'#fff', borderColor:'rgba(0,31,96,0.1)', borderWidth:1,
+                titleColor:'#001F60', bodyColor:'#6B7BA2',
+                titleFont:{family:'DM Sans, sans-serif', size:11, weight:'600'},
+                bodyFont:{family:'DM Sans, sans-serif', size:11},
+                padding:12, boxWidth:8, boxHeight:8,
+                callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${fmtN(ctx.parsed.y)}` }
+              }
+            },
+            scales: {
+              x: { border:{display:false}, grid:{display:false}, ticks:{font:{family:'DM Sans, sans-serif', size:10}, color:'#6B7BA2'} },
+              y: { border:{display:false}, grid:{color:'rgba(0,31,96,0.05)'}, ticks:{font:{family:'DM Sans, sans-serif', size:10}, color:'#6B7BA2', callback: fmtN} }
+            }
           }
         });
+        const legendEl = document.getElementById('legend-subs');
+        if (legendEl) {
+          legendEl.innerHTML = datasets.map(ds =>
+            '<span style="display:inline-flex;align-items:center;gap:6px;margin-left:16px;font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;">' +
+            '<span style="width:16px;height:3px;border-radius:2px;background:' + ds.borderColor + ';display:inline-block;flex-shrink:0;"></span>' +
+            ds.label + '</span>').join('');
+        }
         if (subsKpiEl) subsKpiEl.textContent = Math.round(values[values.length - 1]).toLocaleString();
         const subsMomEl = subsKpiEl ? subsKpiEl.nextElementSibling : null;
         if (subsMomEl) {
@@ -18512,6 +18584,7 @@ async function initSnsExternal() {
     // Stewardship and SNS are plain functions defined at script scope
     if (typeof window.initStewardshipLive === 'function') window.initStewardshipLive();
     if (typeof initSns         === 'function') initSns();
+    if (typeof window.loadCategoryChart === 'function') window.loadCategoryChart();
     // Insights overview — units chart, Active/Peak/Total SKU KPIs, Brand at a Glance.
     // Defined later in the file (needs INSIGHTS_SHEET_ID etc which are declared
     // further down) and exposed on window so it can be called from here.
@@ -20282,11 +20355,14 @@ async function initSnsExternal() {
 document.addEventListener('DOMContentLoaded', function() {
   if (typeof window.wireInsightBlock !== 'function') { console.warn('[ReportInsights] wireInsightBlock not loaded'); return; }
 
-  // Subscriptions Key Insight — added 2026-10-06, same wiring as above.
+  // Insights tab Key Insight — ADDED 2026-10-08, matching Dazzle Dry's
+  // dd-catinsight block: one insight, saved to category_key_insight, shown
+  // with Dazzle Dry's "Key Insights:" prefix. (Replaces the Subscriptions
+  // Key Insight box, which Dazzle Dry's layout doesn't have.)
   window.wireInsightBlock({
     scope: 'monthly',
-    fields: [{ key: 'subscriptions_key_insight', displayId: 'subsinsight-disp', textareaId: 'subsinsight-textarea', placeholder: 'No insight added yet — click Edit to add one.' }],
-    editBtnId: 'subsinsight-edit-btn', saveBtnId: 'subsinsight-save', cancelBtnId: 'subsinsight-cancel', editorId: 'subsinsight-editor',
+    fields: [{ key: 'category_key_insight', displayId: 'catinsight-disp', textareaId: 'catinsight-input', placeholder: 'No insight yet — click Edit to add one.', prefix: '<strong>Key Insights:</strong> ' }],
+    editBtnId: 'catinsight-edit-btn', saveBtnId: 'catinsight-save-btn', cancelBtnId: 'catinsight-cancel-btn', editorId: 'catinsight-editor',
   });
 
   window.wireInsightBlock({
@@ -20381,8 +20457,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const slotsEl = document.getElementById('opp-editor-slots');
     if (!editBtn || !saveBtn || !editorEl || !slotsEl) return;
 
-    // Build the 4 editor slots once.
-    slotsEl.innerHTML = [1,2,3,4].map(n => `
+    // Build the 6 editor slots once (was 4; 6 matches Dazzle Dry, 2026-10-08).
+    slotsEl.innerHTML = [1,2,3,4,5,6].map(n => `
       <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px;">
         <div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:4px;">Opportunity ${n} — Title</div>
         <textarea id="textarea-opp${n}-title" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid rgba(0,31,96,.2);border-radius:var(--radius-sm);font-family:var(--font);font-size:12px;color:var(--navy);resize:none;height:40px;margin-bottom:8px;"></textarea>
@@ -20404,7 +20480,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const { year, month } = getLastFullMonthLocal2();
       const row = await window.reportInsightsFetchRow(BRAND, { year: String(year), month: String(month) });
       let anyVisible = false;
-      [1,2,3,4].forEach(n => {
+      [1,2,3,4,5,6].forEach(n => {
         const title    = row ? (row[`opp${n}_title`]    || '') : '';
         const subtitle = row ? (row[`opp${n}_subtitle`] || '') : '';
         const body     = row ? (row[`opp${n}_body`]     || '') : '';
@@ -20442,7 +20518,7 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         const { year, month } = getLastFullMonthLocal2();
         const fields = {};
-        [1,2,3,4].forEach(n => {
+        [1,2,3,4,5,6].forEach(n => {
           fields[`opp${n}_title`]    = (document.getElementById(`textarea-opp${n}-title`).value || '').trim();
           fields[`opp${n}_subtitle`] = (document.getElementById(`textarea-opp${n}-subtitle`).value || '').trim();
           fields[`opp${n}_body`]     = (document.getElementById(`textarea-opp${n}-body`).value || '').trim();
@@ -21831,6 +21907,102 @@ async function runCategoryListingAudit(catKey, categoryLabel, skus, btn) {
   }
 }
 window.runCategoryListingAudit = runCategoryListingAudit;
+
+// ══════════════════ Unit Sales by Product Category ══════════════════
+// ADDED 2026-10-08 per Jaclyn — ported from Dazzle Dry's
+// loadDDCategoryChart (VBC dashboard): grouped bar chart, one colour per
+// category, last 13 months that exist in the sheet, legend top-right.
+// Sources: Business Report (one row per ASIN per month, units_ordered —
+// same sheet as Total Sessions) + Product Short Name sheet's col K
+// "Product Category" via getProductMaster(). Crème Shop has ~50
+// categories, so like Dazzle Dry this charts a fixed 4: the top 4 by
+// units over the sheet's history as of 2026-10-08 (Lip Balm 725, Spa
+// Headband 698, Face Masks 490, Makeup Wipes 405). Edit the list to
+// change which ones show; same 4 colours Dazzle Dry uses.
+const CS_CATEGORY_CONFIG = [
+  { match: 'Lip Balm',     label: 'Lip Balm',     color: '#24E9A3' },
+  { match: 'Spa Headband', label: 'Spa Headband', color: '#F4DFD0' },
+  { match: 'Face Masks',   label: 'Face Masks',   color: '#6B7BA2' },
+  { match: 'Makeup Wipes', label: 'Makeup Wipes', color: '#CCD3D5' },
+];
+window.loadCategoryChart = async function () {
+  if (window._categoryChart || window._categoryChartLoading) return window._categoryChartLoading;
+  const canvas = document.getElementById('chart-category-sales');
+  if (!canvas) return;
+  window._categoryChartLoading = (async () => {
+    try {
+      const [csv, master] = await Promise.all([
+        fetch(ovCsvUrl(OV_BUSINESS_REPORT_SHEET_ID, OV_BUSINESS_REPORT_GID) + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => ''),
+        getProductMaster(),
+      ]);
+      const rows = parseCsvToRows(csv);
+      const norm = s => String(s || '').trim().toLowerCase();
+      const byPeriod = {}; // 'YYYY-M' -> { match: units }
+      rows.forEach(r => {
+        const entry = master.byAsin[(r.asin || '').trim().toUpperCase()];
+        if (!entry) return;
+        const cfg = CS_CATEGORY_CONFIG.find(c => norm(c.match) === norm(entry.category));
+        if (!cfg) return;
+        const yr = parseInt(r.year, 10), mo = parseInt(r.month, 10);
+        if (!yr || !mo) return;
+        const key = `${yr}-${mo}`;
+        byPeriod[key] = byPeriod[key] || {};
+        byPeriod[key][cfg.match] = (byPeriod[key][cfg.match] || 0) + (parseFloat(r.units_ordered) || 0);
+      });
+      const periods = Object.keys(byPeriod)
+        .map(k => { const [yr, mo] = k.split('-'); return { key: k, year: +yr, month: +mo }; })
+        .sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month))
+        .slice(-13);
+      console.log('[Creme Shop][category chart] months:', periods.map(p => p.key).join(', '));
+      if (!periods.length) return;
+      const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const labels = periods.map(p => MONTHS[p.month - 1] || p.month);
+      const datasets = CS_CATEGORY_CONFIG.map(c => ({
+        label: c.label,
+        data: periods.map(p => byPeriod[p.key][c.match] || 0),
+        backgroundColor: c.color,
+        borderRadius: 2,
+      }));
+      // Dazzle Dry's axis shows thousands as "K"; Crème Shop's monthly
+      // category units are in the hundreds, so plain numbers under 1,000.
+      const fmt = v => v >= 1000 ? (v / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : v;
+      window._categoryChart = new Chart(canvas, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }, // HTML legend in the card header instead (#legend-category)
+            tooltip: {
+              backgroundColor: '#fff', borderColor: 'rgba(0,31,96,0.1)', borderWidth: 1,
+              titleColor: '#001F60', bodyColor: '#6B7BA2',
+              titleFont: { family: 'DM Sans, sans-serif', size: 11, weight: '600' },
+              bodyFont: { family: 'DM Sans, sans-serif', size: 11 },
+              padding: 12,
+              callbacks: { label: ctx => ` ${ctx.dataset.label}: ${Math.round(ctx.parsed.y).toLocaleString()}` }
+            }
+          },
+          scales: {
+            x: { border: { display: false }, grid: { display: false }, ticks: { font: { family: 'DM Sans, sans-serif', size: 10 }, color: '#6B7BA2' } },
+            y: { border: { display: false }, grid: { color: 'rgba(0,31,96,0.05)' }, ticks: { font: { family: 'DM Sans, sans-serif', size: 10 }, color: '#6B7BA2', callback: fmt } }
+          }
+        }
+      });
+      const legendEl = document.getElementById('legend-category');
+      if (legendEl) {
+        legendEl.innerHTML = CS_CATEGORY_CONFIG.map(c =>
+          '<span style="display:inline-flex;align-items:center;gap:6px;margin-left:14px;font-size:11px;color:#001F60;white-space:nowrap;font-family:\'DM Sans\',sans-serif;">' +
+          '<span style="width:12px;height:12px;border-radius:2px;background:' + c.color + ';display:inline-block;flex-shrink:0;"></span>' + c.label + '</span>').join('');
+      }
+    } catch (err) {
+      console.error('[Creme Shop][category chart]', err);
+    } finally {
+      window._categoryChartLoading = null;
+    }
+  })();
+  return window._categoryChartLoading;
+};
 
 function getProductMaster() {
   if (_productMasterPromise) return _productMasterPromise;
@@ -27587,6 +27759,7 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
     _investChart: 'chart-invest',
     _impressChart: 'chart-impressions',
     _snsChart: 'chart-sns',
+    _categoryChart: 'chart-category-sales', // Insights tab, added 2026-10-08
     // Added 2026-07-21 — was never registered here at all, so it fell
     // through to the naive pdfxRawChartImg fallback (no force-visible
     // ancestors, no correct-size capture), which is exactly why it showed
@@ -27827,7 +28000,7 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       // at a fixed height in px (at the 686px card width); anything not
       // listed, like the event Top Sellers charts, keeps the old behavior.
       const PDFX_CHART_TARGET_HEIGHT_PX = {
-        _amazonChart: 190, _walmartChart: 190, _snsChart: 190,
+        _amazonChart: 190, _walmartChart: 190, _snsChart: 160, _categoryChart: 200, // Insights heights = Dazzle Dry's (200/160)
         _investChart: 170, _impressChart: 150, mfcShippedChartInstance: 150,
       };
       const captureHeightPx = Math.round(PDFX_CHART_TARGET_HEIGHT_PX[varName]
@@ -28176,7 +28349,7 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
   // site doesn't pass it, so this is a no-op everywhere else — the
   // param defaults to empty and the extra line simply doesn't render.
   function pdfxHeaderBand(monthYear, activeTab, subLabel) {
-    const tabs = ['Sales', 'Fulfillment & Customer Service', 'Brand Stewardship', 'Opportunities', 'Events'];
+    const tabs = ['Sales', 'Fulfillment & Customer Service', 'Brand Stewardship', 'Insights', 'Opportunities', 'Events'];
     const tabsHtml = tabs.map(function (t) {
       return '<span class="pdfx-tab' + (t === activeTab ? ' on' : '') + '">' + t + '</span>';
     }).join('');
@@ -28389,32 +28562,60 @@ window.loadAuditResultsFromSheet = loadAuditResultsFromSheet;
       '</div>';
   }
 
-  function buildOpportunitiesPage(monthYear) {
-    // REBUILT 2026-10-07 to match Just Bjorn: What's Been Accomplished +
-    // Future Opportunities, using Just Bjorn's own blocks and compact
-    // footer. Unlike Just Bjorn, Crème Shop's Subscribe & Save still lives
-    // on this tab, so it stays at the top of this page, with the
-    // Subscriptions Key Insight under its chart (same as Just Bjorn's
-    // Insights page renders it). Empty insight = omitted.
+  // Insights page — ADDED 2026-10-08, matching Dazzle Dry's
+  // pdfxBuildInsightsPage: Unit Sales by Product Category, Subscriptions
+  // (legend + 2 KPIs + YOY chart), then the Key Insight if one is saved.
+  function buildInsightsPage(monthYear) {
     const kpis = ['kpi-active-subs', 'kpi-retention'].map(pdfxKpi);
-    const subsInsight = pdfxText('#subsinsight-disp');
+    const ta = document.getElementById('catinsight-input');
+    const insight = ta ? (ta.value || '').trim() : '';
+    const subs = window._snsChart;
+    const legend = (subs && subs.data && subs.data.datasets || []).map(function (ds) {
+      return '<span style="display:inline-flex;align-items:center;gap:5px;margin-left:14px;font-size:10px;font-weight:600;color:var(--navy);">' +
+        '<span style="display:inline-block;width:14px;height:3px;border-radius:2px;background:' + pdfxEscape(ds.borderColor) + ';"></span>' + pdfxEscape(ds.label) + '</span>';
+    }).join('');
+    return '' +
+      '<div class="pdfx-page">' +
+        '<div class="pdfx-inner">' +
+          pdfxHeaderBand(monthYear, 'Insights') +
+          '<div class="pdfx-card" style="margin-bottom:14px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+              '<div class="pdfx-card-title" style="margin-bottom:0;">Unit Sales by Product Category</div>' +
+              '<div style="display:flex;align-items:center;">' + CS_CATEGORY_CONFIG.map(function (c) {
+                return '<span style="display:inline-flex;align-items:center;gap:5px;margin-left:12px;font-size:10px;font-weight:600;color:var(--navy);">' +
+                  '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + c.color + ';"></span>' + pdfxEscape(c.label) + '</span>';
+              }).join('') + '</div>' +
+            '</div>' +
+            pdfxChartBlock('_categoryChart') +
+          '</div>' +
+          '<div class="pdfx-card" style="margin-bottom:14px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+              '<div class="pdfx-card-title" style="margin-bottom:0;">Subscriptions</div><div style="display:flex;align-items:center;">' + legend + '</div>' +
+            '</div>' +
+            '<div class="pdfx-kpis n2" style="margin-bottom:10px;">' + kpis.map(pdfxKpiCardHtml).join('') + '</div>' +
+            pdfxChartBlock('_snsChart') +
+          '</div>' +
+          (insight ? '<div class="pdfx-insight"><strong>Key Insight:</strong> ' + pdfxEscape(insight) + '</div>' : '') +
+          pdfxFooter(monthYear) +
+        '</div>' +
+      '</div>';
+  }
+
+  function buildOpportunitiesPage(monthYear) {
+    // CHANGED 2026-10-08: Subscribe & Save moved to the Insights page
+    // (matching Dazzle Dry), so this page is What's Been Accomplished +
+    // Future Opportunities only — same as Just Bjorn's.
     return '' +
       '<div class="pdfx-page">' +
         '<div class="pdfx-inner" style="padding:22px 46px 26px;">' +
           pdfxHeaderBand(monthYear, 'Opportunities') +
-          '<div class="pdfx-card" style="margin-bottom:14px;">' +
-            '<div class="pdfx-card-title">Subscribe &amp; Save</div>' +
-            '<div class="pdfx-kpis n2" style="margin-bottom:10px;">' + kpis.map(pdfxKpiCardHtml).join('') + '</div>' +
-            '<div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;">Active Subscriptions by Month</div>' +
-            pdfxChartBlock('_snsChart') +
-            (subsInsight ? '<div class="pdfx-insight" style="margin-top:10px;">' + pdfxEscape(subsInsight) + '</div>' : '') +
-          '</div>' +
           pdfxAccomplishedBlock() +
           pdfxFutureOpportunitiesBlock() +
           pdfxFooter(monthYear, true) +
         '</div>' +
       '</div>';
   }
+
 
 
   // Static content — mirrors the Strategy tab's own text (#ev-strategy).
@@ -28966,6 +29167,7 @@ html,body{height:auto!important;margin:0!important;padding:0!important;backgroun
         amazon:        !!document.getElementById('pdf-include-amazon')        && document.getElementById('pdf-include-amazon').checked,
         walmart:       !!document.getElementById('pdf-include-walmart')       && document.getElementById('pdf-include-walmart').checked,
         stewardship:   !!document.getElementById('pdf-include-stewardship')   && document.getElementById('pdf-include-stewardship').checked,
+        insights:      !!document.getElementById('pdf-include-insights')      && document.getElementById('pdf-include-insights').checked,
         opportunities: !!document.getElementById('pdf-include-opportunities') && document.getElementById('pdf-include-opportunities').checked,
         strategy: !!document.getElementById('pdf-include-strategy') && document.getElementById('pdf-include-strategy').checked,
         bss:  !!document.getElementById('pdf-include-bss')  && document.getElementById('pdf-include-bss').checked,
@@ -28986,7 +29188,8 @@ html,body{height:auto!important;margin:0!important;padding:0!important;backgroun
         (includeSections.amazon        && typeof window.initAmazonLive === 'function')            ? window.initAmazonLive()            : null,
         (includeSections.walmart       && typeof window.initWalmartLive === 'function')            ? window.initWalmartLive()            : null,
         (includeSections.stewardship   && typeof window.initStewardshipLive === 'function')        ? window.initStewardshipLive()        : null,
-        (includeSections.opportunities && !window._snsChart && typeof initSns === 'function')       ? initSns()                           : null,
+        (includeSections.insights      && !window._snsChart && typeof initSns === 'function')       ? initSns()                           : null,
+        (includeSections.insights      && typeof window.loadCategoryChart === 'function')          ? window.loadCategoryChart()          : null,
         // Prime Day's KPIs/chart are lazy-loaded on tab click — if it's
         // checked for inclusion but the tab was never opened this session,
         // this is what actually builds the chart before capture below.
@@ -29030,7 +29233,7 @@ html,body{height:auto!important;margin:0!important;padding:0!important;backgroun
       // never going to render because its page got excluded.
       const chartsBySection = {
         amazon: ['_amazonChart'], website: ['_webChart'], walmart: ['_walmartChart'],
-        stewardship: ['_investChart', '_impressChart'], opportunities: ['_snsChart'],
+        stewardship: ['_investChart', '_impressChart'], insights: ['_categoryChart', '_snsChart'],
       };
       const expectedCharts = Object.keys(chartsBySection)
         .filter(sec => includeSections[sec])
@@ -29086,6 +29289,7 @@ html,body{height:auto!important;margin:0!important;padding:0!important;backgroun
         includeSections.amazon        ? buildAmazonPage(monthYear)        : '',
         includeSections.walmart       ? buildWalmartPage(monthYear)       : '',
         includeSections.stewardship   ? buildStewardshipPage(monthYear)   : '',
+        includeSections.insights      ? buildInsightsPage(monthYear)      : '',
         includeSections.opportunities ? buildOpportunitiesPage(monthYear) : '',
       ].join('');
 
