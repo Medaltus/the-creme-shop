@@ -1,8 +1,10 @@
 {
- "name": "creme-shop-dashboard",
- "version": "1.0.0",
- "private": true,
- "dependencies": {
-   "googleapis": "^140.0.0"
- }
+  "name": "creme-shop-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "googleapis": "^140.0.0",
+    "puppeteer-core": "25.11.0",
+    "@sparticuz/chromium": "153.0.0"
+  }
 }
