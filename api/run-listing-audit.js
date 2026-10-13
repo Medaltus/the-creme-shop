@@ -48,9 +48,8 @@
  *     with a suggested lower-volume Reach-tier alternative, not resolved
  *     automatically — "maybe this is too competitive to win" is a human
  *     call, not something to decide silently.
- * This needed a new data source this file didn't have before: rank alone
- * (from the uploads log) isn't enough to build real tiers, volume is
- * required too, and volume only exists in the keyword tracker sheet —
+ * Current rank and search volume come from SHEET_KEYWORD_TRACKER.
+ * The older uploads-log ranking source has been retired.
  * same sheet run-analysis.js already reads, added here as a second
  * fetch. Field-priority hierarchy for placement (Title > Item Highlights
  * > Bullets > Product Description > Backend Keywords) added to the
@@ -112,12 +111,6 @@ const COL = {
 // Tab headers live in row 2; keyword columns found by searching for header text.
 // Each keyword cell contains up to 20 newline-separated keywords in one cell.
 
-// ─── uploads log sheet ───────────────────────────────────────────────────────
-// Sheet ID passed in POST body as uploadsSheetId (optional).
-// Tab name = brand (e.g. "evolis"). Columns: date, week_label, kw_summary_json, ...
-// kw_summary_json is a JSON array: [{asin, kw, rank, vl, aba_click, aba_conv}, ...]
-// We read the most recent row and build a rank lookup: keyword → rank
-
 // ─── audit sheet headers (must match write-listing-audit.js) ────────────────
 const AUDIT_HEADERS = [
   'date', 'sku', 'sku_name', 'action',
@@ -132,10 +125,8 @@ const AUDIT_HEADERS = [
 
 // ─── Keyword priority tiers — added 2026-07-27 per Jaclyn ───────────────────
 // Same sheet run-analysis.js reads (confirmed there against a real screenshot
-// + upload-keyword-tracker.js's own example) — reused here rather than
-// relying only on the uploads-log rankings, since the tracker has BOTH
-// rank and search volume per keyword, and volume is required to do this
-// prioritization at all (the uploads log has rank only).
+// + upload-keyword-tracker.js's own example). The tracker supplies BOTH
+// current organic rank and search volume per keyword.
 const KEYWORD_TRACKER_SHEET_ID = '1geNDQgd_1ensLDyZOuXZBnvQrFT_RC85l9rHHGpgJe4';
 
 // Real page-1 depth varies ~24-60 depending on layout/sponsored density —
@@ -218,15 +209,15 @@ function buildKwTrackerLookup(kwTrackerRows, sku) {
 // Sorts a SKU's keyword targets into 3 tiers. Volume-unknown keywords
 // (not on the tracker) fall into "other" rather than being guessed into
 // tier 2 or 3 — no invented numbers.
-function categorizeKeywordTiers(allKeywords, kwTrackerLookup, kwRankingsFallback) {
+function categorizeKeywordTiers(allKeywords, kwTrackerLookup) {
   const tier1Protect = [];  // rank <= PAGE1_RANK_CUTOFF — already page 1, do not lose
-  const tier2Push = [];     // rank 49-100 — close, push toward page 1
-  const other = [];         // unranked, or ranked >100 — not a placement priority this pass
+  const tier2Push = [];     // below page-1 cutoff through CLOSE_TO_PAGE1_MAX
+  const other = [];         // unranked, or ranked beyond CLOSE_TO_PAGE1_MAX
 
   allKeywords.forEach(kw => {
     const key = normTerm(kw);
     const tracked = kwTrackerLookup[key];
-    const rank = tracked ? tracked.rank : (kwRankingsFallback[key] || null);
+    const rank = tracked ? tracked.rank : null;
     const volume = tracked ? tracked.volume : null;
     const entry = { keyword: kw, rank, volume };
     if (rank !== null && rank <= PAGE1_RANK_CUTOFF) tier1Protect.push(entry);
@@ -314,10 +305,12 @@ async function getToken() {
 }
 
 // Sanitize a cell value for sending to Claude — remove smart quotes, em dashes,
-// HTML entities, extra whitespace. Truncate to maxLen.
+// HTML entities and extra whitespace. Input is preserved in full unless a
+// caller deliberately supplies maxLen. Output character limits are enforced
+// separately in the audit prompt and must never be reused as read-side caps.
 function san(s, maxLen) {
   if (!s) return '';
-  return String(s)
+  const cleaned = String(s)
     .replace(/&amp;/g, 'and').replace(/&nbsp;/g, ' ').replace(/&[a-z]+;/g, ' ')
     .replace(/[\u2018\u2019\u0060\u00b4]/g, "'")
     .replace(/[\u201C\u201D]/g, '"')
@@ -325,8 +318,8 @@ function san(s, maxLen) {
     .replace(/\u2026/g, '...')
     .replace(/\r?\n|\r/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, maxLen || 400);
+    .trim();
+  return Number.isFinite(maxLen) ? cleaned.slice(0, maxLen) : cleaned;
 }
 
 // Parse Claude's plain-text delimited response into a result object.
@@ -343,8 +336,15 @@ function parseDelimited(text) {
     'BACKEND_NOTES', 'BACKEND_REWRITE',
   ];
 
+  // Fields whose line breaks are kept (CHANGED 2026-10-13): the description
+  // is now 2–3 paragraphs, and joining every continuation line with a space
+  // (as for the other fields) flattened it into one block. A blank line in
+  // the response becomes a paragraph break in the sheet cell.
+  const MULTILINE_KEYS = new Set(['DESC_REWRITE']);
+
   const result = {};
   let currentKey = null;
+  let blankSinceLast = false;
 
   for (const line of text.split('\n')) {
     const upper = line.toUpperCase();
@@ -353,13 +353,20 @@ function parseDelimited(text) {
       if (upper.startsWith(key + ':')) {
         currentKey = key;
         result[currentKey] = line.slice(key.length + 1).trim();
+        blankSinceLast = false;
         matched = true;
         break;
       }
     }
-    if (!matched && currentKey && line.trim()) {
+    if (matched || !currentKey) continue;
+    if (!line.trim()) { blankSinceLast = true; continue; }
+    if (MULTILINE_KEYS.has(currentKey)) {
+      const sep = !result[currentKey] ? '' : (blankSinceLast ? '\n\n' : '\n');
+      result[currentKey] += sep + line.trim();
+    } else {
       result[currentKey] += ' ' + line.trim();
     }
+    blankSinceLast = false;
   }
 
   return {
@@ -395,6 +402,58 @@ function parseSimpleCsv(line) {
   return result;
 }
 
+// Full CSV parser — handles commas, escaped quotes, and embedded newlines in quoted cells.
+// Use this for sheet exports where product context, reviews, bullets, or descriptions can be multiline.
+function parseCsvRows(text) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+    if (ch === '"') {
+      if (inQuotes && next === '"') { field += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      row.push(field); field = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      if (ch === '\r' && next === '\n') i++;
+      row.push(field); field = '';
+      if (row.some(v => String(v || '').trim())) rows.push(row);
+      row = [];
+    } else {
+      field += ch;
+    }
+  }
+  row.push(field);
+  if (row.some(v => String(v || '').trim())) rows.push(row);
+  return rows;
+}
+
+function rowsToObjects(rows, headerRowIndex = 0) {
+  if (!rows || rows.length <= headerRowIndex) return [];
+  const headers = rows[headerRowIndex].map(h => String(h || '').trim());
+  return rows.slice(headerRowIndex + 1).map(cells => {
+    const obj = {};
+    headers.forEach((h, idx) => { if (h) obj[h] = String(cells[idx] || '').trim(); });
+    return obj;
+  }).filter(obj => Object.values(obj).some(Boolean));
+}
+
+async function fetchCsvByGid(sheetId, gid, token, label) {
+  if (!sheetId || gid === undefined || gid === null || gid === '') return null;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!response.ok) throw new Error(`${label} fetch failed: HTTP ${response.status}`);
+  return parseCsvRows(await response.text());
+}
+
+function headerIndex(headers, names) {
+  const wanted = names.map(n => String(n).trim().toLowerCase());
+  return headers.findIndex(h => wanted.includes(String(h || '').trim().toLowerCase()));
+}
+
 // Detect travel SKUs by name or status containing "travel" (case-insensitive)
 function isTravel(row) {
   const name   = (row[COL.name]   || '').toLowerCase();
@@ -411,7 +470,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { brand, sourceSheetId, auditSheetId, auditGid, sku: testSku, keywordSheetId, skuGidMap, uploadsSheetId, uploadsGid, skuFilter } = req.body || {};
+  const { brand, sourceSheetId, auditSheetId, auditGid, sku: testSku, keywordSheetId, skuGidMap, masterSkuSheetId, masterSkuGid, brandInsightsSheetId, brandInsightsGid, businessReportSheetId, businessReportGid, adSearchTermsSheetId, adSearchTermsGid, amazonReviewsSheetId, amazonReviewsGid, skuFilter } = req.body || {};
 
   if (!brand)         return res.status(400).json({ error: 'Missing: brand' });
   if (!sourceSheetId) return res.status(400).json({ error: 'Missing: sourceSheetId' });
@@ -426,8 +485,15 @@ module.exports = async function handler(req, res) {
   // ── 0. Pre-fetch keyword targets and recent rankings (optional) ─────────────
   // Runs AFTER getToken() — token is available from step 1 below.
   // Declared here as empty; populated after token is obtained.
-  let kwRankings = {};    // keyword (lowercase) → rank number
-  let skuKeywordMap = {}; // sku → { top20, opportunity, reach }
+  let skuStrategyMap = {}; // sku → { top20, opportunity, reach, competitors, categoryLeaders }
+  let skuContextMap = {};  // sku → { productContext, auditGuardrails }
+  let brandInsights = '';
+  let businessReportRows = [];
+  let adSearchTermRows = [];
+  let amazonReviewRows = [];
+  const debug = { sources: {}, skus: {}, warnings: [] };
+  const debugOk = (source, detail) => { debug.sources[source] = { ok: true, ...detail }; console.log(`[listing-audit][debug] ${source}: OK`, detail); };
+  const debugFail = (source, error) => { const message = error instanceof Error ? error.message : String(error); debug.sources[source] = { ok: false, error: message }; debug.warnings.push(`${source}: ${message}`); console.warn(`[listing-audit][debug] ${source}: FAILED - ${message}`); };
 
     // ── 1. Read source sheet ──────────────────────────────────────────────────
   let token;
@@ -452,6 +518,7 @@ module.exports = async function handler(req, res) {
   }
   const sourceData = await sourceRes.json();
   const allRawRows = sourceData.values || [];
+  debugOk('productInventory', { rawRows: allRawRows.length, brand });
 
   if (!allRawRows.length) {
     return res.status(200).json({ ok: true, message: 'No rows found in source sheet', skuCount: 0 });
@@ -489,103 +556,66 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: `SKU ${testSku} not found in source sheet` });
   }
 
-  // ── 0b. Now fetch keyword data (token is available) ─────────────────────────
-  if (uploadsSheetId) {
-    try {
-      const uploadsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${uploadsSheetId}/values/${encodeURIComponent(brand + '!A:F')}?majorDimension=ROWS`;
-      const uploadsRes = await fetch(uploadsUrl, { headers: { Authorization: `Bearer ${token}` } });
-      if (uploadsRes.ok) {
-        const uploadsData = await uploadsRes.json();
-        const uploadsRows = (uploadsData.values || []).slice(1);
-        for (let i = uploadsRows.length - 1; i >= 0; i--) {
-          const kwJson = uploadsRows[i][2];
-          if (kwJson) {
-            try {
-              const kwArr = JSON.parse(kwJson);
-              for (const entry of kwArr) {
-                if (entry.kw && entry.rank) {
-                  kwRankings[entry.kw.toLowerCase().trim()] = parseInt(entry.rank) || 999;
-                }
-              }
-              console.log(`[listing-audit] Loaded ${Object.keys(kwRankings).length} keyword rankings`);
-            } catch(e) { console.warn('[listing-audit] kw_summary_json parse error:', e.message); }
-            break;
-          }
-        }
-      }
-    } catch(e) { console.warn('[listing-audit] Could not fetch upload rankings:', e.message); }
-  }
-
+  // ── 0b. Fetch keyword strategy + competitor/category data ───────────────
   if (keywordSheetId && skuGidMap) {
     for (const [skuKey, gid] of Object.entries(skuGidMap)) {
       try {
-        // Fetch the tab as CSV using export URL with gid parameter
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${keywordSheetId}/export?format=csv&gid=${gid}`;
-        const csvRes = await fetch(csvUrl, { headers: { Authorization: `Bearer ${token}` } });
-        if (!csvRes.ok) { console.warn(`[listing-audit] KW sheet fetch failed for ${skuKey}: ${csvRes.status}`); continue; }
-        const csvText = await csvRes.text();
-        const csvLines = csvText.split('\n').map(l => l.trim());
+        const csvRows = await fetchCsvByGid(keywordSheetId, gid, token, `strategy ${skuKey}`);
+        if (!csvRows || !csvRows.length) { debugFail(`strategy:${skuKey}`, 'No rows returned'); continue; }
+        const headers = csvRows[1] || csvRows[0] || [];
+        const top20Idx = headerIndex(headers, ['Top 20 Keywords']);
+        const oppIdx = headerIndex(headers, ['Top 20 Opportunity Keywords']);
+        const reachIdx = headerIndex(headers, ['Top 20 Reach for the stars keywords']);
+        if (top20Idx < 0) console.warn(`[listing-audit] No keyword strategy headers for ${skuKey}; competitor/category data will still be checked`);
 
-        // Find row 2 (index 1) as headers — keywords headers are in row 2
-        // Row 1 is row index 0, row 2 is index 1
-        const headerLine = csvLines[1] || csvLines[0] || '';
-        const headers = parseSimpleCsv(headerLine);
-
-        const top20Idx = headers.findIndex(h => h.trim() === 'Top 20 Keywords');
-        const oppIdx   = headers.findIndex(h => h.trim() === 'Top 20 Opportunity Keywords');
-        const reachIdx = headers.findIndex(h => h.trim() === 'Top 20 Reach for the stars keywords');
-
-        if (top20Idx < 0) { console.warn(`[listing-audit] No keyword headers found for ${skuKey}`); continue; }
-
-        // Collect keywords from all data rows for those columns.
-        //
-        // FIXED 2026-09-18 per Jaclyn — this used to scan every row from
-        // the keyword data down to the literal bottom of the tab, with
-        // no stopping point. Confirmed against the real Competitor &
-        // Variation Data sheet (Hand Creams tab): column E holds "Top 20
-        // Keywords" in row 2's header, but the SAME column E is reused
-        // for "Product Name" in row 5, the header row of that tab's
-        // separate "Current Competitors" table further down. With no
-        // row boundary, colKws was picking up the literal string
-        // "Product Name" as a fake keyword today, and would pick up
-        // every real competitor product name as a "keyword" too, the
-        // moment that table gets filled in — the exact same column-
-        // index collision, just with real contamination instead of one
-        // stray header string.
-        //
-        // Fix: stop as soon as column A goes non-blank. Confirmed
-        // directly against the real sheet: column A is blank on the
-        // keyword data row (row 3) and non-blank on every row from that
-        // point on — a section title ("Current Competitors — Data:
-        // Helium 10"), a header row ("#"), or a row number (1, 2, 3…).
-        // That makes column A a reliable, already-present signal for
-        // "we've left the keyword-strategy block" without needing to
-        // guess at a fixed row count, which wouldn't generalize if a
-        // future category's tab needs more than one data row for its
-        // keyword list.
         function colKws(colIdx) {
           if (colIdx < 0) return [];
           const kws = [];
-          for (let r = 2; r < csvLines.length; r++) {
-            const cells = parseSimpleCsv(csvLines[r]);
-            const colA = (cells[0] || '').trim();
-            if (colA) break; // left the keyword-strategy block
-            const val = (cells[colIdx] || '').trim();
-            if (val) {
-              val.split(/\n|\r|,/).map(k => k.trim()).filter(Boolean).forEach(k => kws.push(k));
-            }
+          for (let r = 2; r < csvRows.length; r++) {
+            const cells = csvRows[r];
+            if (String(cells[0] || '').trim()) break;
+            const val = String(cells[colIdx] || '').trim();
+            if (val) val.split(/\n|\r|,/).map(k => k.trim()).filter(Boolean).forEach(k => kws.push(k));
           }
           return [...new Set(kws)].slice(0, 20);
         }
 
-        skuKeywordMap[skuKey] = {
-          top20:       colKws(top20Idx),
-          opportunity: colKws(oppIdx),
-          reach:       colKws(reachIdx),
-        };
-        console.log(`[listing-audit] ${skuKey}: ${skuKeywordMap[skuKey].top20.length} top20 keywords loaded`);
-      } catch(e) { console.warn(`[listing-audit] KW fetch error for ${skuKey}:`, e.message); }
+        function findRowContaining(text) {
+          const target = text.toLowerCase();
+          return csvRows.findIndex(row => row.some(cell => String(cell || '').toLowerCase().includes(target)));
+        }
+        function parseMarketTable(sectionStart, nextSectionStart = csvRows.length) {
+          if (sectionStart < 0) return [];
+          let headerRow = -1;
+          for (let r = sectionStart + 1; r < nextSectionStart; r++) {
+            const normalized = csvRows[r].map(c => String(c || '').trim().toLowerCase());
+            if (normalized.includes('asin') && (normalized.includes('brand') || normalized.includes('product name'))) { headerRow = r; break; }
+          }
+          if (headerRow < 0) return [];
+          const tableHeaders = csvRows[headerRow].map(h => String(h || '').trim());
+          const asinIdx = headerIndex(tableHeaders, ['ASIN']);
+          const results = [];
+          for (let r = headerRow + 1; r < nextSectionStart; r++) {
+            const cells = csvRows[r];
+            const asinVal = asinIdx >= 0 ? String(cells[asinIdx] || '').trim() : '';
+            if (!asinVal) continue;
+            const obj = {};
+            tableHeaders.forEach((h, idx) => { if (h) obj[h] = String(cells[idx] || '').trim(); });
+            results.push(obj);
+          }
+          return results;
+        }
+
+        const competitorStart = findRowContaining('Current Competitors');
+        const leaderStart = findRowContaining('CATEGORY LEADERS');
+        const competitors = parseMarketTable(competitorStart, leaderStart > competitorStart ? leaderStart : csvRows.length);
+        const categoryLeaders = parseMarketTable(leaderStart, csvRows.length);
+        skuStrategyMap[skuKey] = { top20: colKws(top20Idx), opportunity: colKws(oppIdx), reach: colKws(reachIdx), competitors, categoryLeaders };
+        debugOk(`strategy:${skuKey}`, { top20: skuStrategyMap[skuKey].top20.length, opportunity: skuStrategyMap[skuKey].opportunity.length, reach: skuStrategyMap[skuKey].reach.length, competitors: competitors.length, categoryLeaders: categoryLeaders.length });
+      } catch (e) { debugFail(`strategy:${skuKey}`, e); }
     }
+  } else {
+    debugFail('strategy', 'keywordSheetId or skuGidMap not supplied');
   }
 
   console.log(`[listing-audit] Starting audit: ${rows.length} SKUs (brand: ${brand})`);
@@ -599,27 +629,80 @@ module.exports = async function handler(req, res) {
     const kwTrackerRes = await fetch(kwTrackerUrl, { headers: { Authorization: `Bearer ${token}` } });
     if (kwTrackerRes.ok) {
       const csvText = await kwTrackerRes.text();
-      const lines = csvText.trim().split('\n');
-      if (lines.length > 1) {
-        const headers = parseSimpleCsv(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
-        for (let i = 1; i < lines.length; i++) {
-          const cells = parseSimpleCsv(lines[i]).map(c => c.replace(/^"|"$/g, '').trim());
-          const obj = {};
-          headers.forEach((h, idx) => { obj[h] = cells[idx] || ''; });
-          kwTrackerRows.push(obj);
-        }
-      }
-      console.log(`[listing-audit] keyword tracker: ${kwTrackerRows.length} rows loaded for ${brand}`);
+      kwTrackerRows = rowsToObjects(parseCsvRows(csvText));
+      debugOk('keywordTracker', { rows: kwTrackerRows.length, brand });
     } else {
-      console.warn(`[listing-audit] keyword tracker fetch failed (${kwTrackerRes.status}) — tier 1/2/3 keyword priority will fall back to uploads-log rank only, no volume`);
+      debugFail('keywordTracker', `HTTP ${kwTrackerRes.status}; keyword strategy can still load, but current rank/volume will be unavailable`);
     }
   } catch (e) {
-    console.warn('[listing-audit] keyword tracker fetch error:', e.message);
+    debugFail('keywordTracker', e);
   }
+
+  // ── 1c. Optional context/performance sources ─────────────────────────────
+  try {
+    const masterRows = await fetchCsvByGid(masterSkuSheetId, masterSkuGid, token, 'Master SKU List');
+    if (masterRows && masterRows.length) {
+      const headers = masterRows[0].map(h => String(h || '').trim());
+      const skuIdx = headerIndex(headers, ['SKU']);
+      const contextIdx = headerIndex(headers, ['PRODUCT_CONTEXT', 'Product Context']);
+      const guardIdx = headerIndex(headers, ['AUDIT_GUARDRAILS', 'Audit Guardrails']);
+      if (skuIdx < 0) throw new Error('SKU header not found');
+      for (const row of masterRows.slice(1)) {
+        const sku = String(row[skuIdx] || '').trim();
+        if (!sku) continue;
+        skuContextMap[sku] = { productContext: contextIdx >= 0 ? String(row[contextIdx] || '').trim() : '', auditGuardrails: guardIdx >= 0 ? String(row[guardIdx] || '').trim() : '' };
+      }
+      debugOk('masterSku', { rows: masterRows.length - 1, skuContexts: Object.keys(skuContextMap).length, productContextHeader: contextIdx >= 0, guardrailsHeader: guardIdx >= 0 });
+    } else debugFail('masterSku', 'sheet ID/GID not supplied or no rows returned');
+  } catch (e) { debugFail('masterSku', e); }
+
+  try {
+    const insightRows = await fetchCsvByGid(brandInsightsSheetId, brandInsightsGid, token, 'Brand Insights');
+    if (insightRows && insightRows.length) {
+      const headers = insightRows[0].map(h => String(h || '').trim());
+      const idx = headerIndex(headers, ['Brand_Insights', 'Brand Insights']);
+      if (idx < 0) throw new Error('Brand_Insights header not found');
+      brandInsights = insightRows.slice(1).map(r => String(r[idx] || '').trim()).filter(Boolean).join('\n');
+      debugOk('brandInsights', { insightRows: brandInsights ? brandInsights.split('\n').length : 0 });
+    } else debugFail('brandInsights', 'sheet ID/GID not supplied or no rows returned');
+  } catch (e) { debugFail('brandInsights', e); }
+
+  try {
+    const rows = await fetchCsvByGid(businessReportSheetId, businessReportGid, token, 'Business Report');
+    if (rows) { businessReportRows = rowsToObjects(rows); debugOk('businessReport', { rows: businessReportRows.length }); }
+    else debugFail('businessReport', 'sheet ID/GID not supplied');
+  } catch (e) { debugFail('businessReport', e); }
+
+  try {
+    const rows = await fetchCsvByGid(adSearchTermsSheetId, adSearchTermsGid, token, 'Ad Search Terms');
+    if (rows) { adSearchTermRows = rowsToObjects(rows); const hasAsin = rows[0] ? headerIndex(rows[0], ['asin']) >= 0 : false; debugOk('adSearchTerms', { rows: adSearchTermRows.length, asinColumnPresent: hasAsin }); }
+    else debugFail('adSearchTerms', 'sheet ID/GID not supplied');
+  } catch (e) { debugFail('adSearchTerms', e); }
+
+  try {
+    const rows = await fetchCsvByGid(amazonReviewsSheetId, amazonReviewsGid, token, 'Amazon Reviews');
+    if (rows) { amazonReviewRows = rowsToObjects(rows); debugOk('amazonReviews', { rows: amazonReviewRows.length }); }
+    else debugFail('amazonReviews', 'sheet ID/GID not supplied');
+  } catch (e) { debugFail('amazonReviews', e); }
 
   // ── 2. Ensure audit sheet has headers ────────────────────────────────────
   const auditTabName = brand; // tab is named after the brand, e.g. "evolis"
   await ensureAuditHeaders(auditSheetId, auditTabName, token);
+
+  let previousAuditMap = {};
+  try {
+    const historyUrl = `https://sheets.googleapis.com/v4/spreadsheets/${auditSheetId}/values/${encodeURIComponent(auditTabName + '!A2:T')}?majorDimension=ROWS`;
+    const historyRes = await fetch(historyUrl, { headers: { Authorization: `Bearer ${token}` } });
+    if (!historyRes.ok) throw new Error(`HTTP ${historyRes.status}`);
+    const historyRows = (await historyRes.json()).values || [];
+    for (const row of historyRows) {
+      const date = String(row[0] || '').trim(), sku = String(row[1] || '').trim(), action = String(row[3] || '').trim();
+      if (!sku || action !== 'audit_run') continue;
+      const audit = { date, titleNotes: row[4] || '', titleRewrite: row[5] || '', ihNotes: row[6] || '', ihRewrite: row[7] || '', bulletsNotes: row[8] || '', bullet1Rewrite: row[9] || '', bullet2Rewrite: row[10] || '', bullet3Rewrite: row[11] || '', bullet4Rewrite: row[12] || '', bullet5Rewrite: row[13] || '', descNotes: row[14] || '', descRewrite: row[15] || '', backendNotes: row[16] || '', backendRewrite: row[17] || '' };
+      if (!previousAuditMap[sku] || date > previousAuditMap[sku].date) previousAuditMap[sku] = audit;
+    }
+    debugOk('auditHistory', { rows: historyRows.length, skusWithPriorAudit: Object.keys(previousAuditMap).length });
+  } catch (e) { debugFail('auditHistory', e); }
 
   // ── 3. Audit each SKU ────────────────────────────────────────────────────
   const auditRows = [];
@@ -627,6 +710,21 @@ module.exports = async function handler(req, res) {
   const auditDate = now.slice(0, 10);
 
   const systemPrompt = `You are an Amazon listing compliance auditor for ${brand} (Medaltus portfolio).
+
+CONTEXT HIERARCHY — use evidence before generic convention:
+1. Actual Amazon/compliance restrictions in CRITICAL RULES
+2. AUDIT GUARDRAILS
+3. PRODUCT CONTEXT
+4. BRAND INSIGHTS
+5. Current live listing
+6. Previous audit
+7. Business performance
+8. Current keyword rank/volume + strategy
+9. SKU-attributed ad search terms
+10. Customer reviews
+11. Competitor/category context
+
+Do not present a stylistic preference or common category convention as an Amazon compliance requirement. Preserve meaningful shopper information when compliant. If a convention conflicts with useful product-specific information, explain the tradeoff in NOTES rather than mechanically applying the convention.
 
 CRITICAL RULES:
 - Title must be 75 characters or fewer (including spaces). Flag if over.
@@ -641,16 +739,76 @@ CRITICAL RULES:
 - Stats (95% of users etc) require qualifier: "in a consumer perception study"
 - FGF5-blocking is mechanistic language — permissible as descriptor, not disease claim
 - Backend keywords: spaces only, no commas, no drug-claim terms
-- SIZE FORMAT IN TITLE — variation-family exception (2026-09-18), bullet-separator style (2026-09-18, same day): Size is always set off by a bullet separator (•) immediately before it — never wrapped in parentheses, never wrapped in square brackets, and never rendered as a bracketed placeholder like "[X oz]" when the real value isn't known. If the real size isn't available, use a bare, unbracketed placeholder after the bullet instead — "• X oz", not "• [X oz]" — the bullet alone is enough to signal it's a distinct field, no brackets needed on top of that.
-  STANDARD case: size sits at the very end of the title, after the bullet. Example: "Product Name • 2 oz".
-  SCENT-DIFFERENTIATED FAMILY case: Check "Related SKUs in this catalog" below — if sibling names share the same product name and differ only in a trailing scent/flavor descriptor (e.g. "...Hand Crème (Strawberry Milkshake)" vs "...Hand Crème (Peach Fizz)" vs "...Hand Crème (Mint Chip)"), this product is part of a scent-differentiated variation family, and scent — not size — is the real differentiator a shopper uses to choose between otherwise near-identical siblings (same or similar ingredients). In that case the SCENT NAME stays in parentheses at the very end of the title — this is the one remaining place parentheses belong in the title — and size is set off by the bullet separator immediately before that parenthetical scent, not inside it and not omitted. Example: "The Creme Shop x Pusheen Hand Creme • 1 fl oz (Strawberry Milkshake)", NOT "...Hand Creme [1 fl oz] (Strawberry Milkshake)" and NOT "...Hand Creme (1 fl oz) (Strawberry Milkshake)".
-  Liquid products (serums, shampoos, conditioners, masks, oils) still use "fl oz", non-liquid/powder products (hand creams, balms, powders) still use "oz" only, in either case. If the product is NOT part of a scent-differentiated family — siblings differ by size only, differ by some other attribute, or there are no siblings listed — only the STANDARD case applies, never the parenthetical-scent case. State in TITLE_NOTES which case applied (scent-differentiated family vs. standard) and why, so this reasoning is visible on review, not just the resulting rewrite.
+- TITLE QUANTITY / SIZE / SERVING INFORMATION: Physical net quantity and shopper-use quantity communicate different things. Do not automatically replace servings, count, supply duration, pack quantity, or format with oz/fl oz when PRODUCT_CONTEXT or AUDIT_GUARDRAILS indicates that information is meaningful to purchase understanding. If both are useful and fit within the portfolio title limit, they may coexist. Use fl oz for liquid physical volume and oz for solid/powder physical weight when physical quantity is shown. A bullet separator before size/quantity is a default house style, not a universal Amazon compliance rule. Scent/flavor may remain parenthetical when it is the meaningful variation-family differentiator. In TITLE_NOTES explain the quantity logic used; never call a quantity presentation noncompliant unless an explicit supplied rule establishes that.
 - Timeline claims (e.g. "in 90 days", "in 3 months") require a consumer perception study qualifier. Unqualified timeline claims are a violation. Safe form: "In a consumer perception study, X% of users reported [benefit] in [timeframe]." Timeline claims in Item Highlights are especially risky due to 125-char limit — recommend removing from IH and moving to bullets with full qualifier.
 - Item Highlights must not contain unqualified efficacy timelines.
 - INGREDIENT QA: When ingredients are provided, cross-check every specific ingredient named in bullets and description against the actual ingredient list. If a bullet claims an ingredient (e.g. "keratin", "rosemary oil", "hyaluronic acid", "vitamin C") that does NOT appear in the ingredient list, flag it as a violation: "Ingredient '[X]' listed in bullet [N] not found in actual ingredient list — remove or verify." Only flag ingredients that are definitively absent. Common ingredient aliases are acceptable (e.g. "Rosmarinus Officinalis" = rosemary oil). If a timeline claim is present in IH without qualifier, flag it and rewrite removing the timeline or moving it to a bullet.
 
+PAST AUDIT + PERFORMANCE RULES:
+- Compare the previous recommended copy with the CURRENT LIVE LISTING before making a new recommendation.
+- Treat a prior recommendation as NOT IMPLEMENTED, IMPLEMENTED/SUBSTANTIALLY IMPLEMENTED, or NO LONGER RELEVANT.
+- Do not claim an unimplemented recommendation failed. Do not repeat the exact same recommendation without acknowledging it was already recommended.
+- If a prior change is live and performance is healthy/improving, prefer preserving it absent a meaningful compliance issue or stronger evidence-based opportunity.
+- If performance weakened, do not assume the listing change caused it. Sessions, conversion, advertising, inventory, pricing, seasonality and events can all contribute. Use performance as evidence, not proof of causation.
+
+AD SEARCH TERM ATTRIBUTION:
+- When a row contains an ASIN matching the audited SKU, treat its metrics as SKU-specific shopper-search evidence.
+- When ASIN is blank, absent, or does not match, treat the row only as brand/catalog-level language evidence and do not attribute its sales, purchases, conversion or ACOS to this SKU.
+- Never add a term solely because it performs in ads; it must accurately describe the product and comply with guardrails.
+
+CUSTOMER REVIEW EVIDENCE:
+- Use recurring themes to identify shopper language, motivations, confusion, expectations and listing information gaps.
+- Do not turn an isolated review into a product claim or copy unsupported efficacy language into the listing.
+- Distinguish listing-clarity problems from product-experience problems; only recommend copy changes when copy can reasonably address the issue.
+
+COMPETITOR + CATEGORY-LEADER EVIDENCE:
+- Comparative context is not a template. Do not copy competitor wording or assume competitor claims/listings are compliant or substantiated for this product.
+- Use market data to understand positioning, shopper expectations and supported differentiation. Product-specific evidence outranks competitor/category convention.
+
+HOLISTIC PDP STRATEGY — REQUIRED BEFORE WRITING ANY FIELD:
+- Treat the title, Item Highlights, five bullets, description and backend keywords as one coordinated content system. Do not audit or rewrite a field in isolation.
+- First inventory the complete available evidence: PRODUCT CONTEXT, AUDIT GUARDRAILS, current listing, prior audit, business performance, keyword rankings and search volume, strategy groups, SKU-attributed ad terms, customer reviews, ingredients, brand insights and market context.
+- Build an internal content-priority map before generating rewrites. Identify: core product/use, purchase-critical facts, meaningful differentiators, substantiated proof, key ingredients, recurring customer needs or confusion, compliance constraints, established ranking terms, growth keyword opportunities, and useful information currently missing from the PDP.
+- Rank concepts by their value to shopper comprehension, conversion, differentiation, SEO defense, SEO growth and compliance. Existing copy does not receive priority merely because it is already present. PRODUCT CONTEXT is the source of truth for deciding which accurate product facts deserve PDP real estate.
+- Then assign each high-priority concept to its strongest appropriate field. Use the title for immediate product identification and the most valuable natural-fit search language; Item Highlights for rapid differentiation; bullets for the five strongest purchase-driving messages; description for useful detail, mechanism, education and supporting information; backend for relevant indexed keyword coverage that does not need shopper-facing placement.
+- Eliminate cross-field redundancy. Once a core benefit is clearly established, do not spend scarce space restating it in multiple bullets unless repetition is strategically justified by shopper comprehension or keyword protection.
+- Character limits are allocation constraints, not instructions to compress the current field. When a field is over limit, decide which concepts should remain, which should move, which are redundant or low-value enough to remove, and whether higher-priority unused PRODUCT CONTEXT or customer evidence should replace existing copy.
+- Do not silently discard meaningful information. If a product fact, customer need, differentiator, proof point or targeted keyword is removed from one field, determine whether it warrants relocation elsewhere in the PDP. State material relocations or intentional omissions concisely in the relevant NOTES field.
+- Do not assume all five current bullet topics deserve to survive. Select the five highest-value, nonredundant messages for this specific SKU from all available evidence. Likewise, do not omit a stronger unused message merely because no current bullet contains it.
+- Before finalizing, perform a whole-PDP coverage check: confirm the rewrites collectively communicate what the product is, why it matters, its strongest supported differentiators, the most important customer information, and the deliberate keyword strategy without avoidable duplication.
+- INPUT AND OUTPUT LENGTHS ARE SEPARATE: The current live title, Item Highlights, bullets, description, backend terms and ingredients are supplied for complete analysis and are not constrained by the rewrite limits. Read and assess the full supplied field. The title (75), Item Highlights (125), bullet and description length targets apply only to the corresponding generated rewrites.
+- Do not say that a live field was truncated merely because it exceeds the allowed rewrite length. Only report input truncation if the prompt explicitly labels the field as truncated or includes a truncation marker.
+
+KEYWORD TIER CLASSIFICATION — DO NOT CONFUSE STRATEGY WITH PERFORMANCE:
+- Top 20, Opportunity, and Reach for the Stars are STRATEGY GROUPS: they identify keywords we want to target.
+- Tier 1, Tier 2, and Tier 3 are PERFORMANCE GROUPS: they are determined from current SHEET_KEYWORD_TRACKER data and the existing tenure logic.
+- A keyword may be called TIER 1 only when SHEET_KEYWORD_TRACKER provides a current organic rank <= PAGE1_RANK_CUTOFF for this SKU.
+- A keyword may be called TIER 2 only when SHEET_KEYWORD_TRACKER provides a current organic rank > PAGE1_RANK_CUTOFF and <= CLOSE_TO_PAGE1_MAX for this SKU.
+- A keyword may be called TIER 3 only when the existing Tier 3 tenure logic qualifies it.
+- If the tracker has no current organic rank for a keyword, NEVER describe it as Tier 1 or Tier 2.
+- Never infer a performance tier merely because a keyword appears in Top 20, Opportunity, Reach, the live listing, a previous audit, ads, reviews, or competitor data.
+
+TITLE KEYWORD SELECTION:
+- Title space is scarce. For SEO-oriented title language, preferentially use exact target keywords or natural grammatical forms of target keywords supplied in the strategy/performance evidence.
+- Priority for title SEO terms: Tier 1 Protect, then Tier 2 Push, then relevant Top 20 strategy keywords, then relevant Opportunity keywords. Reach for the Stars may be used only when strategically justified and when stronger target terms do not fit or are not appropriate.
+- Do NOT invent a new keyword phrase merely because it sounds natural, compact, or semantically related to the product.
+- Do NOT replace an available targeted keyword with an untracked synonym just to shorten the title.
+- An untracked phrase may be used only when it is necessary for accurate shopper comprehension/grammar or PRODUCT_CONTEXT/BRAND_INSIGHTS establishes it as important product terminology. If used, TITLE_NOTES must explicitly say it is untracked and explain why it is preferable to the available target keywords.
+- When shortening a title to meet the character limit, first look for a shorter accurate/compliant phrase from the supplied target keyword lists. Do not fill newly available title space with invented SEO terminology while relevant target keywords are available.
+- Consider current organic rank, search volume, strategy group, exact product relevance, compliance, and shopper comprehension together. Do not keyword-stuff.
+
+SEO EQUITY DEFENSE + KEYWORD RELOCATION:
+- Treat meaningful existing organic rankings as established SEO equity. The goal is incremental visibility growth without avoidable backsliding.
+- Before removing, materially altering, or reducing the prominence of a ranked keyword, evaluate its current organic rank, search volume, current PDP placement, exact product relevance and strategic importance. Consider ranking trajectory when trajectory data is supplied; never invent a trend when only current rank is available.
+- Protect valuable ranking terms in their current prominent field when practical. A larger-volume opportunity does not automatically justify displacing a relevant term with an established valuable ranking.
+- Before removing any targeted or ranked keyword from a field, check whether it appears elsewhere in the current PDP and proposed PDP. If it deserves continued coverage, relocate it to the strongest natural and compliant field available rather than letting it disappear.
+- Preserve exact keyword phrasing or a natural grammatical form when doing so remains accurate and readable. Do not force awkward repetition, keyword stuffing, irrelevant terms or noncompliant claims solely to preserve text.
+- Evaluate defense and opportunity together: protect what the ASIN is already winning, identify valuable coverage gaps, and add realistic growth terms without unnecessarily sacrificing existing visibility.
+- If an important keyword must be removed because it is inaccurate, noncompliant, irreconcilably awkward or displaced by materially stronger evidence, explain the tradeoff in the relevant NOTES field.
+- Complete this defense analysis before drafting rewrites, not as a QA step after the copy has already been written.
+
 KEYWORD COVERAGE RULES — priority order matters, read the tiers below carefully:
-- TIER 1 keywords (already ranking page 1) are the HIGHEST priority of anything in this audit — higher than adding any new keyword, higher than fixing a coverage gap. If a rewrite would remove or weaken a Tier 1 keyword's presence in whatever field it currently occupies, that is a critical problem — flag it explicitly and do not let the rewrite do that. We never want to lose a page-1 ranking to make room for something else.
+- TIER 1 keywords (already ranking page 1) are the highest SEO-defense priority. If a rewrite would remove or weaken a Tier 1 keyword in the field where it currently appears, treat that as a critical SEO risk: preserve it when accurate, compliant and natural, or explicitly explain the unavoidable tradeoff. Do not sacrifice valuable page-1 equity merely to add a new term or make copy sound cleaner.
 - TIER 2 keywords (close to page 1, sorted by volume) are the priority for NEW placement — these are the closest realistic wins. When choosing what to add to a field, prefer a Tier 2 keyword over an unranked keyword every time, even if the unranked one seems more "important" — proximity to page 1 with real volume behind it is worth more right now than a keyword with no ranking traction at all, no matter how strategically desirable that keyword sounds.
 - TIER 3 items (in the listing a long time, still not ranking) are NOT a placement task — do not just try to shove them into more fields. Raise them as a genuine open question in the relevant NOTES field: is this keyword too competitive for this listing to win, and does the suggested lower-volume alternative deserve a try instead? Do not resolve this question yourself — surface it for a human decision.
 - Do NOT recommend adding drug-claim keywords or any keyword that violates compliance rules, regardless of tier.
@@ -660,9 +818,20 @@ KEYWORD COVERAGE RULES — priority order matters, read the tiers below carefull
 BULLET FORMATTING RULES (apply to all bullet rewrites):
 - Every bullet must open with an ALL-CAPS phrase (3-6 words) followed by a colon, then sentence-case detail. Example: "CLINICALLY TESTED HAIR GROWTH SERUM: In 3 independent studies, 95% of users reported visibly thicker hair."
 - Flag any bullet that does NOT follow this ALL-CAPS header: detail format as a violation.
-- Across the catalog, align parallel bullets by position where products are related: B1 = hero claim/clinical proof, B2 = science/mechanism, B3 = key ingredients, B4 = who it is for/hair types, B5 = brand credentials/clean formula. Rewrites should follow this structure consistently.
+- Choose bullet topics only after completing the holistic PDP strategy. Each bullet must earn its space as one of the five strongest purchase-driving, nonredundant messages for this SKU.
+- For genuinely related variations, align parallel bullet positions when doing so improves comparison and consistency. Use B1 = hero value/proof, B2 = science/mechanism, B3 = key ingredients, B4 = intended user/use case, and B5 = credentials/formula as a flexible starting framework, not a mandatory template. Reorder or replace topics when PRODUCT CONTEXT, customer evidence or keyword strategy shows a different sequence is more valuable.
+- When shortening a bullet, do not merely compress its existing sentences. Reassess the current bullet against all unused and used evidence, retain only concepts that deserve bullet-level prominence, and relocate worthwhile supporting detail to the description or another appropriate field.
 - Within a single SKU, bullet headers should not repeat the same keyword root — vary to maximize keyword coverage.
-- Bullet rewrites must be max 200 chars including the ALL-CAPS header.
+- BULLET LENGTH (beauty & wellness standard, Jaclyn 2026-10-09 — replaces the old 200-char max). Count characters including the ALL-CAPS header:
+  - 200–250 characters: the preferred writing range. Aim here by default.
+  - 250–300 characters: use when the bullet genuinely needs the extra space for ingredients, product benefits or differentiators.
+  - 300+ characters: only when truly necessary and the product type's bullet limit allows it; never exceed 500 characters.
+  - A bullet under 200 characters is usually underusing the space — expand it with real, supported benefits, ingredients or differentiators (never filler or unsupported claims).
+- PRODUCT DESCRIPTION LENGTH & STYLE (Jaclyn 2026-10-13 — replaces the old 400-char max). Most of our listings have A+ Content, so the description is usually not shown to shoppers, but Amazon still indexes it and it carries some SEO weight. Treat it as real, readable copy that also earns search relevance:
+  - Write 2–3 paragraphs, roughly 1,000–1,800 characters. Never exceed 2,000 characters (Amazon's description limit). A description under about 800 characters is underusing the field unless the product genuinely has little more to say.
+  - A natural flow works well: what the product is and who it's for → how it works / key ingredients and benefits → how to use it and what sets it apart. Use it for supporting detail, education and ingredient context that didn't fit the bullets — don't just restate the bullets.
+  - Work in Tier 1 / Tier 2 and other relevant strategy keywords ONLY where they read naturally in a sentence. Never stuff keywords, list them, or repeat the same phrase; it must read like copy a person wrote, not an SEO block.
+  - Complete sentences in paragraphs — no bullets, no HTML, no ALL-CAPS headers. All the same compliance rules apply (claims, timeline qualifiers, ingredient accuracy).
 
 OUTPUT FORMAT — use exactly these labels, one per line, no JSON, no markdown:
 TITLE_NOTES: [violations found, or "No violations" if clean. Max 300 chars.]
@@ -670,13 +839,13 @@ TITLE_REWRITE: [compliant rewrite, max 75 chars. If clean, repeat original trimm
 IH_NOTES: [violations found, or generated if missing. Max 300 chars.]
 IH_REWRITE: [compliant rewrite or new copy, max 125 chars.]
 BULLETS_NOTES: [key violations across all bullets, noted by bullet number. Max 500 chars. Empty string if travel SKU.]
-BULLET_1_REWRITE: [compliant rewrite of bullet 1, max 200 chars. Empty string if travel SKU.]
-BULLET_2_REWRITE: [compliant rewrite of bullet 2, max 200 chars. Empty string if travel SKU.]
-BULLET_3_REWRITE: [compliant rewrite of bullet 3, max 200 chars. Empty string if travel SKU.]
-BULLET_4_REWRITE: [compliant rewrite of bullet 4, max 200 chars. Empty string if travel SKU.]
-BULLET_5_REWRITE: [compliant rewrite of bullet 5, max 200 chars. Empty string if travel SKU.]
+BULLET_1_REWRITE: [compliant rewrite of bullet 1, 200–250 chars preferred, up to 300 when needed, 300+ only if necessary. Empty string if travel SKU.]
+BULLET_2_REWRITE: [compliant rewrite of bullet 2, 200–250 chars preferred, up to 300 when needed, 300+ only if necessary. Empty string if travel SKU.]
+BULLET_3_REWRITE: [compliant rewrite of bullet 3, 200–250 chars preferred, up to 300 when needed, 300+ only if necessary. Empty string if travel SKU.]
+BULLET_4_REWRITE: [compliant rewrite of bullet 4, 200–250 chars preferred, up to 300 when needed, 300+ only if necessary. Empty string if travel SKU.]
+BULLET_5_REWRITE: [compliant rewrite of bullet 5, 200–250 chars preferred, up to 300 when needed, 300+ only if necessary. Empty string if travel SKU.]
 DESC_NOTES: [violations found in description, or "No violations" if clean. Max 300 chars. Empty string if travel SKU.]
-DESC_REWRITE: [compliant rewrite of description, max 400 chars, plain sentences no bullets. Empty string if travel SKU.]
+DESC_REWRITE: [compliant rewrite of description: 2–3 natural paragraphs, about 1,000–1,800 chars, never over 2,000. Separate paragraphs with one blank line. No keyword stuffing, no bullets, no HTML. Empty string if travel SKU.]
 BACKEND_NOTES: [violations found, or "No violations" if clean. Max 300 chars.]
 BACKEND_REWRITE: [compliant backend keywords, max 200 chars, spaces only no commas.]
 
@@ -688,24 +857,46 @@ Write nothing else. No preamble. No explanation after the last line. Start immed
     const travel = isTravel(row);
 
     try {
-      const title     = san(row[COL.title], 400);
-      const ih        = san(row[COL.item_highlights], 200) || 'MISSING';
-      const b1        = san(row[COL.bullet_1], 300);
-      const b2        = san(row[COL.bullet_2], 300);
-      const b3        = san(row[COL.bullet_3], 300);
-      const b4        = san(row[COL.bullet_4], 300);
-      const b5        = san(row[COL.bullet_5], 300);
-      const desc      = san(row[COL.description], 400);
-      const backend      = san(row[COL.backend_keywords], 300);
-      const ingredients  = san(row[COL.ingredients], 600);
+      // Preserve the complete current PDP for analysis. Rewrite limits belong
+      // only to Claude's output instructions, never to these input fields.
+      const title        = san(row[COL.title]);
+      const ih           = san(row[COL.item_highlights]) || 'MISSING';
+      const b1           = san(row[COL.bullet_1]);
+      const b2           = san(row[COL.bullet_2]);
+      const b3           = san(row[COL.bullet_3]);
+      const b4           = san(row[COL.bullet_4]);
+      const b5           = san(row[COL.bullet_5]);
+      const desc         = san(row[COL.description]);
+      const backend      = san(row[COL.backend_keywords]);
+      const ingredients  = san(row[COL.ingredients]);
+      const asin = (row[COL.asin] || '').trim();
+      const skuContext = skuContextMap[sku] || {};
+      const productContext = san(skuContext.productContext || '');
+      const auditGuardrails = san(skuContext.auditGuardrails || '');
+      const previousAudit = previousAuditMap[sku] || null;
+      const contextBlock = `
+BUSINESS CONTEXT:
+BRAND INSIGHTS: ${san(brandInsights) || 'NOT AVAILABLE'}
+PRODUCT CONTEXT: ${productContext || 'NOT AVAILABLE'}
+AUDIT GUARDRAILS: ${auditGuardrails || 'NOT AVAILABLE'}
+`;
+      const previousAuditContext = previousAudit ? `
+PREVIOUS AUDIT (${previousAudit.date}):
+Title recommendation: ${san(previousAudit.titleRewrite, 300) || 'None'}
+Item Highlights recommendation: ${san(previousAudit.ihRewrite, 300) || 'None'}
+Bullet recommendations: ${[previousAudit.bullet1Rewrite, previousAudit.bullet2Rewrite, previousAudit.bullet3Rewrite, previousAudit.bullet4Rewrite, previousAudit.bullet5Rewrite].map((x,i)=>`${i+1}. ${san(x,500) || 'None'}`).join(' | ')}
+Description recommendation: ${san(previousAudit.descRewrite, 2000) || 'None'}
+Backend recommendation: ${san(previousAudit.backendRewrite, 250) || 'None'}
+Prior notes: ${san([previousAudit.titleNotes, previousAudit.ihNotes, previousAudit.bulletsNotes, previousAudit.descNotes, previousAudit.backendNotes].filter(Boolean).join(' | '), 1000) || 'None'}
+` : '\nPREVIOUS AUDIT: No previous audit is available for this SKU.\n';
 
       let userPrompt;
       if (travel) {
-        userPrompt = `Audit this TRAVEL SIZE SKU. For travel SKUs only check title and item highlights. Set BULLETS_NOTES and BULLETS_REWRITE to empty string.
-
+        userPrompt = `Audit this TRAVEL SIZE SKU. For travel SKUs only check title and item highlights. Set BULLETS_NOTES, BULLET_1_REWRITE through BULLET_5_REWRITE, DESC_NOTES, and DESC_REWRITE to empty strings.
+${contextBlock}${previousAuditContext}
 SKU: ${sku}
 Name: ${name} [TRAVEL SIZE]
-Title: ${title}
+Title (${title.length} chars as received by audit): ${title}
 Item Highlights: ${ih}
 Backend: ${backend}`;
       } else {
@@ -720,19 +911,25 @@ Backend: ${backend}`;
         // Build keyword coverage context — 3-tier priority system, added
         // 2026-07-27 per Jaclyn (see header comment). Replaces the old
         // "prioritize unranked keywords" logic entirely.
-        const asin = (row[COL.asin] || '').trim();
-        const skuKws = skuKeywordMap[sku] || null;
+        const skuKws = skuStrategyMap[sku] || null;
         const kwTrackerLookup = buildKwTrackerLookup(kwTrackerRows, sku);
         let kwContext = '';
 
         if (skuKws && skuKws.top20.length) {
           const allTargetKeywords = [...skuKws.top20, ...(skuKws.opportunity || [])];
-          const { tier1Protect, tier2Push, other } = categorizeKeywordTiers(allTargetKeywords, kwTrackerLookup, kwRankings);
+          const { tier1Protect, tier2Push, other } = categorizeKeywordTiers(allTargetKeywords, kwTrackerLookup);
           const tier3 = buildTier3Reconsiderations(other, sku, allRawRows, skuKws.reach || [], kwTrackerLookup);
 
           const fmt = e => `${e.keyword}${e.rank !== null ? ` (rank #${e.rank}` : ' (not ranking'}${e.volume !== null ? `, ${e.volume}/mo)` : ')'}`;
 
           kwContext = `
+QUARTERLY KEYWORD STRATEGY GROUPS (these are TARGET GROUPS, not performance tiers):
+TOP 20 TARGETS: ${skuKws.top20.length ? skuKws.top20.join(', ') : 'None supplied.'}
+OPPORTUNITY TARGETS: ${(skuKws.opportunity || []).length ? skuKws.opportunity.join(', ') : 'None supplied.'}
+REACH FOR THE STARS: ${(skuKws.reach || []).length ? skuKws.reach.join(', ') : 'None supplied.'}
+
+IMPORTANT: Only the tracker-derived sections below establish Tier 1/Tier 2 status. A keyword appearing in a strategy group does not make it Tier 1 or Tier 2.
+
 TIER 1 — PROTECT (already ranking page 1 — DO NOT let a rewrite remove or weaken these; this is the highest priority, above adding anything new):
 ${tier1Protect.length ? tier1Protect.map(fmt).join(', ') : 'None currently on page 1 for this SKU.'}
 
@@ -743,43 +940,63 @@ TIER 3 — RECONSIDER (in the listing well past a competitiveness-scaled thresho
 ${tier3.map(t => `"${t.keyword}"${t.volume !== null ? ` (${t.volume}/mo)` : ''} — in listing ${t.tenure_days} days (past the ${t.tenure_threshold_applied}-day threshold for its volume tier), no rank${t.suggested_alternative ? `. Consider substituting: "${t.suggested_alternative}"` : ''}`).join('; ')}` : ''}
 
 FIELD PRIORITY FOR PLACEMENT (highest SEO weight to lowest): Title > Item Highlights > Bullets > Product Description > Backend Keywords. When a Tier 1 or Tier 2 keyword is missing, place it in the HIGHEST-weight field it can compliantly fit in that's currently missing it — do not default to backend just because there's room there.`;
-        } else if (Object.keys(kwRankings).length > 0) {
-          // No strategy sheet tab for this SKU — use top ranking keywords from upload as proxy.
-          // No volume data available in this fallback path, so this can only
-          // sort by rank, not build real tiers — noted to Claude as such.
-          const ranked = Object.entries(kwRankings)
-            .filter(([kw]) => {
-              const nameParts = name.toLowerCase().split(' ');
-              return nameParts.some(p => p.length > 3 && kw.includes(p));
-            })
-            .sort(([, a], [, b]) => a - b)
-            .slice(0, 15)
-            .map(([kw, rank]) => `${kw} (rank #${rank})`);
-          if (ranked.length) {
-            kwContext = `
-KEYWORD RANKINGS FROM TRACKER (no keyword strategy tab for this SKU, so no volume data available — ranked by position only, real 3-tier volume-weighted prioritization not possible this run):
-${ranked.join(', ')}
-
-FIELD PRIORITY FOR PLACEMENT (highest SEO weight to lowest): Title > Item Highlights > Bullets > Product Description > Backend Keywords.`;
-          }
+        } else if (Object.keys(kwTrackerLookup).length > 0) {
+          const trackedKeywords = Object.entries(kwTrackerLookup).map(([keyword, data]) => ({ keyword, rank: data.rank, volume: data.volume }));
+          const byVolume = (a, b) => (b.volume || 0) - (a.volume || 0);
+          const trackerPage1 = trackedKeywords.filter(k => k.rank !== null && k.rank <= PAGE1_RANK_CUTOFF).sort(byVolume);
+          const trackerPush = trackedKeywords.filter(k => k.rank !== null && k.rank > PAGE1_RANK_CUTOFF && k.rank <= CLOSE_TO_PAGE1_MAX).sort(byVolume);
+          const trackerOther = trackedKeywords.filter(k => k.rank === null || k.rank > CLOSE_TO_PAGE1_MAX).sort(byVolume);
+          kwContext = `
+KEYWORD PERFORMANCE — QUARTERLY STRATEGY LIST NOT AVAILABLE:
+Do not invent Top 20, Opportunity, or Reach classifications.
+CURRENT PAGE-1 / PROTECT TERMS: ${JSON.stringify(trackerPage1.slice(0, 15))}
+CURRENT PUSH OPPORTUNITIES: ${JSON.stringify(trackerPush.slice(0, 15))}
+OTHER TRACKED TERMS: ${JSON.stringify(trackerOther.slice(0, 15))}
+FIELD PRIORITY FOR PLACEMENT: Title > Item Highlights > Bullets > Product Description > Backend Keywords.`;
         }
 
+        const skuBusinessRows = businessReportRows.filter(r => String(r.SKU || r.sku || '').trim() === sku).sort((a,b) => `${b.YEAR || b.year || ''}-${String(b.MONTH || b.month || '').padStart(2,'0')}`.localeCompare(`${a.YEAR || a.year || ''}-${String(a.MONTH || a.month || '').padStart(2,'0')}`)).slice(0, 6);
+        const performanceContext = skuBusinessRows.map(r => ({ month: r.MONTH || r.month, year: r.YEAR || r.year, sessions: r.SESSIONS || r.sessions, pageViews: r.PAGE_VIEWS || r.page_views, units: r.UNITS_ORDERED_CLEAN || r.units_ordered_clean || r.UNITS_ORDERED || r.units_ordered, sales: r.ORDERED_PRODUCT_SALES_CLEAN || r.ordered_product_sales_clean || r.ORDERED_PRODUCT_SALES || r.ordered_product_sales, conversionRate: r.CONVERSION_RATE || r.conversion_rate }));
+
+        const adAsinRows = asin ? adSearchTermRows.filter(r => String(r.asin || r.ASIN || '').trim().toUpperCase() === asin.toUpperCase()) : [];
+        const unattributedAdRows = adSearchTermRows.filter(r => !String(r.asin || r.ASIN || '').trim());
+        const sortAds = arr => [...arr].sort((a,b) => Number(b.sales||0)-Number(a.sales||0) || Number(b.purchases||0)-Number(a.purchases||0) || Number(b.clicks||0)-Number(a.clicks||0));
+        const formatAd = r => ({ searchTerm:r.search_term, keyword:r.keyword, matchType:r.match_type, adType:r.ad_type, impressions:r.impressions, clicks:r.clicks, purchases:r.purchases, sales:r.sales, conversionRate:r.conversion_rate, acos:r.acos, year:r.year, month:r.month });
+        const adSearchContext = adAsinRows.length ? `SKU-SPECIFIC AD SEARCH TERMS (ASIN ${asin}): ${JSON.stringify(sortAds(adAsinRows).slice(0,30).map(formatAd))}\nUNATTRIBUTED BRAND/CATALOG SEARCH LANGUAGE: ${JSON.stringify(sortAds(unattributedAdRows).slice(0,20).map(formatAd))}` : `No ASIN-attributed ad search terms found for ${asin || 'this SKU'}. Treat these only as brand/catalog-level language evidence: ${JSON.stringify(sortAds(adSearchTermRows).slice(0,30).map(formatAd))}`;
+
+        const skuReviews = amazonReviewRows.filter(r => String(r.sku || r.SKU || '').trim() === sku || (asin && String(r.asin || r.ASIN || '').trim().toUpperCase() === asin.toUpperCase())).sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')));
+        const lowReviews = skuReviews.filter(r => Number(r.star_rating) <= 3).slice(0,12);
+        const highReviews = skuReviews.filter(r => Number(r.star_rating) >= 4).slice(0,12);
+        const reviewSample = [...lowReviews, ...highReviews].slice(0,24).map(r => ({ rating:r.star_rating, title:san(r.review_title,150), review:san(r.review_text,500), date:r.date, purchaseType:r.purchase_type }));
+
+        function compactMarketProduct(p) { return { asin:p['ASIN']||'', brand:p['Brand']||'', productName:p['Product Name']||'', itemHighlights:san(p['Item Highlights'],300), price:p['Price']||'', size:p['Size']||'', pricePerOz:p['Price/oz']||'', rating:p['Rating']||'', reviewCount:p['# Reviews']||'', estimatedMonthlySales:p['Est Monthly Sales']||'', subcategoryBsr:p['Subcategory BSR']||'', keyIngredients:san(p['Key Ingredients'],300), keyBenefits:san(p['Key Benefits Clinically'],300), skinType:p['Skin Type']||'', cleanStandards:san(p['Clean Standards/Certifications'],200), fragrance:p['Fragrance']||'', targetConsumer:san(p['Target Consumer'],200), priceTier:p['Price Tier']||'', competitiveAdvantage:san(p['Competitive Advantage'],300), threatLevel:p['Threat Level']||'', bullet1:san(p['Bullet1'],250), bullet2:san(p['Bullet2'],250), bullet3:san(p['Bullet3'],250), bullet4:san(p['Bullet4'],250), bullet5:san(p['Bullet5'],250), description:san(p['Description'],400) }; }
+        const marketContext = `CLOSE COMPETITORS: ${JSON.stringify((skuKws?.competitors || []).slice(0,10).map(compactMarketProduct))}\nCATEGORY LEADERS: ${JSON.stringify((skuKws?.categoryLeaders || []).slice(0,10).map(compactMarketProduct))}`;
+
+        console.log(`[listing-audit][debug] ${sku}: context product=${!!productContext}, guardrails=${!!auditGuardrails}, priorAudit=${!!previousAudit}, businessMonths=${performanceContext.length}, trackerKeywords=${Object.keys(kwTrackerLookup).length}, adAsinRows=${adAsinRows.length}, reviews=${skuReviews.length}, competitors=${(skuKws?.competitors||[]).length}, leaders=${(skuKws?.categoryLeaders||[]).length}`);
+        console.log(`[listing-audit][debug] ${sku}: liveTitleChars=${title.length}, liveTitle=${JSON.stringify(title)}, strategyTop20=${skuKws?.top20?.length || 0}, strategyOpportunity=${skuKws?.opportunity?.length || 0}, strategyReach=${skuKws?.reach?.length || 0}`);
+
         userPrompt = `Audit this full listing SKU.
+${contextBlock}${previousAuditContext}
+RECENT BUSINESS PERFORMANCE (up to 6 months): ${performanceContext.length ? JSON.stringify(performanceContext) : 'NOT AVAILABLE'}
+${kwContext}
+AD SEARCH TERM EVIDENCE: ${adSearchContext}
+CUSTOMER REVIEW EVIDENCE: Total available ${skuReviews.length}; balanced recent sample ${reviewSample.length ? JSON.stringify(reviewSample) : 'NOT AVAILABLE'}
+COMPETITIVE MARKET CONTEXT: ${marketContext}
 
 SKU: ${sku}
 Name: ${name}
 ASIN: ${asin}
 Related SKUs in this catalog: ${siblings || 'none'}
-Title: ${title}
-Item Highlights: ${ih}
-Bullet 1: ${b1}
-Bullet 2: ${b2}
-Bullet 3: ${b3}
-Bullet 4: ${b4}
-Bullet 5: ${b5}
-Description (excerpt): ${desc}
+Title (${title.length} chars as received by audit): ${title}
+Item Highlights (${ih === 'MISSING' ? 0 : ih.length} chars as received by audit): ${ih}
+Bullet 1 (${b1.length} chars as received by audit): ${b1}
+Bullet 2 (${b2.length} chars as received by audit): ${b2}
+Bullet 3 (${b3.length} chars as received by audit): ${b3}
+Bullet 4 (${b4.length} chars as received by audit): ${b4}
+Bullet 5 (${b5.length} chars as received by audit): ${b5}
+Description (${desc.length} chars as received by audit): ${desc}
 Backend: ${backend}
-Ingredients: ${ingredients || 'NOT AVAILABLE'}${kwContext}`;
+Ingredients: ${ingredients || 'NOT AVAILABLE'}`;
       }
 
       // Call Claude — retry once on 429
@@ -799,7 +1016,7 @@ Ingredients: ${ingredients || 'NOT AVAILABLE'}${kwContext}`;
           },
           body: JSON.stringify({
             model: 'claude-sonnet-4-6',
-            max_tokens: travel ? 600 : 2500,
+            max_tokens: travel ? 600 : 3800, // 2500 → 3200 (longer bullets) → 3800 (2026-10-13: description is now 2–3 paragraphs, up to 2,000 chars)
             system: systemPrompt,
             messages: [{ role: 'user', content: userPrompt }]
           })
@@ -814,6 +1031,8 @@ Ingredients: ${ingredients || 'NOT AVAILABLE'}${kwContext}`;
       if (!claudeRes.ok) {
         const errText = await claudeRes.text().catch(() => '');
         console.error(`[listing-audit] ${sku} Claude error ${claudeRes.status}: ${errText.slice(0, 100)}`);
+        debug.skus[sku] = { ok: false, error: `Claude HTTP ${claudeRes.status}` };
+        debug.warnings.push(`sku:${sku}: Claude HTTP ${claudeRes.status}`);
         auditRows.push(buildErrorRow(auditDate, sku, name, `Claude error ${claudeRes.status}`, now));
         continue;
       }
@@ -850,9 +1069,12 @@ Ingredients: ${ingredients || 'NOT AVAILABLE'}${kwContext}`;
         now   // audited_at
       ]);
 
+      debug.skus[sku] = { ok: true };
       console.log(`[listing-audit] ✓ ${sku}`);
 
     } catch (err) {
+      debug.skus[sku] = { ok: false, error: err.message };
+      debug.warnings.push(`sku:${sku}: ${err.message}`);
       console.error(`[listing-audit] ✗ ${sku}: ${err.message}`);
       auditRows.push(buildErrorRow(auditDate, sku, name, err.message, now));
     }
@@ -878,8 +1100,9 @@ Ingredients: ${ingredients || 'NOT AVAILABLE'}${kwContext}`;
     }
   }
 
+  debugOk('auditWrite', { rowsWritten: auditRows.length, tab: auditTabName });
   console.log(`[listing-audit] Done — ${auditRows.length} rows written`);
-  return res.status(200).json({ ok: true, skuCount: auditRows.length });
+  return res.status(200).json({ ok: true, skuCount: auditRows.length, debug });
 };
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
