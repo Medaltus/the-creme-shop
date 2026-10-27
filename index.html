@@ -335,6 +335,10 @@ a.alt-chip:hover{background:rgba(0,31,96,.12);}
 .alt-tier-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;}
 .alt-tier-count{font-size:11px;font-weight:600;color:var(--muted);}
 .alt-empty{font-size:12px;color:var(--muted);padding:6px 0;}
+/* 15 rows tall, scroll inside (2026-10-27). JS sets the exact max-height
+   from the real height of the first 15 rows; 640px is just the fallback. */
+.alt-scroll{overflow:auto;max-height:640px;border-radius:6px;}
+.alt-scroll table.data-table thead th{position:sticky;top:0;z-index:2;background:var(--navy);}
 .alt-tbl th.alt-sort{cursor:pointer;user-select:none;white-space:nowrap;}
 .alt-tbl th.alt-sort:hover,.alt-tbl th.alt-sort.active{color:#24e9a3;}
 .alt-tbl .alt-arrow{font-size:9px;}
@@ -12583,7 +12587,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <div class="card-title" style="margin-bottom:0;">Products We Control <span style="font-weight:400;color:var(--muted);font-size:12px;">· no alternate sellers</span></div>
         <div class="alt-tier-count" id="alt-count-control"></div>
       </div>
-      <div style="overflow-x:auto;" id="alt-table-control"><div class="alt-empty">Loading…</div></div>
+      <div class="alt-scroll" id="alt-table-control"><div class="alt-empty">Loading…</div></div>
     </div>
 
     <div class="card" style="margin-bottom:16px;">
@@ -12591,7 +12595,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <div class="card-title" style="margin-bottom:0;">Products We're Fighting For <span style="font-weight:400;color:var(--muted);font-size:12px;">· 1–4 alternate sellers</span></div>
         <div class="alt-tier-count" id="alt-count-fighting"></div>
       </div>
-      <div style="overflow-x:auto;" id="alt-table-fighting"><div class="alt-empty">Loading…</div></div>
+      <div class="alt-scroll" id="alt-table-fighting"><div class="alt-empty">Loading…</div></div>
     </div>
 
     <div class="card" style="margin-bottom:16px;">
@@ -12599,7 +12603,7 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
         <div class="card-title" style="margin-bottom:0;">Products We Don't Control <span style="font-weight:400;color:var(--muted);font-size:12px;">· 5+ alternate sellers</span></div>
         <div class="alt-tier-count" id="alt-count-lost"></div>
       </div>
-      <div style="overflow-x:auto;" id="alt-table-lost"><div class="alt-empty">Loading…</div></div>
+      <div class="alt-scroll" id="alt-table-lost"><div class="alt-empty">Loading…</div></div>
     </div>
   </div><!-- /page-alt-sellers -->
 
@@ -22185,9 +22189,11 @@ window.initAltSellers = function () {
         const price = pm && pm.price ? pm.price : null;
         // Inventory — summed across the ASIN's SKUs (each SKU is its own
         // FBA stock). Available = FBA fulfillable + seller-fulfilled.
-        let avail = null, inbound = 0, reserved = 0;
+        let avail = null, inbound = 0, reserved = 0, sheetDays = null;
         a.skus.forEach(sku => {
           const iv = invBySku[sku]; if (!iv) return;
+          const sd = num(iv.days_of_inventory);
+          if (sd != null) sheetDays = Math.max(sheetDays || 0, sd);
           avail = (avail || 0) + (num(iv.fulfillable_quantity) || 0) + (num(iv.seller_fulfilled_quantity) || 0);
           inbound += (num(iv.inbound_working_quantity) || 0) + (num(iv.inbound_shipped_quantity) || 0) + (num(iv.inbound_receiving_quantity) || 0);
           reserved += num(iv.reserved_quantity) || 0;
@@ -22203,7 +22209,7 @@ window.initAltSellers = function () {
           count,
           sellers: ids.map((id, i) => ({ id, url: (links[i] && /^https?:\/\//.test(links[i])) ? links[i] : sellerUrl(id) })),
           buybox: (r.buybox_owner || '').trim(),
-          avail, inbound, reserved, daysCover,
+          avail, inbound, reserved, daysCover, sheetDays, noSales: units90 === 0,
         };
         const flagged = notControlled.has(a.asin);
         if (flagged || count >= 5) tiers.lost.push(Object.assign(item, { flagged }));
@@ -22233,7 +22239,16 @@ window.initAltSellers = function () {
         if (it.avail == null) return '<span style="color:var(--muted);font-weight:500;">—</span>';
         const sub = [];
         if (it.inbound) sub.push('+' + it.inbound.toLocaleString() + ' inbound');
-        if (it.avail > 0 && it.daysCover != null) sub.push(it.daysCover > 365 ? '365+ days' : '~' + Math.round(it.daysCover) + ' days');
+        // Days of cover on every in-stock row (2026-10-27): computed from
+        // stock ÷ avg daily units; if there's no 90-day sales figure, falls
+        // back to the sheet's own days_of_inventory, and if the product
+        // genuinely sold 0 in 90 days, says so instead of leaving it blank.
+        if (it.avail > 0) {
+          const days = it.daysCover != null ? it.daysCover : it.sheetDays;
+          if (days != null) sub.push(days > 365 ? '365+ days' : '~' + Math.round(days) + ' days');
+          else if (it.noSales) sub.push('no sales in 90d');
+          else sub.push('days n/a');
+        }
         const main = it.avail <= 0
           ? '<span class="alt-oos">OOS</span>'
           : '<span' + (it.daysCover != null && it.daysCover < 30 ? ' class="alt-low" title="Under 30 days of cover"' : '') + '>' + it.avail.toLocaleString() + '</span>';
@@ -22289,6 +22304,21 @@ window.initAltSellers = function () {
             '<td class="num alt-inv">' + invHtml(it) + '</td>' +
           '</tr>').join('') +
           '</tbody></table>';
+        // Lock to 15 rows: header + the first 15 rows' real heights (rows
+        // vary — long names and seller chips wrap). Re-measured on every
+        // render so sorting keeps it at 15. Scroll resets to top on re-sort.
+        const VISIBLE_ROWS = 15;
+        const sizeIt = () => {
+          const thead = host.querySelector('thead');
+          const trs = host.querySelectorAll('tbody tr');
+          if (!thead || !thead.offsetHeight) return false;
+          let h = thead.offsetHeight;
+          for (let i = 0; i < Math.min(VISIBLE_ROWS, trs.length); i++) h += trs[i].offsetHeight;
+          host.style.maxHeight = (h + 1) + 'px';
+          return true;
+        };
+        if (!sizeIt()) requestAnimationFrame(sizeIt);
+        host.scrollTop = 0;
         host.querySelectorAll('[data-key]').forEach(el => el.addEventListener('click', ev => {
           ev.stopPropagation();
           const key = el.getAttribute('data-key');
@@ -31367,3 +31397,4 @@ window.addEventListener('load', async () => {
 </script>
 </body>
 </html>
+ 
