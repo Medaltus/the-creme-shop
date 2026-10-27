@@ -318,6 +318,23 @@ table.data-table tbody tr{border-bottom:1px solid var(--border2);}
 table.data-table tbody tr:nth-child(odd){background:var(--bg);}
 table.data-table tbody tr:last-child{border-bottom:none;}
 table.data-table tbody td{padding:9px 12px;font-size:12px;color:var(--navy);font-weight:600;}
+/* Alt Sellers page — added 2026-10-27 */
+.alt-tbl td{vertical-align:top;}
+.alt-tbl td.num,.alt-tbl th.num{text-align:right;white-space:nowrap;}
+.alt-tbl .alt-name{font-weight:500;max-width:280px;}
+.alt-tbl .alt-sku{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--muted);line-height:1.5;white-space:nowrap;}
+.alt-tbl a.alt-asin{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--navy);text-decoration:none;border-bottom:1px dotted var(--muted);}
+.alt-chips{display:flex;flex-wrap:wrap;gap:4px;max-width:360px;}
+.alt-chip{display:inline-block;font-family:'DM Mono',monospace;font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:4px;background:rgba(0,31,96,.06);border:1px solid rgba(0,31,96,.12);color:var(--navy);text-decoration:none;white-space:nowrap;}
+a.alt-chip:hover{background:rgba(0,31,96,.12);}
+.alt-chip.bb{background:rgba(219,55,45,.08);border-color:rgba(219,55,45,.3);color:#b3261e;}
+.alt-bb{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;text-decoration:none;}
+.alt-bb.us{background:rgba(36,233,163,.15);color:#0f8a5f;}
+.alt-bb.none{background:rgba(0,31,96,.06);color:var(--muted);}
+.alt-bb.them{background:rgba(219,55,45,.1);color:#b3261e;font-family:'DM Mono',monospace;font-weight:600;}
+.alt-tier-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;}
+.alt-tier-count{font-size:11px;font-weight:600;color:var(--muted);}
+.alt-empty{font-size:12px;color:var(--muted);padding:6px 0;}
 
 /* ── Placeholder content ── */
 .placeholder-block{background:var(--white);border:1.5px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--muted);}
@@ -1250,6 +1267,10 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
     </button>
     <button class="nav-btn" onclick="showPage('organic',this)">
       <svg viewBox="0 0 16 16"><path d="M8 14C8 8 3 5 3 5s1 5 5 9z"/><path d="M8 14C8 8 13 5 13 5s-1 5-5 9z"/><path d="M8 2v12"/></svg>Organic
+    </button>
+    <!-- Added 2026-10-27 per Jaclyn -->
+    <button class="nav-btn" onclick="showPage('alt-sellers',this)">
+      <svg viewBox="0 0 16 16"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M1 14c0-2.5 1.8-4 4-4s4 1.5 4 4"/><path d="M9.5 10.3c.5-.2 1-.3 1.5-.3 2.2 0 4 1.5 4 4"/></svg>Alt Sellers
     </button>
     </div>
   </nav>
@@ -12528,6 +12549,48 @@ details.inci-toggle[open] summary::before{content:'▾ ';}
 
   </div><!-- /page-organic -->
 
+  <!-- ══ ALT SELLERS (internal only) — added 2026-10-27 per Jaclyn ══
+       Three tables bucketed by alt_seller_count from the Products sheet
+       (Products Cache, same file/tab as Listing Audit): 0 = we control,
+       1–4 = fighting for control, 5+ = we don't control. -->
+  <div class="page" id="page-alt-sellers">
+    <div class="sheet-link-menu">
+      <button class="sheet-link-btn" onclick="document.getElementById('alt-sheet-dropdown').classList.toggle('open')">🔗 Source Sheets <span style="font-size:9px;">▾</span></button>
+      <div class="sheet-link-dropdown" id="alt-sheet-dropdown">
+        <a href="https://docs.google.com/spreadsheets/d/1cdqKzqaUFr8MFDWkskpGJ5NQSv9QjVv64ab8P_PPr6s/edit?gid=1255096066#gid=1255096066" target="_blank" rel="noopener"><span class="sheet-link-icon">📦</span>Products (alt sellers, buy box, 90-day units)</a>
+        <a href="https://docs.google.com/spreadsheets/d/1NNRTRQxQl2r4XivAvH700CC39p49GD2xfZlyRNqahGA/edit?gid=164358627#gid=164358627" target="_blank" rel="noopener"><span class="sheet-link-icon">🏷️</span>Product Short Name (names, prices)</a>
+      </div>
+    </div>
+
+    <div class="page-hd">
+      <div><div class="page-title">Alt Sellers</div><div class="page-sub" id="alt-sub">Seller control by ASIN · Loading…</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="alt-tier-hd">
+        <div class="card-title" style="margin-bottom:0;">Products We Control <span style="font-weight:400;color:var(--muted);font-size:12px;">· no alternate sellers</span></div>
+        <div class="alt-tier-count" id="alt-count-control"></div>
+      </div>
+      <div style="overflow-x:auto;" id="alt-table-control"><div class="alt-empty">Loading…</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="alt-tier-hd">
+        <div class="card-title" style="margin-bottom:0;">Products We're Fighting For <span style="font-weight:400;color:var(--muted);font-size:12px;">· 1–4 alternate sellers</span></div>
+        <div class="alt-tier-count" id="alt-count-fighting"></div>
+      </div>
+      <div style="overflow-x:auto;" id="alt-table-fighting"><div class="alt-empty">Loading…</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="alt-tier-hd">
+        <div class="card-title" style="margin-bottom:0;">Products We Don't Control <span style="font-weight:400;color:var(--muted);font-size:12px;">· 5+ alternate sellers</span></div>
+        <div class="alt-tier-count" id="alt-count-lost"></div>
+      </div>
+      <div style="overflow-x:auto;" id="alt-table-lost"><div class="alt-empty">Loading…</div></div>
+    </div>
+  </div><!-- /page-alt-sellers -->
+
 </div><!-- /main -->
 </div><!-- /shell -->
 
@@ -12551,7 +12614,7 @@ const pageTitles = {
   home:'Home — The Crème Shop',
   overview:'Overview — The Crème Shop',sales:'Sales — The Crème Shop','sales-external':'Sales — The Crème Shop',marketing:'Marketing — The Crème Shop','marketing-external':'Marketing — The Crème Shop',
   events:'Events — The Crème Shop',inventory:'Inventory — The Crème Shop',
-  insights:'Insights — The Crème Shop',listing:'Listing Audit — The Crème Shop',ppc:'PPC — The Crème Shop',organic:'Organic — The Crème Shop'
+  insights:'Insights — The Crème Shop',listing:'Listing Audit — The Crème Shop',ppc:'PPC — The Crème Shop',organic:'Organic — The Crème Shop','alt-sellers':'Alt Sellers — The Crème Shop'
 };
 
 function showPage(id, btn) {
@@ -12568,6 +12631,7 @@ function showPage(id, btn) {
   // click into Rank Tracker first. initRankTracker caches internally, so
   // this is a no-op on subsequent visits to the page.
   if (id === 'organic' && typeof window.initRankTracker === 'function') window.initRankTracker('activators');
+  if (id === 'alt-sellers' && typeof window.initAltSellers === 'function') window.initAltSellers();
 
   // Listing Audit — lazy-loaded on first visit (Products Cache is a large
   // fetch, no reason to pull it unless someone actually opens this page).
@@ -22002,6 +22066,148 @@ window.loadCategoryChart = async function () {
     }
   })();
   return window._categoryChartLoading;
+};
+
+// ═══════════════════════════ ALT SELLERS ═══════════════════════════
+// Added 2026-10-27 per Jaclyn. One row per ASIN (alt-seller and buy-box
+// data are per ASIN on Amazon; the Products sheet repeats them on every
+// SKU of that ASIN, e.g. CRE0001-label / CRE0001-stickerless, so SKUs
+// are listed together on the ASIN's row instead of duplicating it).
+//
+// Uses each SKU's most recent row that has offers_synced_at filled in —
+// NOT simply the newest date: the daily sync writes the new day's rows
+// first and fills the offer columns later, so the newest date can be
+// partly written with blank alt-seller columns (verified 2026-10-27:
+// 151 of 323 rows on today's date, all with no offer data yet).
+//
+// Avg Daily Units   = purchased_units_90d ÷ 90 (Products sheet).
+// Avg Daily Revenue = Avg Daily Units × Price from Product Short Name —
+//   the Products sheet has no revenue column, so this is an estimate at
+//   list price (actual sale prices/coupons aren't reflected).
+// Buy box: buybox_owner is "us", "none" (no one has it), or a seller id.
+//
+// ALT_SELLERS_NOT_CONTROLLED_ASINS — Jaclyn's list (to come) of ASINs
+// with no alt sellers that we still don't control. Any ASIN listed here
+// goes in "Products We Don't Control" whatever its alt-seller count.
+const ALT_SELLERS_NOT_CONTROLLED_ASINS = [
+  // 'B0XXXXXXXX',
+];
+window.initAltSellers = function () {
+  if (window._altSellersPromise) return window._altSellersPromise;
+  window._altSellersPromise = (async () => {
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const sellerUrl = id => 'https://www.amazon.com/sp?seller=' + encodeURIComponent(id);
+    try {
+      const [csv, master] = await Promise.all([
+        fetch(ovCsvUrl(OV_PRODUCTS_CACHE_SHEET_ID, OV_PRODUCTS_CACHE_GID) + `&_cb=${Date.now()}`).then(r => r.ok ? r.text() : '').catch(() => ''),
+        getProductMaster(),
+      ]);
+      const rows = parseCsvToRows(csv);
+      if (!rows.length) throw new Error('Products sheet returned no rows');
+
+      // latest offer-synced row per SKU
+      const bySku = {};
+      rows.forEach(r => {
+        const sku = (r.sku || '').trim();
+        if (!sku || !(r.offers_synced_at || '').trim()) return;
+        const prev = bySku[sku];
+        if (!prev || (r.date || '') > (prev.date || '') ||
+            ((r.date || '') === (prev.date || '') && (r.offers_synced_at || '') > (prev.offers_synced_at || ''))) bySku[sku] = r;
+      });
+
+      // roll up to ASIN
+      const byAsin = {};
+      let latestSync = '';
+      Object.values(bySku).forEach(r => {
+        const asin = (r.asin || '').trim().toUpperCase();
+        if (!asin) return;
+        if ((r.offers_synced_at || '') > latestSync) latestSync = r.offers_synced_at;
+        const a = byAsin[asin] || (byAsin[asin] = { asin, skus: [], row: r });
+        a.skus.push((r.sku || '').trim());
+        if ((r.offers_synced_at || '') > (a.row.offers_synced_at || '')) a.row = r;
+      });
+
+      const notControlled = new Set(ALT_SELLERS_NOT_CONTROLLED_ASINS.map(a => String(a).trim().toUpperCase()));
+      const tiers = { control: [], fighting: [], lost: [] };
+      Object.values(byAsin).forEach(a => {
+        const r = a.row;
+        const pm = master.byAsin[a.asin] || null;
+        const count = parseInt(r.alt_seller_count, 10) || 0;
+        const ids = (r.alt_sellers || '').split('|').map(s => s.trim()).filter(Boolean);
+        const links = (r.alt_seller_links || '').split('|').map(s => s.trim());
+        const units90 = parseFloat(String(r.purchased_units_90d || '').replace(/[^0-9.\-]/g, ''));
+        const dailyUnits = isNaN(units90) ? null : units90 / 90;
+        const price = pm && pm.price ? pm.price : null;
+        const item = {
+          asin: a.asin,
+          skus: a.skus.sort(),
+          name: (pm && pm.name) || r.name || '',
+          dailyUnits,
+          dailyRevenue: (dailyUnits != null && price) ? dailyUnits * price : null,
+          count,
+          sellers: ids.map((id, i) => ({ id, url: (links[i] && /^https?:\/\//.test(links[i])) ? links[i] : sellerUrl(id) })),
+          buybox: (r.buybox_owner || '').trim(),
+        };
+        const flagged = notControlled.has(a.asin);
+        if (flagged || count >= 5) tiers.lost.push(Object.assign(item, { flagged }));
+        else if (count >= 1) tiers.fighting.push(item);
+        else tiers.control.push(item);
+      });
+      Object.values(tiers).forEach(list => list.sort((x, y) =>
+        ((y.dailyRevenue || 0) - (x.dailyRevenue || 0)) || ((y.dailyUnits || 0) - (x.dailyUnits || 0)) || x.asin.localeCompare(y.asin)));
+
+      const fmtUnits = v => v == null ? '—' : (v >= 10 ? Math.round(v).toLocaleString() : v.toFixed(1));
+      const fmtRev = v => v == null ? '—' : '$' + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const bbHtml = (bb, sellers) => {
+        const low = bb.toLowerCase();
+        if (low === 'us') return '<span class="alt-bb us">Us</span>';
+        if (!bb || low === 'none') return '<span class="alt-bb none">No one</span>';
+        const hit = sellers.find(s => s.id === bb);
+        return '<a class="alt-bb them" href="' + esc(hit ? hit.url : sellerUrl(bb)) + '" target="_blank" rel="noopener" title="Alt seller has the buy box">' + esc(bb) + '</a>';
+      };
+      const table = (list, withSellers) => {
+        if (!list.length) return '<div class="alt-empty">No products in this group.</div>';
+        return '<table class="data-table alt-tbl"><thead><tr>' +
+          '<th>ASIN</th><th>SKU</th><th>Product Name</th><th class="num">Avg Daily Units</th><th class="num">Avg Daily Revenue</th>' +
+          (withSellers ? '<th>Alt Sellers</th>' : '') + '<th>Buy Box</th></tr></thead><tbody>' +
+          list.map(it => '<tr>' +
+            '<td><a class="alt-asin" href="https://www.amazon.com/dp/' + esc(it.asin) + '" target="_blank" rel="noopener">' + esc(it.asin) + '</a></td>' +
+            '<td class="alt-sku">' + it.skus.map(esc).join('<br>') + '</td>' +
+            '<td class="alt-name">' + esc(it.name) + (it.flagged ? ' <span class="alt-chip" title="On the not-controlled list">flagged</span>' : '') + '</td>' +
+            '<td class="num">' + fmtUnits(it.dailyUnits) + '</td>' +
+            '<td class="num">' + fmtRev(it.dailyRevenue) + '</td>' +
+            (withSellers ? '<td><div class="alt-chips">' + (it.sellers.length
+              ? it.sellers.map(s => '<a class="alt-chip' + (s.id === it.buybox ? ' bb' : '') + '" href="' + esc(s.url) + '" target="_blank" rel="noopener"' + (s.id === it.buybox ? ' title="Has the buy box"' : '') + '>' + esc(s.id) + '</a>').join('')
+              : '<span style="color:var(--muted);font-weight:500;">—</span>') + '</div></td>' : '') +
+            '<td>' + bbHtml(it.buybox, it.sellers) + '</td>' +
+          '</tr>').join('') +
+          '</tbody></table>';
+      };
+      const summarize = list => {
+        const rev = list.reduce((s, it) => s + (it.dailyRevenue || 0), 0);
+        const lostBB = list.filter(it => it.buybox && !['us', 'none'].includes(it.buybox.toLowerCase())).length;
+        return list.length + ' ASIN' + (list.length === 1 ? '' : 's') + ' · ' + fmtRev(rev) + '/day' + (lostBB ? ' · ' + lostBB + ' with buy box held by an alt seller' : '');
+      };
+      document.getElementById('alt-table-control').innerHTML  = table(tiers.control, false);
+      document.getElementById('alt-table-fighting').innerHTML = table(tiers.fighting, true);
+      document.getElementById('alt-table-lost').innerHTML     = table(tiers.lost, true);
+      document.getElementById('alt-count-control').textContent  = summarize(tiers.control);
+      document.getElementById('alt-count-fighting').textContent = summarize(tiers.fighting);
+      document.getElementById('alt-count-lost').textContent     = summarize(tiers.lost);
+      const synced = latestSync ? new Date(latestSync) : null;
+      document.getElementById('alt-sub').textContent = 'Seller control by ASIN · alt-seller data as of ' +
+        (synced && !isNaN(synced) ? synced.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—') +
+        ' · revenue estimated at list price';
+      console.log('[AltSellers] ASINs — control:', tiers.control.length, 'fighting:', tiers.fighting.length, 'lost:', tiers.lost.length, '| latest offers sync:', latestSync);
+    } catch (err) {
+      console.error('[AltSellers]', err);
+      ['control', 'fighting', 'lost'].forEach(k => {
+        document.getElementById('alt-table-' + k).innerHTML = '<div class="alt-empty">Couldn\'t load the Products sheet — ' + esc(err.message) + '</div>';
+      });
+      window._altSellersPromise = null; // allow a retry on next visit
+    }
+  })();
+  return window._altSellersPromise;
 };
 
 function getProductMaster() {
